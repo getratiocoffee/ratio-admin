@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ratio Admin — Green stock</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Ratio Admin">
+<meta name="theme-color" content="#EFE8DE">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<link rel="icon" href="data:image/png;base64,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">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { width: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #EFE8DE;
+    display: block;
+    padding: max(16px, env(safe-area-inset-top)) 10px max(16px, env(safe-area-inset-bottom));
+    min-height: 100vh;
+  }
+  .phone { width: 100%; max-width: 420px; margin: 0 auto; }
+  .card {
+    background: #FAF6F0;
+    border: 0.5px solid #DCD2C2;
+    border-radius: 28px;
+    overflow: hidden;
+    min-height: 90vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .app-header {
+    padding: 18px 20px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-name { font-size: 18px; font-weight: 600; color: #463E3A; }
+
+  .section-bar {
+    padding: 4px 20px 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .section-title { font-size: 21px; font-weight: 600; color: #2E2925; }
+  .section-count { font-size: 13px; color: #8A7F6F; margin-top: 2px; }
+  .header-incomplete-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #633806;
+    background: #FAEEDA;
+    padding: 7px 11px;
+    border-radius: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    border: none;
+    font-family: inherit;
+    flex-shrink: 0;
+  }
+  .header-incomplete-badge.hidden { display: none; }
+
+  .search-bar { padding: 0 20px 12px; flex-shrink: 0; }
+  .search-input-wrap { position: relative; display: flex; align-items: center; }
+  .search-input-wrap svg { position: absolute; left: 14px; color: #B0A491; }
+  .search-input {
+    width: 100%;
+    padding: 12px 14px 12px 40px;
+    font-size: 15px;
+    border: 1px solid #DCD2C2;
+    border-radius: 14px;
+    background: #FFFFFF;
+    color: #2E2925;
+    font-family: inherit;
+  }
+  .search-input::placeholder { color: #B0A491; }
+
+  .filter-row { display: flex; gap: 8px; padding: 0 20px 14px; overflow-x: auto; flex-shrink: 0; }
+  .filter-chip {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 18px;
+    background: #FAF6F0;
+    color: #463E3A;
+    border: 1px solid #DCD2C2;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .filter-chip.active { background: #463E3A; color: #fff; border-color: #463E3A; }
+
+  .bean-list {
+    flex: 1;
+    width: 100%;
+    padding: 0 14px 14px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 16px;
+    overflow-y: auto;
+  }
+
+  .country-group { display: flex; flex-direction: column; gap: 10px; }
+  .country-group-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #8A7F6F;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 4px 6px 0;
+  }
+
+  .bean-card {
+    width: 100%;
+    border: 1px solid #DCD2C2;
+    border-radius: 18px;
+    background: #FFFFFF;
+    overflow: hidden;
+  }
+  .bean-card-main {
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    cursor: pointer;
+  }
+  .bean-card-main-left { min-width: 0; }
+  .bean-name { font-size: 16px; font-weight: 600; color: #2E2925; line-height: 1.3; }
+  .bean-process { font-size: 13px; color: #8A7F6F; margin-top: 3px; }
+
+  .incomplete-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #633806;
+    background: #FAEEDA;
+    padding: 3px 8px;
+    border-radius: 8px;
+    margin-top: 6px;
+  }
+  .incomplete-dot { width: 6px; height: 6px; border-radius: 50%; background: #EF9F27; flex-shrink: 0; }
+
+  .right-cluster { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .stock-pill {
+    font-size: 15px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .stock-healthy { background: #EAF3DE; color: #27500A; }
+  .stock-low { background: #FAEEDA; color: #7A4707; }
+  .stock-out { background: #EFE8DE; color: #6B6155; }
+
+  .chevron { flex-shrink: 0; color: #B0A491; transition: transform 0.15s ease; }
+  .bean-card.expanded .chevron { transform: rotate(180deg); }
+
+  .bean-card-detail { overflow: hidden; max-height: 0; transition: max-height 0.25s ease; }
+  .bean-card-detail-inner {
+    padding: 0 14px 14px;
+    border-top: 1px solid #EFE8DE;
+    margin-top: 2px;
+    padding-top: 12px;
+  }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .detail-field-label { font-size: 11px; color: #B0A491; }
+  .detail-field-value { font-size: 14px; color: #2E2925; margin-top: 3px; }
+  .detail-field-value.missing { color: #C99A60; font-style: italic; }
+
+  .incomplete-note {
+    font-size: 12px;
+    color: #633806;
+    background: #FAEEDA;
+    padding: 9px 11px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .low-tag-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #7A4707;
+    margin-top: 12px;
+  }
+
+  .card-actions { display: flex; gap: 10px; margin-top: 14px; }
+  .btn-edit, .btn-delete {
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid #DCD2C2;
+    background: #FFFFFF;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-edit { flex: 1; padding: 10px 0; color: #463E3A; }
+  .btn-delete { width: 44px; color: #A32D2D; display: flex; align-items: center; justify-content: center; }
+
+  .empty-state { text-align: center; padding: 50px 16px; color: #8A7F6F; font-size: 14px; }
+
+  .bottom-bar {
+    padding: 12px 16px 18px;
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid #DCD2C2;
+    background: #FAF6F0;
+    flex-shrink: 0;
+  }
+  .btn {
+    flex: 1;
+    padding: 15px 0;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+  }
+  .btn-primary { background: #463E3A; color: #fff; }
+  .btn-secondary { background: #FFFFFF; color: #463E3A; border: 1.5px solid #DCD2C2; flex: 0.85; }
+
+  /* ===== Form screen ===== */
+  .screen { display: none; flex-direction: column; height: 100%; }
+  .screen.active { display: flex; }
+  .form-topbar { padding: 18px 20px 12px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+  .back-btn {
+    width: 42px; height: 42px; border-radius: 13px; background: #FFFFFF;
+    border: 1px solid #DCD2C2; display: flex; align-items: center; justify-content: center;
+    color: #463E3A; cursor: pointer; flex-shrink: 0;
+  }
+  .form-topbar h1 { font-size: 19px; font-weight: 600; color: #463E3A; }
+  .form-scroll { flex: 1; overflow-y: auto; padding: 6px 20px 16px; }
+
+  .field-group { margin-bottom: 16px; }
+  .field-label { display: block; font-size: 14px; font-weight: 600; color: #2E2925; margin-bottom: 7px; }
+  .field-input {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 16px;
+    border: 1.5px solid #DCD2C2;
+    border-radius: 14px;
+    background: #FFFFFF;
+    color: #2E2925;
+    font-family: inherit;
+  }
+  .field-input::placeholder { color: #B0A491; }
+  .field-input:focus { outline: none; border-color: #463E3A; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .qty-input-wrap, .cost-input-wrap { position: relative; display: flex; align-items: center; }
+  .qty-unit { position: absolute; right: 14px; font-size: 14px; color: #8A7F6F; }
+  .qty-input-wrap .field-input { padding-right: 42px; }
+  .cost-prefix { position: absolute; left: 14px; font-size: 15px; color: #8A7F6F; }
+  .cost-input-wrap .field-input { padding-left: 28px; padding-right: 42px; }
+  .cost-suffix { position: absolute; right: 14px; font-size: 13px; color: #8A7F6F; }
+
+  .divider { height: 1px; background: #DCD2C2; margin: 6px 0 18px; }
+  .section-label {
+    font-size: 12px; font-weight: 600; color: #8A7F6F; text-transform: uppercase;
+    letter-spacing: 0.04em; margin-bottom: 12px;
+  }
+
+  .form-bottom-bar { padding: 12px 20px 20px; border-top: 1px solid #DCD2C2; background: #FAF6F0; flex-shrink: 0; }
+  .btn-save {
+    width: 100%; padding: 16px 0; border-radius: 16px; font-size: 16px; font-weight: 600;
+    border: none; cursor: pointer; font-family: inherit; background: #463E3A; color: #fff;
+  }
+  .btn-save:disabled { background: #DCD2C2; color: #B0A491; cursor: default; }
+  .required-hint { text-align: center; font-size: 12px; color: #B0A491; margin-top: 8px; }
+
+  /* ===== Delivery screen ===== */
+  .delivery-bean-row { border: 1px solid #DCD2C2; border-radius: 14px; padding: 12px; margin-bottom: 10px; background: #FFFFFF; }
+  .delivery-row-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .delivery-row-top select {
+    flex: 1; padding: 9px; font-size: 14px; border: 1px solid #DCD2C2; border-radius: 10px;
+    background: #FFFFFF; color: #2E2925; font-family: inherit;
+  }
+  .remove-row-btn {
+    width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    background: transparent; border: none; color: #8A7F6F; cursor: pointer;
+  }
+  .delivery-row-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .delivery-row-fields label { font-size: 11px; color: #B0A491; display: block; margin-bottom: 4px; }
+  .delivery-row-fields input {
+    width: 100%; padding: 8px; font-size: 14px; border: 1px solid #DCD2C2; border-radius: 10px;
+    background: #FFFFFF; color: #2E2925; font-family: inherit;
+  }
+  .delivery-row-result {
+    margin-top: 8px; padding-top: 8px; border-top: 1px solid #EFE8DE;
+    display: flex; justify-content: space-between; font-size: 13px;
+  }
+  .delivery-row-result .label { color: #8A7F6F; }
+  .delivery-row-result .value { font-weight: 600; color: #2E2925; }
+
+  .add-row-btn {
+    width: 100%; padding: 10px 0; background: #FFFFFF; color: #463E3A;
+    border: 1.5px dashed #DCD2C2; border-radius: 12px; font-size: 14px; cursor: pointer;
+    font-family: inherit; margin-bottom: 6px;
+  }
+
+  .delivery-summary { margin-top: 18px; padding-top: 12px; border-top: 1px solid #DCD2C2; }
+  .summary-line { display: flex; justify-content: space-between; font-size: 13px; color: #8A7F6F; margin-bottom: 6px; }
+  .summary-line.total {
+    font-size: 15px; font-weight: 600; color: #2E2925; margin-top: 4px;
+    padding-top: 8px; border-top: 1px solid #DCD2C2;
+  }
+
+  .save-status {
+    text-align: center; font-size: 12px; color: #8A7F6F; padding: 6px 20px;
+    flex-shrink: 0; transition: opacity 0.3s ease;
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="card">
+
+    <!-- ===== LIST SCREEN ===== -->
+    <div class="screen active" id="screen-list">
+
+      <div class="app-header">
+        <div class="brand">
+          <img src="data:image/png;base64,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" width="28" height="28" alt="Ratio Coffee logo" style="display:block;">
+          <span class="brand-name">Ratio Admin</span>
+        </div>
+      </div>
+
+      <div class="section-bar">
+        <div>
+          <div class="section-title">Green stock</div>
+          <div class="section-count" id="bean-count">0 green beans</div>
+        </div>
+        <button class="header-incomplete-badge hidden" id="header-incomplete-badge">
+          <span class="incomplete-dot"></span>
+          <span id="incomplete-count">0</span> need info
+        </button>
+      </div>
+
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" class="search-input" id="search-input" placeholder="Search beans...">
+        </div>
+      </div>
+
+      <div class="filter-row" id="filter-row">
+        <button class="filter-chip active" data-filter="all">All</button>
+        <button class="filter-chip" data-filter="incomplete">Needs info</button>
+        <button class="filter-chip" data-filter="healthy">In stock</button>
+        <button class="filter-chip" data-filter="low">Low stock</button>
+        <button class="filter-chip" data-filter="out">Out of stock</button>
+      </div>
+
+      <div class="bean-list" id="bean-list"></div>
+
+      <div class="save-status" id="save-status" style="opacity:0;">Saved</div>
+
+      <div class="bottom-bar">
+        <button class="btn btn-secondary" id="open-delivery-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96 12 12.01l8.73-5.05M12 22.08V12"/></svg>
+          Stock delivery
+        </button>
+        <button class="btn btn-primary" id="open-add-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Add bean
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== ADD / EDIT BEAN SCREEN ===== -->
+    <div class="screen" id="screen-form">
+      <div class="form-topbar">
+        <div class="back-btn" id="form-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        <h1 id="form-title">Add bean</h1>
+      </div>
+
+      <div class="form-scroll">
+        <div class="section-label">Basics</div>
+
+        <div class="field-group">
+          <label class="field-label">Name</label>
+          <input type="text" class="field-input" id="f-name" placeholder="e.g. Yirgacheffe Kochere">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Region</label>
+          <input type="text" class="field-input" id="f-region" placeholder="e.g. Ethiopia">
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Station / Farm</label>
+            <input type="text" class="field-input" id="f-station" placeholder="e.g. Kochere">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Process</label>
+            <input type="text" class="field-input" id="f-process" placeholder="e.g. Washed">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Variety</label>
+            <input type="text" class="field-input" id="f-variety" placeholder="e.g. Heirloom">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Harvest</label>
+            <input type="text" class="field-input" id="f-harvest" placeholder="e.g. 2025">
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="section-label">Stock &amp; cost</div>
+
+        <div class="field-group">
+          <label class="field-label">Quantity</label>
+          <div class="qty-input-wrap">
+            <input type="number" class="field-input" id="f-quantity" min="0" step="0.1" placeholder="0.0" inputmode="decimal">
+            <span class="qty-unit">kg</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Cost per kg</label>
+          <div class="cost-input-wrap">
+            <span class="cost-prefix">$</span>
+            <input type="number" class="field-input" id="f-cost" min="0" step="0.1" placeholder="0.00" inputmode="decimal">
+            <span class="cost-suffix">/kg</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Supplier</label>
+          <input type="text" class="field-input" id="f-supplier" placeholder="e.g. Trabocca">
+        </div>
+      </div>
+
+      <div class="form-bottom-bar">
+        <button class="btn-save" id="save-bean-btn" disabled>Save bean</button>
+        <p class="required-hint">Name and quantity are required — everything else can be filled in later</p>
+      </div>
+    </div>
+
+    <!-- ===== STOCK DELIVERY SCREEN ===== -->
+    <div class="screen" id="screen-delivery">
+      <div class="form-topbar">
+        <div class="back-btn" id="delivery-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        <h1>New stock delivery</h1>
+      </div>
+
+      <div class="form-scroll">
+        <div class="section-label" style="margin-bottom: 4px;">Beans in this delivery</div>
+        <p style="font-size: 12px; color: #8A7F6F; margin-bottom: 14px; line-height: 1.5;">
+          Shipping cost is split evenly across every kg in the delivery, regardless of bean.
+        </p>
+
+        <div id="delivery-rows"></div>
+
+        <button class="add-row-btn" id="add-delivery-row-btn">+ Add bean to this delivery</button>
+
+        <div class="section-label" style="margin-top: 18px;">Shipping</div>
+        <div class="field-group">
+          <label class="field-label">Total shipping cost for this delivery</label>
+          <div class="cost-input-wrap">
+            <span class="cost-prefix">$</span>
+            <input type="number" class="field-input" id="delivery-shipping" min="0" step="1" placeholder="0.00" inputmode="decimal">
+          </div>
+        </div>
+
+        <div class="delivery-summary">
+          <div class="summary-line"><span>Total weight received</span><span id="delivery-total-weight">0.0 kg</span></div>
+          <div class="summary-line"><span>Total bean cost</span><span id="delivery-total-bean-cost">$0.00</span></div>
+          <div class="summary-line"><span>Shipping cost</span><span id="delivery-total-shipping">$0.00</span></div>
+          <div class="summary-line total"><span>Total landed cost</span><span id="delivery-total-landed">$0.00</span></div>
+        </div>
+      </div>
+
+      <div class="form-bottom-bar">
+        <button class="btn-save" id="confirm-delivery-btn" disabled>Confirm and add to stock</button>
+        <p class="required-hint">Each bean's stock and cost per kg will be updated automatically.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var STORAGE_KEY = 'ratio-admin-inventory-v1';
+  var LOW_STOCK_THRESHOLD = 10;
+
+  var SEED_BEANS = [
+    { id: 'seed1', name: 'Brazil Cerrado', region: 'Brazil', station: 'Fazenda Santa In\u00eas', process: 'Natural', variety: 'Mundo Novo', harvest: '2025', quantity: '68.0', supplier: 'Falcon Coffees', costPerKg: '15.20' },
+    { id: 'seed2', name: 'Yirgacheffe Kochere', region: 'Ethiopia', station: 'Kochere station', process: 'Washed', variety: 'Heirloom', harvest: '2025', quantity: '42.0', supplier: 'Trabocca', costPerKg: '18.00' },
+    { id: 'seed3', name: 'Indonesia Mandheling', region: 'Indonesia', station: 'Sumatra', process: 'Wet-hulled', variety: 'Tim Tim', harvest: '2024', quantity: '0.0', supplier: '', costPerKg: '12.80' },
+    { id: 'seed4', name: 'Panama Boquete', region: 'Panama', station: 'Finca La Mula', process: 'Washed', variety: 'Geisha', harvest: '2025', quantity: '6.5', supplier: 'Mercanta', costPerKg: '32.00' }
+  ];
+
+  function uid(){ return 'bean_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); }
+  function fmtKg(n){ var v = parseFloat(n); return (isNaN(v)?0:v).toFixed(1) + ' kg'; }
+  function fmtMoney(n){ var v = parseFloat(n); return '$' + (isNaN(v)?0:v).toFixed(2); }
+  function stockStatus(q){ var v = parseFloat(q)||0; if (v<=0) return 'out'; if (v<=LOW_STOCK_THRESHOLD) return 'low'; return 'healthy'; }
+  function isIncomplete(b){ return !b.region || !b.station || !b.process || !b.variety || !b.harvest || !b.supplier || !b.costPerKg; }
+  function esc(s){
+    var div = document.createElement('div');
+    div.textContent = s == null ? '' : s;
+    return div.innerHTML;
+  }
+
+  // ---------- Storage (localStorage, offline-capable) ----------
+  function loadBeans(){
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch(e) { console.error('Load failed', e); }
+    return null;
+  }
+  function saveBeans(beans){
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(beans));
+      return true;
+    } catch(e) {
+      console.error('Save failed', e);
+      return false;
+    }
+  }
+
+  var beans = loadBeans();
+  if (!beans) {
+    beans = SEED_BEANS.slice();
+    saveBeans(beans);
+  }
+
+  var state = {
+    search: '',
+    filter: 'all',
+    expandedId: null,
+    editingId: null
+  };
+
+  function persist(){
+    var ok = saveBeans(beans);
+    flashSaveStatus(ok);
+  }
+
+  function flashSaveStatus(ok){
+    var el = document.getElementById('save-status');
+    el.textContent = ok ? 'Saved' : "Couldn't save \u2014 your browser storage may be full or blocked";
+    el.style.color = ok ? '#8A7F6F' : '#A32D2D';
+    el.style.opacity = '1';
+    clearTimeout(flashSaveStatus._t);
+    flashSaveStatus._t = setTimeout(function(){ el.style.opacity = '0'; }, 1600);
+  }
+
+  // ---------- Screen navigation ----------
+  function showScreen(id){
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+  }
+
+  // ---------- List rendering ----------
+  function render(){
+    var listEl = document.getElementById('bean-list');
+    var countEl = document.getElementById('bean-count');
+    var incompleteBadge = document.getElementById('header-incomplete-badge');
+    var incompleteCountEl = document.getElementById('incomplete-count');
+
+    var incompleteTotal = beans.filter(isIncomplete).length;
+    incompleteCountEl.textContent = incompleteTotal;
+    incompleteBadge.classList.toggle('hidden', incompleteTotal === 0);
+
+    var q = state.search.trim().toLowerCase();
+    var filtered = beans.filter(function(b){
+      var matchesFilter = state.filter === 'all' ? true :
+        state.filter === 'incomplete' ? isIncomplete(b) :
+        stockStatus(b.quantity) === state.filter;
+      var matchesSearch = !q || b.name.toLowerCase().indexOf(q) !== -1 || (b.region||'').toLowerCase().indexOf(q) !== -1;
+      return matchesFilter && matchesSearch;
+    });
+
+    countEl.textContent = beans.length + ' green bean' + (beans.length === 1 ? '' : 's');
+
+    if (filtered.length === 0) {
+      listEl.innerHTML = '<div class="empty-state">No beans match this search.</div>';
+      return;
+    }
+
+    var grouped = {};
+    filtered.forEach(function(b){
+      var key = (b.region || 'Unspecified').trim() || 'Unspecified';
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(b);
+    });
+    var groupKeys = Object.keys(grouped).sort(function(a,b){ return a.localeCompare(b); });
+
+    var html = '';
+    groupKeys.forEach(function(group){
+      html += '<div class="country-group">';
+      html += '<div class="country-group-label">' + esc(group) + '</div>';
+      grouped[group].forEach(function(bean){
+        html += renderBeanCard(bean);
+      });
+      html += '</div>';
+    });
+    listEl.innerHTML = html;
+
+    attachCardListeners();
+  }
+
+  function renderBeanCard(bean){
+    var incomplete = isIncomplete(bean);
+    var status = stockStatus(bean.quantity);
+    var statusClass = status === 'healthy' ? 'stock-healthy' : status === 'low' ? 'stock-low' : 'stock-out';
+    var expanded = state.expandedId === bean.id;
+
+    var missingFields = [
+      !bean.region && 'Region',
+      !bean.station && 'Station / Farm',
+      !bean.process && 'Process',
+      !bean.variety && 'Variety',
+      !bean.harvest && 'Harvest',
+      !bean.supplier && 'Supplier',
+      !bean.costPerKg && 'Cost per kg'
+    ].filter(Boolean).join(', ');
+
+    var detailHeight = expanded ? '600px' : '0px';
+
+    var html = '<div class="bean-card' + (expanded ? ' expanded' : '') + '" data-id="' + bean.id + '">';
+    html += '  <div class="bean-card-main" data-action="toggle">';
+    html += '    <div class="bean-card-main-left">';
+    html += '      <div class="bean-name">' + esc(bean.name || 'Untitled bean') + '</div>';
+    if (bean.process) html += '      <div class="bean-process">' + esc(bean.process) + '</div>';
+    if (incomplete) html += '      <div class="incomplete-badge"><span class="incomplete-dot"></span>Needs info</div>';
+    html += '    </div>';
+    html += '    <div class="right-cluster">';
+    html += '      <span class="stock-pill ' + statusClass + '">' + fmtKg(bean.quantity) + '</span>';
+    html += '      <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>';
+    html += '    </div>';
+    html += '  </div>';
+    html += '  <div class="bean-card-detail" style="max-height:' + detailHeight + ';">';
+    html += '    <div class="bean-card-detail-inner">';
+    if (incomplete) html += '      <div class="incomplete-note">Missing: ' + esc(missingFields) + '</div>';
+    html += '      <div class="detail-grid">';
+    html += detailField('Region', bean.region);
+    html += detailField('Station / Farm', bean.station);
+    html += detailField('Variety', bean.variety);
+    html += detailField('Harvest', bean.harvest);
+    html += detailField('Supplier', bean.supplier);
+    html += detailField('Cost per kg', bean.costPerKg ? fmtMoney(bean.costPerKg) + ' /kg' : '');
+    html += '      </div>';
+    if (status === 'low') {
+      html += '      <div class="low-tag-row"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Low stock</div>';
+    }
+    html += '      <div class="card-actions">';
+    html += '        <button class="btn-edit" data-action="edit">Edit</button>';
+    html += '        <button class="btn-delete" data-action="delete" aria-label="Delete bean"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+    html += '      </div>';
+    html += '    </div>';
+    html += '  </div>';
+    html += '</div>';
+    return html;
+  }
+
+  function detailField(label, value){
+    var missing = !value;
+    return '<div><div class="detail-field-label">' + esc(label) + '</div>' +
+      '<div class="detail-field-value' + (missing ? ' missing' : '') + '">' + (missing ? 'Not set yet' : esc(value)) + '</div></div>';
+  }
+
+  function attachCardListeners(){
+    document.querySelectorAll('.bean-card').forEach(function(card){
+      var id = card.getAttribute('data-id');
+      var mainRow = card.querySelector('[data-action="toggle"]');
+      var detail = card.querySelector('.bean-card-detail');
+
+      mainRow.addEventListener('click', function(){
+        if (state.expandedId === id) {
+          state.expandedId = null;
+        } else {
+          state.expandedId = id;
+        }
+        render();
+      });
+
+      var editBtn = card.querySelector('[data-action="edit"]');
+      if (editBtn) {
+        editBtn.addEventListener('click', function(e){
+          e.stopPropagation();
+          openEditForm(id);
+        });
+      }
+
+      var deleteBtn = card.querySelector('[data-action="delete"]');
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', function(e){
+          e.stopPropagation();
+          beans = beans.filter(function(b){ return b.id !== id; });
+          if (state.expandedId === id) state.expandedId = null;
+          persist();
+          render();
+        });
+      }
+    });
+  }
+
+  // ---------- Search & filter ----------
+  document.getElementById('search-input').addEventListener('input', function(e){
+    state.search = e.target.value;
+    render();
+  });
+
+  document.querySelectorAll('.filter-chip').forEach(function(chip){
+    chip.addEventListener('click', function(){
+      document.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.remove('active'); });
+      chip.classList.add('active');
+      state.filter = chip.getAttribute('data-filter');
+      render();
+    });
+  });
+
+  document.getElementById('header-incomplete-badge').addEventListener('click', function(){
+    document.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.remove('active'); });
+    document.querySelector('.filter-chip[data-filter="incomplete"]').classList.add('active');
+    state.filter = 'incomplete';
+    render();
+  });
+
+  // ---------- Add / Edit form ----------
+  var formFields = ['name','region','station','process','variety','harvest','quantity','cost','supplier'];
+  var fieldToBeanKey = { name:'name', region:'region', station:'station', process:'process', variety:'variety', harvest:'harvest', quantity:'quantity', cost:'costPerKg', supplier:'supplier' };
+
+  function clearForm(){
+    formFields.forEach(function(f){ document.getElementById('f-' + f).value = ''; });
+  }
+
+  function fillForm(bean){
+    document.getElementById('f-name').value = bean.name || '';
+    document.getElementById('f-region').value = bean.region || '';
+    document.getElementById('f-station').value = bean.station || '';
+    document.getElementById('f-process').value = bean.process || '';
+    document.getElementById('f-variety').value = bean.variety || '';
+    document.getElementById('f-harvest').value = bean.harvest || '';
+    document.getElementById('f-quantity').value = bean.quantity || '';
+    document.getElementById('f-cost').value = bean.costPerKg || '';
+    document.getElementById('f-supplier').value = bean.supplier || '';
+  }
+
+  function checkFormValid(){
+    var name = document.getElementById('f-name').value.trim();
+    var qty = document.getElementById('f-quantity').value.trim();
+    var valid = name.length > 0 && qty.length > 0;
+    document.getElementById('save-bean-btn').disabled = !valid;
+    return valid;
+  }
+
+  formFields.forEach(function(f){
+    document.getElementById('f-' + f).addEventListener('input', checkFormValid);
+  });
+
+  function openAddForm(){
+    state.editingId = null;
+    clearForm();
+    document.getElementById('form-title').textContent = 'Add bean';
+    checkFormValid();
+    showScreen('screen-form');
+  }
+
+  function openEditForm(id){
+    var bean = beans.find(function(b){ return b.id === id; });
+    if (!bean) return;
+    state.editingId = id;
+    fillForm(bean);
+    document.getElementById('form-title').textContent = 'Edit bean';
+    checkFormValid();
+    showScreen('screen-form');
+  }
+
+  document.getElementById('open-add-btn').addEventListener('click', openAddForm);
+  document.getElementById('form-back-btn').addEventListener('click', function(){ showScreen('screen-list'); });
+
+  document.getElementById('save-bean-btn').addEventListener('click', function(){
+    if (!checkFormValid()) return;
+    var values = {};
+    formFields.forEach(function(f){
+      values[fieldToBeanKey[f]] = document.getElementById('f-' + f).value.trim();
+    });
+
+    if (state.editingId) {
+      beans = beans.map(function(b){
+        return b.id === state.editingId ? Object.assign({}, b, values) : b;
+      });
+    } else {
+      values.id = uid();
+      beans.push(values);
+    }
+    persist();
+    showScreen('screen-list');
+    render();
+  });
+
+  // ---------- Stock delivery ----------
+  var deliveryRows = [];
+  var deliveryRowCounter = 0;
+
+  function beanOptionsHtml(selectedId){
+    return beans.map(function(b){
+      return '<option value="' + b.id + '"' + (b.id === selectedId ? ' selected' : '') + '>' + esc(b.name) + '</option>';
+    }).join('');
+  }
+
+  function renderDeliveryRows(){
+    var container = document.getElementById('delivery-rows');
+    var shipping = parseFloat(document.getElementById('delivery-shipping').value) || 0;
+    var totalWeight = deliveryRows.reduce(function(sum, r){ return sum + (parseFloat(r.kg) || 0); }, 0);
+    var shippingPerKg = totalWeight > 0 ? shipping / totalWeight : 0;
+
+    var html = '';
+    deliveryRows.forEach(function(row){
+      var landedCost = (parseFloat(row.price) || 0) + shippingPerKg;
+      html += '<div class="delivery-bean-row" data-row-id="' + row.id + '">';
+      html += '  <div class="delivery-row-top">';
+      html += '    <select class="delivery-bean-select">' + beanOptionsHtml(row.beanId) + '</select>';
+      if (deliveryRows.length > 1) {
+        html += '    <button class="remove-row-btn" data-action="remove-row" aria-label="Remove"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+      }
+      html += '  </div>';
+      html += '  <div class="delivery-row-fields">';
+      html += '    <div><label>Kg received</label><input type="number" class="delivery-kg-input" min="0" step="0.5" value="' + esc(row.kg) + '" inputmode="decimal"></div>';
+      html += '    <div><label>Bean price / kg ($)</label><input type="number" class="delivery-price-input" min="0" step="0.1" value="' + esc(row.price) + '" inputmode="decimal"></div>';
+      html += '  </div>';
+      html += '  <div class="delivery-row-result"><span class="label">Landed cost / kg</span><span class="value">' + (row.kg ? fmtMoney(landedCost) + ' /kg' : '\u2014') + '</span></div>';
+      html += '</div>';
+    });
+    container.innerHTML = html;
+
+    container.querySelectorAll('.delivery-bean-row').forEach(function(rowEl){
+      var rowId = rowEl.getAttribute('data-row-id');
+      var rowData = deliveryRows.find(function(r){ return r.id == rowId; });
+
+      rowEl.querySelector('.delivery-bean-select').addEventListener('change', function(e){
+        rowData.beanId = e.target.value;
+        updateDeliverySummary();
+      });
+      rowEl.querySelector('.delivery-kg-input').addEventListener('input', function(e){
+        rowData.kg = e.target.value;
+        renderDeliveryRows();
+        updateDeliverySummary();
+      });
+      rowEl.querySelector('.delivery-price-input').addEventListener('input', function(e){
+        rowData.price = e.target.value;
+        renderDeliveryRows();
+        updateDeliverySummary();
+      });
+      var removeBtn = rowEl.querySelector('[data-action="remove-row"]');
+      if (removeBtn) {
+        removeBtn.addEventListener('click', function(){
+          deliveryRows = deliveryRows.filter(function(r){ return r.id != rowId; });
+          renderDeliveryRows();
+          updateDeliverySummary();
+        });
+      }
+    });
+
+    updateConfirmButtonState();
+  }
+
+  function updateDeliverySummary(){
+    var shipping = parseFloat(document.getElementById('delivery-shipping').value) || 0;
+    var totalWeight = deliveryRows.reduce(function(sum, r){ return sum + (parseFloat(r.kg) || 0); }, 0);
+    var totalBeanCost = deliveryRows.reduce(function(sum, r){ return sum + (parseFloat(r.kg) || 0) * (parseFloat(r.price) || 0); }, 0);
+
+    document.getElementById('delivery-total-weight').textContent = fmtKg(totalWeight);
+    document.getElementById('delivery-total-bean-cost').textContent = fmtMoney(totalBeanCost);
+    document.getElementById('delivery-total-shipping').textContent = fmtMoney(shipping);
+    document.getElementById('delivery-total-landed').textContent = fmtMoney(totalBeanCost + shipping);
+
+    updateConfirmButtonState();
+  }
+
+  function updateConfirmButtonState(){
+    var canConfirm = deliveryRows.some(function(r){ return r.beanId && parseFloat(r.kg) > 0; });
+    document.getElementById('confirm-delivery-btn').disabled = !canConfirm;
+  }
+
+  document.getElementById('delivery-shipping').addEventListener('input', function(){
+    renderDeliveryRows();
+    updateDeliverySummary();
+  });
+
+  document.getElementById('add-delivery-row-btn').addEventListener('click', function(){
+    deliveryRowCounter++;
+    deliveryRows.push({ id: deliveryRowCounter, beanId: beans[0] ? beans[0].id : '', kg: '', price: '' });
+    renderDeliveryRows();
+    updateDeliverySummary();
+  });
+
+  function openDeliveryScreen(){
+    deliveryRowCounter = 1;
+    deliveryRows = [{ id: 1, beanId: beans[0] ? beans[0].id : '', kg: '', price: '' }];
+    document.getElementById('delivery-shipping').value = '';
+    renderDeliveryRows();
+    updateDeliverySummary();
+    showScreen('screen-delivery');
+  }
+
+  document.getElementById('open-delivery-btn').addEventListener('click', openDeliveryScreen);
+  document.getElementById('delivery-back-btn').addEventListener('click', function(){ showScreen('screen-list'); });
+
+  document.getElementById('confirm-delivery-btn').addEventListener('click', function(){
+    var shipping = parseFloat(document.getElementById('delivery-shipping').value) || 0;
+    var totalWeight = deliveryRows.reduce(function(sum, r){ return sum + (parseFloat(r.kg) || 0); }, 0);
+    var shippingPerKg = totalWeight > 0 ? shipping / totalWeight : 0;
+
+    var updates = deliveryRows
+      .filter(function(r){ return r.beanId && parseFloat(r.kg) > 0; })
+      .map(function(r){
+        return {
+          beanId: r.beanId,
+          addKg: parseFloat(r.kg) || 0,
+          landedCostPerKg: (parseFloat(r.price) || 0) + shippingPerKg
+        };
+      });
+
+    if (updates.length === 0) return;
+
+    beans = beans.map(function(b){
+      var update = updates.find(function(u){ return u.beanId === b.id; });
+      if (!update) return b;
+      var newQty = (parseFloat(b.quantity) || 0) + update.addKg;
+      return Object.assign({}, b, {
+        quantity: newQty.toFixed(1),
+        costPerKg: update.landedCostPerKg.toFixed(2)
+      });
+    });
+
+    persist();
+    showScreen('screen-list');
+    render();
+  });
+
+  // ---------- Init ----------
+  render();
+})();
+</script>
+</body>
+</html>
