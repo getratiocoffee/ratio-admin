@@ -16,6 +16,7 @@ const ALLOWED_KEYS = {
   beans: 'green-bean-inventory',
   contacts: 'roaster-contacts',
   transfers: 'transfer-history',
+  invoices: 'invoice-log',
 };
 
 export default async function handler(req, res) {
