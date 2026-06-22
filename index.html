@@ -758,7 +758,7 @@
           <button class="toggle-btn active" id="transfer-dir-in" data-dir="in">Transfer in</button>
           <button class="toggle-btn" id="transfer-dir-out" data-dir="out">Transfer out</button>
         </div>
-        <p class="field-hint" id="transfer-dir-hint">Receiving beans from another roaster. Stock and cost will be merged with your existing inventory (weighted average) if the bean and source match.</p>
+        <p class="field-hint" id="transfer-dir-hint">Receiving beans from another roaster. If you select an existing bean, the quantity and cost will be merged into your current stock (weighted average).</p>
 
         <div class="divider"></div>
 
@@ -1787,7 +1787,7 @@
     document.getElementById('transfer-out-price-group').style.display = dir === 'out' ? 'block' : 'none';
     document.getElementById('transfer-bean-detail-fields').style.display = dir === 'in' ? 'block' : 'none';
     document.getElementById('transfer-dir-hint').textContent = dir === 'in'
-      ? "Receiving beans from another roaster. Stock and cost will be merged with your existing inventory (weighted average) if the bean and source match."
+      ? "Receiving beans from another roaster. If you select an existing bean, the quantity and cost will be merged into your current stock (weighted average)."
       : "Sending beans to another roaster. This will deduct from your stock and use your current cost per kg as the pricing baseline.";
     populateTransferBeanSelect();
     document.getElementById('transfer-new-name-group').style.display = 'none';
@@ -1901,18 +1901,19 @@
       record.deliveryGst = deliveryIn / 11;
       record.totalAmount = (qty * priceIn) + handlingIn + deliveryIn;
 
-      if (existingBean && supplierMatches(existingBean.supplier, contact.name)) {
+      if (existingBean) {
         var existingQty = parseFloat(existingBean.quantity) || 0;
         var existingValue = existingQty * (parseFloat(existingBean.costPerKg) || 0);
-        var incomingValue = qty * priceIn;
+        var incomingValue = (qty * priceIn) + handlingIn + deliveryIn;
         var newQty = existingQty + qty;
-        var newCostPerKg = newQty > 0 ? (existingValue + incomingValue) / newQty : priceIn;
+        var newCostPerKg = newQty > 0 ? (existingValue + incomingValue) / newQty : (incomingValue / qty);
         beans = beans.map(function(b){
           if (b.id !== existingBean.id) return b;
-          return Object.assign({}, b, { quantity: newQty.toFixed(1), costPerKg: newCostPerKg.toFixed(2) });
+          return Object.assign({}, b, { quantity: newQty.toFixed(1), costPerKg: newCostPerKg.toFixed(2), supplier: contact.name });
         });
       } else {
-        var base = existingBean || fieldsSnapshot;
+        var base = fieldsSnapshot;
+        var landedCostPerKg = qty > 0 ? ((qty * priceIn) + handlingIn + deliveryIn) / qty : priceIn;
         beans.push(Object.assign({
           id: uid(),
           name: beanName,
@@ -1925,7 +1926,7 @@
           harvest: base.harvest || '',
           supplier: contact.name,
           quantity: qty.toFixed(1),
-          costPerKg: priceIn.toFixed(2)
+          costPerKg: landedCostPerKg.toFixed(2)
         }));
       }
     } else {
