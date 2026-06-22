@@ -899,8 +899,8 @@
       <!-- Dashboard handover banner -->
       <div id="dashboard-handover-banner" style="display:none; margin:0 20px 4px; padding:10px 14px; border-radius:14px; border:1.5px solid #90C4E4; flex-shrink:0; cursor:pointer;"></div>
       <div id="dashboard-schedule-banner" style="display:none; margin:0 20px 4px; padding:10px 14px; border-radius:14px; border:1.5px solid #B8A6E8; background:#E8E0F5; flex-shrink:0; cursor:pointer;">
-        <div style="font-size:12px;font-weight:700;color:#3D2875;margin-bottom:3px;">⚠ Next week's timesheet not set</div>
-        <div style="font-size:13px;color:#3D2875;">Tap to add the schedule now.</div>
+        <div style="font-size:15px;font-weight:700;color:#3D2875;margin-bottom:4px;">⚠ Next week's timesheet not set</div>
+        <div style="font-size:14px;color:#3D2875;">Tap to add the schedule now.</div>
       </div>
       <div id="dashboard-beans-banner" style="display:none; margin:0 20px 4px; padding:10px 14px; border-radius:14px; border:1.5px solid #7DC49A; background:#D6EBDB; flex-shrink:0; cursor:pointer;"></div>
       <div id="dashboard-roasted-banner" style="display:none; margin:0 20px 4px; padding:10px 14px; border-radius:14px; border:1.5px solid #C4A882; background:#F5EBD8; flex-shrink:0; cursor:pointer;"></div>
@@ -1007,11 +1007,11 @@
 
       <!-- N/A status banner -->
       <div class="na-banner" id="na-banner" style="display:none; margin:0 20px 12px; padding:12px 14px; background:#E8E0F5; border-radius:14px; border:1.5px solid #B8A6E8; flex-shrink:0;">
-        <div style="font-size:12px;font-weight:700;color:#3D2875;margin-bottom:6px;">⚠ Staff N/A</div>
-        <div id="na-banner-content" style="font-size:13px;color:#3D2875;line-height:1.6;"></div>
+        <div style="font-size:15px;font-weight:700;color:#3D2875;margin-bottom:6px;">⚠ Staff N/A</div>
+        <div id="na-banner-content" style="font-size:14px;color:#3D2875;line-height:1.6;"></div>
       </div>
       <div class="na-banner" id="na-all-ok-banner" style="display:none; margin:0 20px 12px; padding:10px 14px; background:#E8E0F5; border-radius:14px; border:1.5px solid #B8A6E8; flex-shrink:0;">
-        <div style="font-size:13px;font-weight:600;color:#3D2875;">✓ All staff available today</div>
+        <div style="font-size:15px;font-weight:600;color:#3D2875;">✓ All staff available today</div>
       </div>
 
       <div class="menu-body">
@@ -2728,8 +2728,8 @@
     var names = incomplete.slice(0, 3).map(function(b){ return b.name; }).join(', ');
     if (incomplete.length > 3) names += ' +' + (incomplete.length - 3) + ' more';
     banner.innerHTML =
-      '<div style="font-size:12px;font-weight:700;color:#1A5C30;margin-bottom:3px;">⚠ Green bean info missing (' + incomplete.length + ')</div>' +
-      '<div style="font-size:13px;color:#1A5C30;">' + esc(names) + '</div>';
+      '<div style="font-size:15px;font-weight:700;color:#1A5C30;margin-bottom:4px;">⚠ Green bean info missing (' + incomplete.length + ')</div>' +
+      '<div style="font-size:14px;color:#1A5C30;">' + esc(names) + '</div>';
   }
 
   document.getElementById('dashboard-beans-banner').addEventListener('click', function(){
@@ -5188,15 +5188,15 @@
     }
     banner.style.display = 'block';
     if (remaining.length === 0) {
-      banner.innerHTML = '<div style="font-size:13px;font-weight:600;color:#1A5C8A;">\u2713 All handover tasks done for today</div>';
+      banner.innerHTML = '<div style="font-size:15px;font-weight:600;color:#1A5C8A;">\u2713 All handover tasks done for today</div>';
       banner.style.background = '#E0EEF8';
       banner.style.borderColor = '#90C4E4';
     } else {
       var names = remaining.slice(0,3).map(function(t){ return t.name; }).join(', ');
       if (remaining.length > 3) names += ' +' + (remaining.length - 3) + ' more';
       banner.innerHTML =
-        '<div style="font-size:12px;font-weight:700;color:#1A5C8A;margin-bottom:4px;">\u26a0 Today\'s Check List (' + remaining.length + ' remaining)</div>' +
-        '<div style="font-size:13px;color:#1A5C8A;">' + esc(names) + '</div>';
+        '<div style="font-size:15px;font-weight:700;color:#1A5C8A;margin-bottom:4px;">\u26a0 Today\'s Check List (' + remaining.length + ' remaining)</div>' +
+        '<div style="font-size:14px;color:#1A5C8A;">' + esc(names) + '</div>';
       banner.style.background = '#E0EEF8';
       banner.style.borderColor = '#90C4E4';
     }
@@ -5769,8 +5769,8 @@
     var names = pending.slice(0,3).map(function(r){ return r.name; }).join(', ');
     if (pending.length > 3) names += ' +' + (pending.length - 3) + ' more';
     banner.innerHTML =
-      '<div style="font-size:12px;font-weight:700;color:#7A4A00;margin-bottom:3px;">⚠ Sensory not done (' + pending.length + ')</div>' +
-      '<div style="font-size:13px;color:#7A4A00;">' + esc(names) + '</div>';
+      '<div style="font-size:15px;font-weight:700;color:#7A4A00;margin-bottom:4px;">⚠ Sensory not done (' + pending.length + ')</div>' +
+      '<div style="font-size:14px;color:#7A4A00;">' + esc(names) + '</div>';
   }
 
   function openRoastedScreen(){
