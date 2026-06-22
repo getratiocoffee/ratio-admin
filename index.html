@@ -710,7 +710,7 @@
         <div class="gate-bottom">
           <div class="gate-title">Enter app password</div>
           <div class="gate-subtitle">Ask your manager for the shared password to access the green bean inventory.</div>
-          <input type="password" class="gate-input" id="gate-password-input" placeholder="Password" autocomplete="off">
+          <input type="password" class="gate-input" id="gate-password-input" placeholder="Password" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
           <div class="gate-error" id="gate-error"></div>
           <button class="gate-btn" id="gate-submit-btn">Unlock</button>
         </div>
@@ -3104,6 +3104,8 @@
     });
   }
 
+  var expandedStaffContact = null;
+
   function renderStaffContacts(){
     var listEl = document.getElementById('staff-contacts-list');
     if (staffList.length === 0) {
@@ -3112,18 +3114,57 @@
     }
     var html = '';
     staffList.forEach(function(s){
-      html += '<div class="bean-card" style="margin-bottom:10px;">';
-      html += '  <div class="bean-card-main" style="cursor:default;">';
+      var isExpanded = expandedStaffContact === s.id;
+      html += '<div class="bean-card" style="margin-bottom:10px;" data-id="' + s.id + '">';
+      html += '  <div class="bean-card-main" data-action="toggle-contact">';
       html += '    <div class="bean-card-main-left">';
       html += '      <div class="bean-name">' + esc(s.name) + '</div>';
       if (s.phone) html += '      <div class="bean-process">' + esc(s.phone) + '</div>';
       if (s.email) html += '      <div class="bean-process">' + esc(s.email) + '</div>';
       if (!s.phone && !s.email) html += '      <div class="bean-process" style="color:#B0A491;font-style:italic;">No contact details</div>';
       html += '    </div>';
+      html += '    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:rotate(' + (isExpanded ? '180deg' : '0deg') + ');flex-shrink:0;color:#B0A491;"><polyline points="6 9 12 15 18 9"/></svg>';
       html += '  </div>';
+      if (isExpanded) {
+        html += '  <div class="bean-card-detail-inner">';
+        html += '    <div class="field-group"><label class="field-label">Name</label>';
+        html += '      <input type="text" class="field-input sc-name" value="' + esc(s.name) + '" placeholder="Name"></div>';
+        html += '    <div class="field-group"><label class="field-label">Contact number</label>';
+        html += '      <input type="tel" class="field-input sc-phone" value="' + esc(s.phone || '') + '" placeholder="e.g. 0412 345 678" inputmode="tel"></div>';
+        html += '    <div class="field-group"><label class="field-label">Email</label>';
+        html += '      <input type="email" class="field-input sc-email" value="' + esc(s.email || '') + '" placeholder="e.g. jordan@example.com" inputmode="email"></div>';
+        html += '    <button class="btn-save" data-action="save-contact" style="width:100%;padding:13px 0;border-radius:14px;font-size:15px;">Save</button>';
+        html += '  </div>';
+      }
       html += '</div>';
     });
     listEl.innerHTML = html;
+
+    listEl.querySelectorAll('[data-action="toggle-contact"]').forEach(function(header){
+      header.addEventListener('click', function(){
+        var card = header.closest('.bean-card');
+        var id = card.getAttribute('data-id');
+        expandedStaffContact = expandedStaffContact === id ? null : id;
+        renderStaffContacts();
+      });
+    });
+
+    listEl.querySelectorAll('[data-action="save-contact"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var card = btn.closest('.bean-card');
+        var id = card.getAttribute('data-id');
+        var name = card.querySelector('.sc-name').value.trim();
+        var phone = card.querySelector('.sc-phone').value.trim();
+        var email = card.querySelector('.sc-email').value.trim();
+        if (!name) return;
+        staffList = staffList.map(function(s){
+          return s.id === id ? Object.assign({}, s, { name: name, phone: phone, email: email }) : s;
+        });
+        persistStaff();
+        expandedStaffContact = null;
+        renderStaffContacts();
+      });
+    });
   }
 
   document.getElementById('staff-add-btn').addEventListener('click', function(){
