@@ -42,6 +42,38 @@
   .brand { display: flex; align-items: center; gap: 10px; }
   .brand-name { font-size: 18px; font-weight: 600; color: #463E3A; }
 
+  .header-icon-btns { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .icon-btn {
+    width: 38px; height: 38px; border-radius: 12px;
+    background: #FFFFFF; border: 1px solid #DCD2C2;
+    display: flex; align-items: center; justify-content: center;
+    color: #463E3A; cursor: pointer;
+  }
+  .export-text-btn {
+    height: 38px; padding: 0 14px; border-radius: 12px;
+    background: #FFFFFF; border: 1px solid #DCD2C2;
+    color: #463E3A; font-size: 13px; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+
+  .import-confirm-banner {
+    display: none;
+    margin: 0 20px 12px;
+    padding: 12px 14px;
+    background: #FAEEDA;
+    border-radius: 14px;
+    flex-shrink: 0;
+  }
+  .import-confirm-banner.visible { display: block; }
+  .import-confirm-banner p { font-size: 13px; color: #633806; line-height: 1.5; margin-bottom: 10px; }
+  .import-confirm-actions { display: flex; gap: 8px; }
+  .import-confirm-btn {
+    flex: 1; padding: 9px 0; font-size: 13px; font-weight: 600;
+    border-radius: 10px; cursor: pointer; font-family: inherit; border: none;
+  }
+  .import-confirm-btn.cancel { background: #FFFFFF; color: #633806; border: 1px solid #DCD2C2; }
+  .import-confirm-btn.confirm { background: #463E3A; color: #fff; }
+
   .section-bar {
     padding: 4px 20px 12px;
     display: flex;
@@ -393,6 +425,21 @@
         <div class="brand">
           <img src="/logo.png" width="28" height="28" alt="Ratio Coffee logo" style="display:block;">
           <span class="brand-name">Ratio Admin</span>
+        </div>
+        <div class="header-icon-btns">
+          <button class="export-text-btn" id="export-btn" aria-label="Export backup">Export</button>
+          <button class="icon-btn" id="import-btn" aria-label="Import backup" title="Import backup">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </button>
+          <input type="file" id="import-file-input" accept="application/json" style="display:none;">
+        </div>
+      </div>
+
+      <div class="import-confirm-banner" id="import-confirm-banner">
+        <p id="import-confirm-text"></p>
+        <div class="import-confirm-actions">
+          <button class="import-confirm-btn cancel" id="import-cancel-btn">Cancel</button>
+          <button class="import-confirm-btn confirm" id="import-apply-btn">Replace all data</button>
         </div>
       </div>
 
@@ -1074,6 +1121,72 @@
   });
   gateInput.addEventListener('keydown', function(e){
     if (e.key === 'Enter') gateSubmitBtn.click();
+  });
+
+  // ---------- Backup: export ----------
+  document.getElementById('export-btn').addEventListener('click', function(){
+    var payload = {
+      app: 'ratio-admin',
+      exportedAt: new Date().toISOString(),
+      beans: beans
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    var dateStr = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = 'ratio-admin-backup-' + dateStr + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  // ---------- Backup: import ----------
+  var importFileInput = document.getElementById('import-file-input');
+  var importBanner = document.getElementById('import-confirm-banner');
+  var importText = document.getElementById('import-confirm-text');
+  var pendingImportBeans = null;
+
+  document.getElementById('import-btn').addEventListener('click', function(){
+    importFileInput.value = '';
+    importFileInput.click();
+  });
+
+  importFileInput.addEventListener('change', function(e){
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      try {
+        var parsed = JSON.parse(evt.target.result);
+        var importedBeans = Array.isArray(parsed) ? parsed : parsed.beans;
+        if (!Array.isArray(importedBeans)) {
+          alert('This file doesn\'t look like a Ratio Admin backup.');
+          return;
+        }
+        pendingImportBeans = importedBeans;
+        importText.textContent = 'Replace all ' + beans.length + ' current beans with ' + importedBeans.length + ' beans from this backup? This cannot be undone.';
+        importBanner.classList.add('visible');
+      } catch(err) {
+        alert('Could not read this file. Make sure it\'s a Ratio Admin backup (.json).');
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById('import-cancel-btn').addEventListener('click', function(){
+    pendingImportBeans = null;
+    importBanner.classList.remove('visible');
+  });
+
+  document.getElementById('import-apply-btn').addEventListener('click', function(){
+    if (!pendingImportBeans) return;
+    beans = pendingImportBeans;
+    pendingImportBeans = null;
+    importBanner.classList.remove('visible');
+    persist();
+    render();
   });
 
   // ---------- Init ----------
