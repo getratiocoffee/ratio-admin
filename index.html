@@ -498,6 +498,24 @@
     font-family: inherit;
   }
 
+  .ho-tab {
+    flex: 1; padding: 12px 0; font-size: 14px; font-weight: 600; background: none; border: none;
+    border-bottom: 2.5px solid transparent; color: #8A7F6F; cursor: pointer; font-family: inherit;
+    margin-bottom: -1.5px;
+  }
+  .ho-tab.active { color: #463E3A; border-bottom-color: #463E3A; }
+
+  .ho-template-row {
+    border: 1.5px solid #DCD2C2; border-radius: 14px; margin-bottom: 10px; background: #FFFFFF; overflow: hidden;
+  }
+  .ho-template-row-top {
+    display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; gap: 10px;
+  }
+  .ho-template-name { font-size: 15px; font-weight: 600; color: #2E2925; flex: 1; }
+  .ho-template-actions { display: flex; gap: 6px; }
+  .ho-template-edit-form { padding: 0 14px 14px; display: none; }
+  .ho-template-edit-form.open { display: block; }
+
   .handover-date-title {
     font-size: 20px; font-weight: 700; color: #2E2925; margin-bottom: 2px;
   }
@@ -798,7 +816,7 @@
       </div>
 
       <!-- Dashboard handover banner -->
-      <div id="dashboard-handover-banner" style="display:none; margin:0 20px 4px; padding:10px 14px; border-radius:14px; border:1.5px solid #FFD966; flex-shrink:0; cursor:pointer;"></div>
+      <div id="dashboard-handover-banner" style="display:none; margin:0 20px 4px; padding:10px 14px; border-radius:14px; border:1.5px solid #90C4E4; flex-shrink:0; cursor:pointer;"></div>
 
       <div class="app-grid-body">
         <button class="app-grid-item" id="menu-open-greenbean-btn">
@@ -890,12 +908,12 @@
       </div>
 
       <!-- N/A status banner -->
-      <div class="na-banner" id="na-banner" style="display:none; margin:0 20px 12px; padding:12px 14px; background:#FFF3CD; border-radius:14px; border:1.5px solid #FFD966; flex-shrink:0;">
-        <div style="font-size:12px;font-weight:700;color:#7A5C00;margin-bottom:6px;">⚠ Staff N/A Today</div>
-        <div id="na-banner-content" style="font-size:13px;color:#7A5C00;line-height:1.6;"></div>
+      <div class="na-banner" id="na-banner" style="display:none; margin:0 20px 12px; padding:12px 14px; background:#E8E0F5; border-radius:14px; border:1.5px solid #B8A6E8; flex-shrink:0;">
+        <div style="font-size:12px;font-weight:700;color:#3D2875;margin-bottom:6px;">⚠ Staff N/A</div>
+        <div id="na-banner-content" style="font-size:13px;color:#3D2875;line-height:1.6;"></div>
       </div>
-      <div class="na-banner" id="na-all-ok-banner" style="display:none; margin:0 20px 12px; padding:10px 14px; background:#EAF3DE; border-radius:14px; border:1.5px solid #A8D5A2; flex-shrink:0;">
-        <div style="font-size:13px;font-weight:600;color:#27500A;">✓ All staff available today</div>
+      <div class="na-banner" id="na-all-ok-banner" style="display:none; margin:0 20px 12px; padding:10px 14px; background:#E8E0F5; border-radius:14px; border:1.5px solid #B8A6E8; flex-shrink:0;">
+        <div style="font-size:13px;font-weight:600;color:#3D2875;">✓ All staff available today</div>
       </div>
 
       <div class="menu-body">
@@ -1128,15 +1146,38 @@
         </div>
         <h1>Manage Tasks</h1>
       </div>
-      <div class="form-scroll">
+
+      <!-- Tabs -->
+      <div style="display:flex;gap:0;padding:0 20px;flex-shrink:0;border-bottom:1.5px solid #DCD2C2;">
+        <button class="ho-tab active" id="ho-tab-templates" type="button">Templates</button>
+        <button class="ho-tab" id="ho-tab-schedule" type="button">Schedule</button>
+      </div>
+
+      <!-- Templates tab -->
+      <div class="form-scroll" id="ho-panel-templates">
+        <p class="field-hint" style="margin-bottom:14px;">Templates are reusable tasks. Apply them to any date from the Schedule tab.</p>
+        <div id="handover-template-list"></div>
+        <div class="divider"></div>
+        <div class="section-label" style="margin-bottom:10px;">Add template</div>
+        <div class="field-group">
+          <input type="text" class="field-input" id="handover-new-template-input" placeholder="e.g. Defrost Milk">
+        </div>
+        <button class="add-row-btn" id="handover-add-template-btn" type="button">+ Add template</button>
+      </div>
+
+      <!-- Schedule tab -->
+      <div class="form-scroll" id="ho-panel-schedule" style="display:none;">
         <div class="field-group">
           <label class="field-label">Date</label>
           <select class="field-input" id="handover-manage-date-select"></select>
         </div>
+        <div style="margin-bottom:12px;" id="ho-apply-template-wrap">
+          <button class="add-row-btn" id="ho-apply-template-btn" type="button">Apply templates to this date</button>
+        </div>
         <div class="section-label" id="handover-manage-date-label" style="margin-bottom:10px;"></div>
         <div id="handover-manage-list"></div>
         <div class="divider"></div>
-        <div class="section-label" style="margin-bottom:10px;">Add task</div>
+        <div class="section-label" style="margin-bottom:10px;">Add one-off task</div>
         <div class="field-group">
           <input type="text" class="field-input" id="handover-new-task-input" placeholder="e.g. Defrost Milk">
         </div>
@@ -4060,6 +4101,100 @@
   // Manage tasks for a specific date
   var manageDate = null;
 
+  var hoActiveTab = 'templates';
+  var expandedTemplate = null;
+
+  function switchHoTab(tab){
+    hoActiveTab = tab;
+    document.getElementById('ho-tab-templates').classList.toggle('active', tab === 'templates');
+    document.getElementById('ho-tab-schedule').classList.toggle('active', tab === 'schedule');
+    document.getElementById('ho-panel-templates').style.display = tab === 'templates' ? '' : 'none';
+    document.getElementById('ho-panel-schedule').style.display = tab === 'schedule' ? '' : 'none';
+  }
+
+  document.getElementById('ho-tab-templates').addEventListener('click', function(){ switchHoTab('templates'); });
+  document.getElementById('ho-tab-schedule').addEventListener('click', function(){ switchHoTab('schedule'); });
+
+  function renderHoTemplates(){
+    var listEl = document.getElementById('handover-template-list');
+    var templates = handoverData.templates || [];
+    if (templates.length === 0) {
+      listEl.innerHTML = '<p class="field-hint">No templates yet. Add one below.</p>';
+      return;
+    }
+    var html = '';
+    templates.forEach(function(t){
+      var isEditing = expandedTemplate === t.id;
+      html += '<div class="ho-template-row" data-id="' + t.id + '">';
+      html += '  <div class="ho-template-row-top">';
+      html += '    <span class="ho-template-name">' + esc(t.name) + '</span>';
+      html += '    <div class="ho-template-actions">';
+      html += '      <button class="ts-shift-edit-btn" data-action="edit-template" aria-label="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>';
+      html += '      <button class="ts-shift-delete-btn" data-action="delete-template" aria-label="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+      html += '    </div>';
+      html += '  </div>';
+      if (isEditing) {
+        html += '  <div class="ho-template-edit-form open">';
+        html += '    <input type="text" class="field-input ho-template-edit-input" value="' + esc(t.name) + '" style="margin-bottom:8px;">';
+        html += '    <div style="display:flex;gap:8px;">';
+        html += '      <button class="import-confirm-btn confirm" data-action="save-template" style="flex:1;" type="button">Save</button>';
+        html += '      <button class="import-confirm-btn cancel" data-action="cancel-template" style="flex:0.5;" type="button">Cancel</button>';
+        html += '    </div>';
+        html += '  </div>';
+      }
+      html += '</div>';
+    });
+    listEl.innerHTML = html;
+
+    listEl.querySelectorAll('[data-action="edit-template"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.closest('.ho-template-row').getAttribute('data-id');
+        expandedTemplate = expandedTemplate === id ? null : id;
+        renderHoTemplates();
+      });
+    });
+    listEl.querySelectorAll('[data-action="delete-template"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.closest('.ho-template-row').getAttribute('data-id');
+        handoverData.templates = handoverData.templates.filter(function(t){ return t.id !== id; });
+        if (expandedTemplate === id) expandedTemplate = null;
+        persistHandover();
+        renderHoTemplates();
+      });
+    });
+    listEl.querySelectorAll('[data-action="save-template"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var row = btn.closest('.ho-template-row');
+        var id = row.getAttribute('data-id');
+        var newName = row.querySelector('.ho-template-edit-input').value.trim();
+        if (!newName) return;
+        handoverData.templates = handoverData.templates.map(function(t){
+          return t.id === id ? { id: t.id, name: newName } : t;
+        });
+        expandedTemplate = null;
+        persistHandover();
+        renderHoTemplates();
+      });
+    });
+    listEl.querySelectorAll('[data-action="cancel-template"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        expandedTemplate = null;
+        renderHoTemplates();
+      });
+    });
+  }
+
+  document.getElementById('handover-add-template-btn').addEventListener('click', function(){
+    var input = document.getElementById('handover-new-template-input');
+    var name = input.value.trim();
+    if (!name) return;
+    if (!handoverData.templates) handoverData.templates = [];
+    handoverData.templates.push({ id: uid(), name: name });
+    persistHandover();
+    input.value = '';
+    renderHoTemplates();
+  });
+
   function renderHandoverManage(){
     var tasks = getHandoverTasksForDate(manageDate);
     var displayDate = new Date(manageDate + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -4067,7 +4202,7 @@
 
     var listEl = document.getElementById('handover-manage-list');
     if (tasks.length === 0) {
-      listEl.innerHTML = '<p class="field-hint">No tasks for this day. Add one below.</p>';
+      listEl.innerHTML = '<p class="field-hint">No tasks for this day yet.</p>';
     } else {
       var html = '';
       tasks.forEach(function(t){
@@ -4080,7 +4215,6 @@
       listEl.querySelectorAll('[data-action="delete-task"]').forEach(function(btn){
         btn.addEventListener('click', function(){
           var id = btn.closest('.contact-row').getAttribute('data-id');
-          if (!handoverData.tasksByDate) handoverData.tasksByDate = {};
           handoverData.tasksByDate[manageDate] = handoverData.tasksByDate[manageDate].filter(function(t){ return t.id !== id; });
           persistHandover();
           renderHandoverManage();
@@ -4093,6 +4227,10 @@
   function openHandoverManage(dateIso){
     manageDate = dateIso;
     document.getElementById('handover-new-task-input').value = '';
+    document.getElementById('handover-new-template-input').value = '';
+    expandedTemplate = null;
+    switchHoTab('templates');
+    renderHoTemplates();
     renderHandoverManage();
     showScreen('screen-handover-manage');
   }
@@ -4110,17 +4248,17 @@
     }
     banner.style.display = 'block';
     if (remaining.length === 0) {
-      banner.innerHTML = '<div style="font-size:13px;font-weight:600;color:#27500A;">\u2713 All handover tasks done for today</div>';
-      banner.style.background = '#EAF3DE';
-      banner.style.borderColor = '#A8D5A2';
+      banner.innerHTML = '<div style="font-size:13px;font-weight:600;color:#1A5C8A;">\u2713 All handover tasks done for today</div>';
+      banner.style.background = '#E0EEF8';
+      banner.style.borderColor = '#90C4E4';
     } else {
       var names = remaining.slice(0,3).map(function(t){ return t.name; }).join(', ');
       if (remaining.length > 3) names += ' +' + (remaining.length - 3) + ' more';
       banner.innerHTML =
-        '<div style="font-size:12px;font-weight:700;color:#7A5C00;margin-bottom:4px;">\u26a0 Today\'s Check List (' + remaining.length + ' remaining)</div>' +
-        '<div style="font-size:13px;color:#7A5C00;">' + esc(names) + '</div>';
-      banner.style.background = '#FFF3CD';
-      banner.style.borderColor = '#FFD966';
+        '<div style="font-size:12px;font-weight:700;color:#1A5C8A;margin-bottom:4px;">\u26a0 Today\'s Check List (' + remaining.length + ' remaining)</div>' +
+        '<div style="font-size:13px;color:#1A5C8A;">' + esc(names) + '</div>';
+      banner.style.background = '#E0EEF8';
+      banner.style.borderColor = '#90C4E4';
     }
   }
 
@@ -4131,13 +4269,12 @@
     var tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     var tomorrowIso = isoDate(tomorrow);
-    // Build date options (today + next 13 days)
     var sel = document.getElementById('handover-manage-date-select');
     var opts = '';
     for (var i = 0; i < 14; i++) {
       var d = new Date(); d.setDate(d.getDate() + i);
       var iso = isoDate(d);
-      var label = (i === 0 ? 'Today – ' : i === 1 ? 'Tomorrow – ' : '') +
+      var label = (i === 0 ? 'Today \u2013 ' : i === 1 ? 'Tomorrow \u2013 ' : '') +
         d.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
       opts += '<option value="' + iso + '"' + (iso === tomorrowIso ? ' selected' : '') + '>' + label + '</option>';
     }
@@ -4156,6 +4293,26 @@
     manageDate = this.value;
     document.getElementById('handover-new-task-input').value = '';
     renderHandoverManage();
+  });
+  document.getElementById('ho-apply-template-btn').addEventListener('click', function(){
+    var templates = handoverData.templates || [];
+    if (templates.length === 0) {
+      alert('No templates yet. Add templates in the Templates tab first.');
+      return;
+    }
+    if (!handoverData.tasksByDate) handoverData.tasksByDate = {};
+    if (!handoverData.tasksByDate[manageDate]) handoverData.tasksByDate[manageDate] = [];
+    var existingNames = handoverData.tasksByDate[manageDate].map(function(t){ return t.name; });
+    var added = 0;
+    templates.forEach(function(tmpl){
+      if (existingNames.indexOf(tmpl.name) === -1) {
+        handoverData.tasksByDate[manageDate].push({ id: uid(), name: tmpl.name });
+        added++;
+      }
+    });
+    persistHandover();
+    renderHandoverManage();
+    renderDashboardHandoverBanner();
   });
   document.getElementById('handover-add-task-btn').addEventListener('click', function(){
     var input = document.getElementById('handover-new-task-input');
@@ -4205,6 +4362,7 @@
       handoverData = await loadHandoverFromServer();
       if (!handoverData.tasksByDate) handoverData.tasksByDate = {};
       if (!handoverData.checks) handoverData.checks = {};
+      if (!handoverData.templates) handoverData.templates = [];
       // Migrate old format if needed
       if (handoverData.tasks && handoverData.tasks.length > 0 && Object.keys(handoverData.tasksByDate).length === 0) {
         var todayMigrate = isoDate(new Date());
