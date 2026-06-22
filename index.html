@@ -735,10 +735,7 @@
       <div class="gate-screen">
         <div class="gate-top">
           <img src="/logo.png" width="56" height="56" alt="Ratio Coffee logo">
-          <div style="text-align:center; line-height:1.25;">
-            <div class="brand-name">Ratio Coffee</div>
-            <div class="brand-name">Dashboard</div>
-          </div>
+          <div class="brand-name" style="text-align:center;">Ratio Coffee</div>
         </div>
         <div class="gate-bottom">
           <input type="password" class="gate-input" id="gate-password-input" placeholder="Enter Password" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
@@ -758,7 +755,7 @@
       <div class="app-header" style="justify-content: center;">
         <div class="brand">
           <img src="/logo.png" width="28" height="28" alt="Ratio Coffee logo" style="display:block;">
-          <span class="brand-name">Ratio Coffee Dashboard</span>
+          <span class="brand-name">Ratio Coffee</span>
         </div>
       </div>
 
@@ -816,6 +813,17 @@
             </svg>
           </span>
           <span class="app-grid-label">Roasting</span>
+        </button>
+
+        <button class="app-grid-item" id="menu-open-handover-btn">
+          <span class="app-grid-icon" style="background:#E0EEF8;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1A5C8A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 12h6M9 16h4"/>
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+          </span>
+          <span class="app-grid-label">Handover</span>
         </button>
       </div>
     </div>
@@ -1039,6 +1047,24 @@
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
           </div>
           <p class="field-hint" style="text-align:center;">Roasting is coming soon.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== HANDOVER SCREEN (placeholder) ===== -->
+    <div class="screen" id="screen-handover">
+      <div class="form-topbar">
+        <div class="back-btn" id="handover-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        <h1>Handover</h1>
+      </div>
+      <div class="form-scroll">
+        <div class="placeholder-screen">
+          <div class="placeholder-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12h6M9 16h4"/><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <p class="field-hint" style="text-align:center;">Handover is coming soon.</p>
         </div>
       </div>
     </div>
@@ -2958,6 +2984,12 @@
     showScreen('screen-roasting');
   });
   document.getElementById('roasting-back-btn').addEventListener('click', function(){
+    showScreen('screen-menu');
+  });
+  document.getElementById('menu-open-handover-btn').addEventListener('click', function(){
+    showScreen('screen-handover');
+  });
+  document.getElementById('handover-back-btn').addEventListener('click', function(){
     showScreen('screen-menu');
   });
   document.getElementById('list-back-to-menu-btn').addEventListener('click', function(){
