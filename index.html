@@ -1208,15 +1208,17 @@
       </div>
 
       <!-- Session list view -->
-      <div id="sensory-list-panel" class="form-scroll">
-        <!-- Roasted beans pending sensory -->
-        <div id="sensory-pending-section" style="display:none; margin-bottom:16px;">
-          <div class="section-label" style="margin-bottom:8px; color:#B04A10;">Pending — Tap to start cupping</div>
-          <div id="sensory-pending-list"></div>
-        </div>
-        <!-- Past sessions -->
-        <div id="sensory-sessions-section">
-          <div id="sensory-session-list"></div>
+      <div id="sensory-list-panel" style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; overflow:hidden; min-height:0;">
+        <div style="overflow-y:auto; overscroll-behavior:contain; padding:16px 20px max(20px, env(safe-area-inset-bottom)); flex-shrink:0; max-height:100%;">
+          <!-- Roasted beans pending sensory -->
+          <div id="sensory-pending-section" style="display:none; margin-bottom:16px;">
+            <div class="section-label" style="margin-bottom:8px; color:#B04A10;">Pending — Tap to start cupping</div>
+            <div id="sensory-pending-list"></div>
+          </div>
+          <!-- Past sessions -->
+          <div id="sensory-sessions-section">
+            <div id="sensory-session-list"></div>
+          </div>
         </div>
       </div>
 
@@ -5510,7 +5512,7 @@
   }
 
   function snShowList(){
-    document.getElementById('sensory-list-panel').style.display = '';
+    document.getElementById('sensory-list-panel').style.display = 'flex';
     document.getElementById('sensory-form-panel').style.display = 'none';
     document.getElementById('sensory-new-btn').style.display = '';
     renderSensoryList();
