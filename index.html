@@ -1849,10 +1849,14 @@
 
   async function loadHandoverFromServer(){
     var data = await apiRequest('handover', 'GET');
-    return data && (data.tasksByDate !== undefined || data.tasks !== undefined) ? data : { tasksByDate: {}, checks: {} };
+    // stored as items: [handoverData]
+    if (data && Array.isArray(data.items) && data.items.length > 0) return data.items[0];
+    // legacy: stored as items: null or items being the object itself
+    if (data && data.items && !Array.isArray(data.items)) return data.items;
+    return { tasksByDate: {}, checks: {}, templates: [] };
   }
-  async function saveHandoverToServer(data){
-    await apiRequest('handover', 'POST', data);
+  async function saveHandoverToServer(d){
+    await apiRequest('handover', 'POST', { items: [d] });
     return true;
   }
 
