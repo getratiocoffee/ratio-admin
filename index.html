@@ -2225,13 +2225,16 @@
             <span class="cost-prefix">$</span>
             <input type="number" class="field-input" id="delivery-shipping" min="0" step="1" placeholder="0.00" inputmode="decimal">
           </div>
+          <div id="delivery-shipping-per-kg-hint" class="delivery-row-result" style="display:none; margin-top:8px;">
+            <span class="label">Extra cost per kg</span>
+            <span class="value" id="delivery-shipping-per-kg-val"></span>
+          </div>
         </div>
 
         <div class="delivery-summary">
           <div class="summary-line"><span>Total weight received</span><span id="delivery-total-weight">0.0 kg</span></div>
           <div class="summary-line"><span>Total bean cost</span><span id="delivery-total-bean-cost">$0.00</span></div>
           <div class="summary-line"><span>Shipping cost</span><span id="delivery-total-shipping">$0.00</span></div>
-          <div class="summary-line" id="delivery-shipping-per-kg-row" style="display:none;"><span style="color:#8A7F6F;font-size:13px;">Extra cost per kg</span><span id="delivery-shipping-per-kg" style="color:#8A7F6F;font-size:13px;"></span></div>
           <div class="summary-line total"><span>TOTAL</span><span id="delivery-total-landed">$0.00</span></div>
         </div>
       </div>
@@ -3188,12 +3191,13 @@
     document.getElementById('delivery-total-weight').textContent = fmtKg(totalWeight);
     document.getElementById('delivery-total-bean-cost').textContent = fmtMoney(totalBeanCost);
     document.getElementById('delivery-total-shipping').textContent = fmtMoney(shipping);
-    var perKgRow = document.getElementById('delivery-shipping-per-kg-row');
+    var hint = document.getElementById('delivery-shipping-per-kg-hint');
     if (shipping > 0 && totalWeight > 0) {
-      document.getElementById('delivery-shipping-per-kg').textContent = fmtMoney(shippingPerKg) + ' /kg';
-      perKgRow.style.display = '';
+      var extraPerKg = shipping / totalWeight;
+      document.getElementById('delivery-shipping-per-kg-val').textContent = fmtMoney(extraPerKg) + ' /kg';
+      hint.style.display = '';
     } else {
-      perKgRow.style.display = 'none';
+      hint.style.display = 'none';
     }
     document.getElementById('delivery-total-landed').textContent = fmtMoney(totalBeanCost + shipping);
 
