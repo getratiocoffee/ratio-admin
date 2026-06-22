@@ -12,7 +12,7 @@
 <link rel="icon" href="/logo.png">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; }
+  html { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     background: #EFE8DE;
@@ -20,18 +20,19 @@
     align-items: flex-start;
     justify-content: center;
     padding: max(16px, env(safe-area-inset-top)) 10px max(16px, env(safe-area-inset-bottom));
-    min-height: 100vh;
-    min-height: 100dvh;
+    height: 100%; height: 100dvh;
+    overflow: hidden;
     overscroll-behavior: none;
     touch-action: pan-x pan-y;
   }
-  .phone { width: 100%; max-width: 420px; margin: 0 auto; height: 100%; flex: 1; }
+  .phone { width: 100%; max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; min-height: 0; }
   .card {
     background: #FAF6F0;
     border: 0.5px solid #DCD2C2;
     border-radius: 28px;
     overflow: hidden;
-    height: 100%;
+    flex: 1;
+    min-height: 0;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -2247,20 +2248,18 @@
       </div>
 
       <!-- Stock totals at top -->
-      <div class="inventory-summary" style="flex-shrink:0; margin:0; border-radius:0; border-left:none; border-right:none; border-top:none;">
-        <div class="inventory-summary-item">
-          <span class="inventory-summary-label">Total green stock</span>
-          <span class="inventory-summary-value" id="summary-total-kg">0.0 kg</span>
-        </div>
-        <div class="inventory-summary-item">
-          <span class="inventory-summary-label">Total stock value</span>
-          <span class="inventory-summary-value" id="summary-total-value">$0.00</span>
-        </div>
-      </div>
-
-      </div>
-
       <div class="form-scroll">
+
+        <div style="display:flex; gap:10px; margin-bottom:18px;">
+          <div style="flex:1; padding:12px 14px; background:#FFFFFF; border:1.5px solid #DCD2C2; border-radius:14px;">
+            <span style="display:block; font-size:11px; color:#8A7F6F; margin-bottom:4px;">Total green stock</span>
+            <span style="display:block; font-size:17px; font-weight:700; color:#2E2925;" id="summary-total-kg">0.0 kg</span>
+          </div>
+          <div style="flex:1; padding:12px 14px; background:#FFFFFF; border:1.5px solid #DCD2C2; border-radius:14px;">
+            <span style="display:block; font-size:11px; color:#8A7F6F; margin-bottom:4px;">Total stock value</span>
+            <span style="display:block; font-size:17px; font-weight:700; color:#2E2925;" id="summary-total-value">$0.00</span>
+          </div>
+        </div>
 
         <div class="section-label" style="margin-bottom: 10px;">Direction</div>
         <div class="toggle-row" style="margin-bottom: 18px;">
