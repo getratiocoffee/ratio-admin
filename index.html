@@ -2966,6 +2966,13 @@
     if (diff < 0) diff += 24 * 60;
     return diff / 60;
   }
+  function workedHours(start, end, dayKey){
+    var h = hoursBetween(start, end);
+    if (h == null) return null;
+    var isWeekend = (dayKey === 'sat' || dayKey === 'sun');
+    if (!isWeekend && h > 8) h -= 0.5;
+    return h;
+  }
   function fmtHours(h){
     if (h == null) return '0 hrs';
     return (Math.round(h * 100) / 100) + ' hrs';
@@ -3067,7 +3074,7 @@
     DAY_KEYS.forEach(function(dk){
       var shifts = week.days[dk] || [];
       shifts.forEach(function(shift){
-        var h = hoursBetween(shift.start, shift.end);
+        var h = workedHours(shift.start, shift.end, dk);
         if (h == null) return;
         if (dk === 'sat') totals.sat += h;
         else if (dk === 'sun') totals.sun += h;
@@ -3117,7 +3124,7 @@
           html += '      </div>';
           html += '    </div>';
         } else {
-          var hrs = hoursBetween(shift.start, shift.end);
+          var hrs = workedHours(shift.start, shift.end, dk);
           html += '    <div class="ts-shift-row" data-shift-idx="' + idx + '">';
           html += '      <div><div class="ts-shift-name">' + esc(shift.staffName) + '</div><div class="ts-shift-time">' + (fmtTime12(shift.start) || shift.start) + ' \u2013 ' + (fmtTime12(shift.end) || shift.end) + ' \u00b7 ' + fmtHours(hrs) + '</div></div>';
           html += '      <div class="ts-shift-actions">';
@@ -3344,7 +3351,7 @@
   function renderPreviousTimesheets(){
     var listEl = document.getElementById('ts-previous-list');
     var completed = timesheets.filter(function(w){ return isWeekPast(w.weekStart); })
-      .sort(function(a, b){ return new Date(b.weekStart) - new Date(a.weekStart); });
+      .sort(function(a, b){ return new Date(a.weekStart) - new Date(b.weekStart); });
 
     if (completed.length === 0) {
       listEl.innerHTML = '<p class="field-hint">No completed timesheets yet.</p>';
