@@ -1189,10 +1189,6 @@
             <label class="field-label">Bean / Coffee name</label>
             <input type="text" class="field-input" id="sn-bean" placeholder="e.g. Ethiopia Yirgacheffe">
           </div>
-          <div class="field-group">
-            <label class="field-label">Date</label>
-            <input type="date" class="field-input" id="sn-date">
-          </div>
 
           <div class="sn-section">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
@@ -5226,7 +5222,6 @@
 
   function snResetForm(){
     document.getElementById('sn-bean').value = '';
-    document.getElementById('sn-date').value = isoDate(new Date());
     document.getElementById('sn-overall-notes').value = '';
     SN_DIMS.forEach(function(dim){
       SN_TEMPS.forEach(function(temp){ snLoadDimData(dim, temp, {}); });
@@ -5240,7 +5235,7 @@
   }
 
   function snReadForm(){
-    var session = { id: snEditId || uid(), bean: document.getElementById('sn-bean').value.trim(), date: document.getElementById('sn-date').value, overallNotes: document.getElementById('sn-overall-notes').value.trim() };
+    var session = { id: snEditId || uid(), bean: document.getElementById('sn-bean').value.trim(), date: snEditId ? (sensorySessions.find(function(s){return s.id===snEditId;})||{}).date || isoDate(new Date()) : isoDate(new Date()), overallNotes: document.getElementById('sn-overall-notes').value.trim() };
     SN_DIMS.forEach(function(dim){
       session[dim] = {};
       SN_TEMPS.forEach(function(temp){ session[dim][temp] = snReadDimData(dim, temp); });
@@ -5250,7 +5245,6 @@
 
   function snLoadForm(session){
     document.getElementById('sn-bean').value = session.bean || '';
-    document.getElementById('sn-date').value = session.date || isoDate(new Date());
     document.getElementById('sn-overall-notes').value = session.overallNotes || '';
     SN_DIMS.forEach(function(dim){
       SN_TEMPS.forEach(function(temp){
