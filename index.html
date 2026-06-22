@@ -498,6 +498,44 @@
     font-family: inherit;
   }
 
+  .handover-date-title {
+    font-size: 20px; font-weight: 700; color: #2E2925; margin-bottom: 2px;
+  }
+  .handover-date-sub { font-size: 13px; color: #8A7F6F; }
+  .handover-progress-bar {
+    height: 6px; border-radius: 3px; background: #EFE8DE; margin: 14px 0 18px; overflow: hidden;
+  }
+  .handover-progress-fill {
+    height: 100%; border-radius: 3px; background: #463E3A; transition: width 0.3s;
+  }
+  .handover-task-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px; border: 1.5px solid #DCD2C2; border-radius: 16px;
+    margin-bottom: 10px; background: #FFFFFF; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .handover-task-item.done {
+    background: #EAF3DE; border-color: #A8D5A2; cursor: default;
+  }
+  .handover-task-checkbox {
+    width: 26px; height: 26px; border-radius: 50%; border: 2px solid #DCD2C2;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    color: transparent; background: #fff; transition: all 0.15s;
+  }
+  .handover-task-item.done .handover-task-checkbox {
+    background: #27500A; border-color: #27500A; color: #fff;
+  }
+  .handover-task-label {
+    font-size: 16px; font-weight: 500; color: #2E2925; flex: 1;
+  }
+  .handover-task-item.done .handover-task-label {
+    color: #4A7A2A; text-decoration: line-through;
+  }
+  .handover-all-done {
+    text-align: center; padding: 24px 0 8px;
+    font-size: 15px; font-weight: 600; color: #27500A;
+  }
+
   .na-date-chip {
     padding: 8px 12px; border-radius: 10px; border: 1.5px solid #DCD2C2;
     background: #FFFFFF; color: #463E3A; font-size: 13px; font-weight: 500;
@@ -1069,14 +1107,32 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
         <h1>Handover</h1>
+        <button class="icon-btn" id="handover-manage-btn" aria-label="Manage tasks" style="margin-left:auto;" title="Manage task list">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
       </div>
       <div class="form-scroll">
-        <div class="placeholder-screen">
-          <div class="placeholder-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12h6M9 16h4"/><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          </div>
-          <p class="field-hint" style="text-align:center;">Handover is coming soon.</p>
+        <div id="handover-date-header" style="padding:0 0 14px;"></div>
+        <div id="handover-task-list"></div>
+      </div>
+    </div>
+
+    <!-- ===== HANDOVER MANAGE TASKS SCREEN ===== -->
+    <div class="screen" id="screen-handover-manage">
+      <div class="form-topbar">
+        <div class="back-btn" id="handover-manage-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
+        <h1>Manage Tasks</h1>
+      </div>
+      <div class="form-scroll">
+        <div id="handover-manage-list"></div>
+        <div class="divider"></div>
+        <div class="section-label" style="margin-bottom:10px;">Add task</div>
+        <div class="field-group">
+          <input type="text" class="field-input" id="handover-new-task-input" placeholder="e.g. Defrost Milk">
+        </div>
+        <button class="add-row-btn" id="handover-add-task-btn" type="button">+ Add task</button>
       </div>
     </div>
 
@@ -1718,6 +1774,15 @@
     return true;
   }
 
+  async function loadHandoverFromServer(){
+    var data = await apiRequest('handover', 'GET');
+    return data && data.tasks !== undefined ? data : { tasks: [], checks: {} };
+  }
+  async function saveHandoverToServer(data){
+    await apiRequest('handover', 'POST', data);
+    return true;
+  }
+
   var beans = [];
   var contacts = [];
   var transferHistory = [];
@@ -1725,6 +1790,7 @@
   var staffList = [];
   var timesheets = [];
   var naRequests = [];
+  var handoverData = { tasks: [], checks: {} }; // checks: { 'YYYY-MM-DD': { taskId: true } }
 
   var state = {
     search: '',
@@ -3015,12 +3081,6 @@
   document.getElementById('roasting-back-btn').addEventListener('click', function(){
     showScreen('screen-menu');
   });
-  document.getElementById('menu-open-handover-btn').addEventListener('click', function(){
-    showScreen('screen-handover');
-  });
-  document.getElementById('handover-back-btn').addEventListener('click', function(){
-    showScreen('screen-menu');
-  });
   document.getElementById('menu-open-order-btn').addEventListener('click', function(){
     showScreen('screen-order');
   });
@@ -3915,6 +3975,116 @@
     renderNaBanner();
   });
 
+  // ---------- Handover ----------
+  function persistHandover(){
+    saveHandoverToServer(handoverData).catch(function(e){ console.error('Save handover failed', e); });
+  }
+
+  function renderHandover(){
+    var today = new Date();
+    var todayIso = isoDate(today);
+    var dayName = today.toLocaleDateString('en-AU', { weekday: 'long' });
+    var dateLabel = today.toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    document.getElementById('handover-date-header').innerHTML =
+      '<div class="handover-date-title">' + dayName + '</div>' +
+      '<div class="handover-date-sub">' + dateLabel + '</div>';
+
+    var tasks = handoverData.tasks || [];
+    var todayChecks = (handoverData.checks && handoverData.checks[todayIso]) || {};
+    var doneCount = tasks.filter(function(t){ return todayChecks[t.id]; }).length;
+    var total = tasks.length;
+
+    var listEl = document.getElementById('handover-task-list');
+
+    if (tasks.length === 0) {
+      listEl.innerHTML = '<p class="field-hint">No tasks yet. Tap the list icon to add tasks.</p>';
+      return;
+    }
+
+    var pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
+    var html = '<div class="handover-progress-bar"><div class="handover-progress-fill" style="width:' + pct + '%;"></div></div>';
+
+    tasks.forEach(function(t){
+      var done = !!todayChecks[t.id];
+      html += '<div class="handover-task-item' + (done ? ' done' : '') + '" data-id="' + t.id + '">';
+      html += '  <div class="handover-task-checkbox">';
+      if (done) {
+        html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
+      }
+      html += '  </div>';
+      html += '  <span class="handover-task-label">' + esc(t.name) + '</span>';
+      html += '</div>';
+    });
+
+    if (doneCount === total && total > 0) {
+      html += '<div class="handover-all-done">✓ All tasks done for today!</div>';
+    }
+
+    listEl.innerHTML = html;
+
+    listEl.querySelectorAll('.handover-task-item:not(.done)').forEach(function(item){
+      item.addEventListener('click', function(){
+        var id = item.getAttribute('data-id');
+        if (!handoverData.checks[todayIso]) handoverData.checks[todayIso] = {};
+        handoverData.checks[todayIso][id] = true;
+        persistHandover();
+        renderHandover();
+      });
+    });
+  }
+
+  function renderHandoverManage(){
+    var listEl = document.getElementById('handover-manage-list');
+    var tasks = handoverData.tasks || [];
+    if (tasks.length === 0) {
+      listEl.innerHTML = '<p class="field-hint">No tasks yet. Add one below.</p>';
+      return;
+    }
+    var html = '';
+    tasks.forEach(function(t){
+      html += '<div class="contact-row" data-id="' + t.id + '">';
+      html += '  <div class="contact-row-name">' + esc(t.name) + '</div>';
+      html += '  <button class="contact-delete-btn" data-action="delete-task" aria-label="Delete task"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+      html += '</div>';
+    });
+    listEl.innerHTML = html;
+    listEl.querySelectorAll('[data-action="delete-task"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.closest('.contact-row').getAttribute('data-id');
+        handoverData.tasks = handoverData.tasks.filter(function(t){ return t.id !== id; });
+        persistHandover();
+        renderHandoverManage();
+      });
+    });
+  }
+
+  document.getElementById('handover-back-btn').addEventListener('click', function(){
+    showScreen('screen-menu');
+  });
+  document.getElementById('handover-manage-btn').addEventListener('click', function(){
+    renderHandoverManage();
+    showScreen('screen-handover-manage');
+  });
+  document.getElementById('handover-manage-back-btn').addEventListener('click', function(){
+    renderHandover();
+    showScreen('screen-handover');
+  });
+  document.getElementById('menu-open-handover-btn').addEventListener('click', function(){
+    renderHandover();
+    showScreen('screen-handover');
+  });
+  document.getElementById('handover-add-task-btn').addEventListener('click', function(){
+    var input = document.getElementById('handover-new-task-input');
+    var name = input.value.trim();
+    if (!name) return;
+    if (!handoverData.tasks) handoverData.tasks = [];
+    handoverData.tasks.push({ id: uid(), name: name });
+    persistHandover();
+    input.value = '';
+    renderHandoverManage();
+  });
+
   // ---------- Password gate ----------
   var gateInput = document.getElementById('gate-password-input');
   var gateError = document.getElementById('gate-error');
@@ -3947,6 +4117,14 @@
       if (naRequests.length !== loadedNa.length) {
         try { saveNaToServer(naRequests); } catch(e) {}
       }
+      handoverData = await loadHandoverFromServer();
+      if (!handoverData.tasks) handoverData.tasks = [];
+      if (!handoverData.checks) handoverData.checks = {};
+      // Clean up check records older than 30 days
+      var cutoff = isoDate(new Date(Date.now() - 30 * 86400000));
+      Object.keys(handoverData.checks).forEach(function(d){
+        if (d < cutoff) delete handoverData.checks[d];
+      });
       showScreen('screen-menu');
       render();
     } catch(e) {

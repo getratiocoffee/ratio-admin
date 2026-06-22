@@ -20,6 +20,7 @@ const ALLOWED_KEYS = {
   staff: 'staff-contacts',
   timesheets: 'staff-timesheets',
   na: 'staff-na-requests',
+  handover: 'handover-data',
 };
 
 export default async function handler(req, res) {
