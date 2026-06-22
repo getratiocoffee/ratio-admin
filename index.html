@@ -421,6 +421,28 @@
     cursor: pointer; flex-shrink: 0;
   }
 
+  .transfer-history-row {
+    border: 1.5px solid #DCD2C2; border-radius: 14px; padding: 14px; margin-bottom: 10px; background: #FFFFFF;
+  }
+  .transfer-history-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .transfer-history-direction {
+    font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 8px; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .transfer-history-direction.in { background: #EAF3DE; color: #27500A; }
+  .transfer-history-direction.out { background: #E6F1FB; color: #0C447C; }
+  .transfer-history-bean { font-size: 15px; font-weight: 600; color: #2E2925; margin-top: 6px; }
+  .transfer-history-meta { font-size: 12px; color: #8A7F6F; margin-top: 3px; }
+  .transfer-history-bottom {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 10px; padding-top: 10px; border-top: 1px solid #EFE8DE;
+  }
+  .transfer-history-amount { font-size: 15px; font-weight: 700; color: #2E2925; }
+  .transfer-history-delete-btn {
+    width: 36px; height: 36px; border-radius: 11px; border: 1.5px solid #DCD2C2;
+    background: #FFFFFF; color: #A32D2D; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+  }
+
   .inventory-summary {
     display: flex; gap: 10px; padding: 0 16px 4px; flex-shrink: 0;
   }
@@ -712,7 +734,10 @@
         <div class="back-btn" id="transfer-back-btn" aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
-        <h1>Stock transfer</h1>
+        <h1 style="flex:1;">Stock transfer</h1>
+        <button class="back-btn" id="open-transfer-history-btn" aria-label="Transfer history" title="Transfer history">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+        </button>
       </div>
 
       <div class="form-scroll">
@@ -736,7 +761,7 @@
         <div class="divider"></div>
 
         <div class="section-label" style="margin-bottom: 4px;">Bean details</div>
-        <p class="field-hint" style="margin-bottom: 14px;">Select an existing bean from your stock, or type a new name if this bean isn't in your inventory yet.</p>
+        <p class="field-hint" style="margin-bottom: 14px;" id="transfer-bean-hint">Select an existing bean from your stock, or type a new name if this bean isn't in your inventory yet.</p>
 
         <div class="field-group">
           <label class="field-label">Bean</label>
@@ -747,39 +772,41 @@
           <input type="text" class="field-input" id="transfer-new-name" placeholder="e.g. Yirgacheffe Kochere">
         </div>
 
-        <div class="field-row">
-          <div class="field-group">
-            <label class="field-label">Country</label>
-            <input type="text" class="field-input" id="t-country" placeholder="e.g. Ethiopia">
+        <div id="transfer-bean-detail-fields">
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Country</label>
+              <input type="text" class="field-input" id="t-country" placeholder="e.g. Ethiopia">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Region</label>
+              <input type="text" class="field-input" id="t-region" placeholder="e.g. Yirgacheffe">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Station / Farm</label>
+              <input type="text" class="field-input" id="t-station" placeholder="e.g. Kochere">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Process</label>
+              <input type="text" class="field-input" id="t-process" placeholder="e.g. Washed">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Altitude</label>
+              <input type="text" class="field-input" id="t-altitude" placeholder="e.g. 1900m">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Variety</label>
+              <input type="text" class="field-input" id="t-variety" placeholder="e.g. Heirloom">
+            </div>
           </div>
           <div class="field-group">
-            <label class="field-label">Region</label>
-            <input type="text" class="field-input" id="t-region" placeholder="e.g. Yirgacheffe">
+            <label class="field-label">Harvest</label>
+            <input type="text" class="field-input" id="t-harvest" placeholder="e.g. 2025">
           </div>
-        </div>
-        <div class="field-row">
-          <div class="field-group">
-            <label class="field-label">Station / Farm</label>
-            <input type="text" class="field-input" id="t-station" placeholder="e.g. Kochere">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Process</label>
-            <input type="text" class="field-input" id="t-process" placeholder="e.g. Washed">
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field-group">
-            <label class="field-label">Altitude</label>
-            <input type="text" class="field-input" id="t-altitude" placeholder="e.g. 1900m">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Variety</label>
-            <input type="text" class="field-input" id="t-variety" placeholder="e.g. Heirloom">
-          </div>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Harvest</label>
-          <input type="text" class="field-input" id="t-harvest" placeholder="e.g. 2025">
         </div>
 
         <div class="divider"></div>
@@ -791,6 +818,7 @@
             <input type="number" class="field-input" id="t-quantity" min="0" step="0.1" placeholder="0.0" inputmode="decimal">
             <span class="qty-unit">kg</span>
           </div>
+          <p class="field-hint" id="transfer-available-hint" style="display:none; margin-top: 6px;"></p>
         </div>
 
         <div id="transfer-in-price-group">
@@ -824,11 +852,21 @@
               <span class="cost-suffix">/kg</span>
             </div>
           </div>
-          <p class="field-hint">Sale price = cost per kg \u00d7 (1 + margin %). Adjust either field \u2014 they stay in sync.</p>
+          <p class="field-hint" style="margin-bottom: 16px;">Sale price = cost per kg \u00d7 (1 + margin %). Adjust either field \u2014 they stay in sync.</p>
+          <div class="field-group">
+            <label class="field-label">Shipping cost</label>
+            <div class="cost-input-wrap">
+              <span class="cost-prefix">$</span>
+              <input type="number" class="field-input" id="t-shipping" min="0" step="1" placeholder="0.00" inputmode="decimal">
+            </div>
+          </div>
+          <p class="field-hint">Shipping is added on top as a flat amount \u2014 it doesn't change the per kg price.</p>
         </div>
 
         <div class="delivery-summary">
-          <div class="summary-line"><span>Total amount</span><span id="transfer-total-amount">$0.00</span></div>
+          <div class="summary-line"><span>Bean subtotal</span><span id="transfer-bean-subtotal">$0.00</span></div>
+          <div class="summary-line" id="transfer-shipping-row" style="display:none;"><span>Shipping</span><span id="transfer-shipping-amount">$0.00</span></div>
+          <div class="summary-line total"><span>Total amount</span><span id="transfer-total-amount">$0.00</span></div>
         </div>
 
       </div>
@@ -881,6 +919,19 @@
           <input type="email" class="field-input" id="contact-email" placeholder="e.g. marco@threehills.com">
         </div>
         <button class="add-row-btn" id="add-contact-btn" type="button">+ Add contact</button>
+      </div>
+    </div>
+
+    <!-- ===== TRANSFER HISTORY SCREEN ===== -->
+    <div class="screen" id="screen-transfer-history">
+      <div class="form-topbar">
+        <div class="back-btn" id="transfer-history-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        <h1>Transfer history</h1>
+      </div>
+      <div class="form-scroll">
+        <div id="transfer-history-list"></div>
       </div>
     </div>
 
@@ -1581,7 +1632,7 @@
 
   function populateTransferBeanSelect(){
     var sel = document.getElementById('transfer-bean-select');
-    var options = '<option value="__new__">+ New bean (not in my stock)</option>';
+    var options = transferDirection === 'in' ? '<option value="__new__">+ New bean (not in my stock)</option>' : '';
     options += beans.map(function(b){
       return '<option value="' + b.id + '">' + esc(b.name) + '</option>';
     }).join('');
@@ -1603,7 +1654,29 @@
     var bean = beans.find(function(b){ return b.id === sel.value; });
     var baseCost = bean ? (parseFloat(bean.costPerKg) || 0) : 0;
     document.getElementById('transfer-out-base-cost').textContent = fmtMoney(baseCost) + ' /kg';
+    updateTransferAvailableHint();
     return baseCost;
+  }
+
+  function updateTransferAvailableHint(){
+    var hintEl = document.getElementById('transfer-available-hint');
+    if (transferDirection !== 'out') {
+      hintEl.style.display = 'none';
+      return;
+    }
+    var sel = document.getElementById('transfer-bean-select');
+    var bean = beans.find(function(b){ return b.id === sel.value; });
+    var available = bean ? (parseFloat(bean.quantity) || 0) : 0;
+    var qty = parseFloat(document.getElementById('t-quantity').value) || 0;
+
+    hintEl.style.display = 'block';
+    if (qty > available) {
+      hintEl.style.color = '#A32D2D';
+      hintEl.textContent = 'Only ' + fmtKg(available) + ' available \u2014 this exceeds your current stock.';
+    } else {
+      hintEl.style.color = '#8A7F6F';
+      hintEl.textContent = fmtKg(available) + ' available to transfer.';
+    }
   }
 
   function recalcTransferOutPriceFromMargin(){
@@ -1629,7 +1702,13 @@
     var price = transferDirection === 'in'
       ? (parseFloat(document.getElementById('t-price-in').value) || 0)
       : (parseFloat(document.getElementById('t-price-out').value) || 0);
-    document.getElementById('transfer-total-amount').textContent = fmtMoney(qty * price);
+    var beanSubtotal = qty * price;
+    var shipping = transferDirection === 'out' ? (parseFloat(document.getElementById('t-shipping').value) || 0) : 0;
+
+    document.getElementById('transfer-bean-subtotal').textContent = fmtMoney(beanSubtotal);
+    document.getElementById('transfer-shipping-row').style.display = transferDirection === 'out' ? 'flex' : 'none';
+    document.getElementById('transfer-shipping-amount').textContent = fmtMoney(shipping);
+    document.getElementById('transfer-total-amount').textContent = fmtMoney(beanSubtotal + shipping);
     updateTransferConfirmState();
   }
 
@@ -1651,12 +1730,19 @@
     document.getElementById('transfer-dir-out').classList.toggle('active', dir === 'out');
     document.getElementById('transfer-in-price-group').style.display = dir === 'in' ? 'block' : 'none';
     document.getElementById('transfer-out-price-group').style.display = dir === 'out' ? 'block' : 'none';
+    document.getElementById('transfer-bean-detail-fields').style.display = dir === 'in' ? 'block' : 'none';
     document.getElementById('transfer-dir-hint').textContent = dir === 'in'
       ? "Receiving beans from another roaster. Stock and cost will be merged with your existing inventory (weighted average) if the bean and source match."
       : "Sending beans to another roaster. This will deduct from your stock and use your current cost per kg as the pricing baseline.";
+    populateTransferBeanSelect();
+    document.getElementById('transfer-new-name-group').style.display = 'none';
+    document.getElementById('transfer-bean-hint').textContent = dir === 'in'
+      ? "Select an existing bean from your stock, or type a new name if this bean isn't in your inventory yet."
+      : "Select a bean from your stock to send.";
     if (dir === 'out') {
       recalcTransferOutPriceFromMargin();
     }
+    updateTransferAvailableHint();
     updateTransferTotal();
   }
 
@@ -1673,22 +1759,25 @@
   });
 
   document.getElementById('transfer-new-name').addEventListener('input', updateTransferConfirmState);
-  document.getElementById('t-quantity').addEventListener('input', updateTransferTotal);
+  document.getElementById('t-quantity').addEventListener('input', function(){
+    updateTransferTotal();
+    updateTransferAvailableHint();
+  });
   document.getElementById('t-price-in').addEventListener('input', updateTransferTotal);
   document.getElementById('t-margin-pct').addEventListener('input', recalcTransferOutPriceFromMargin);
   document.getElementById('t-price-out').addEventListener('input', recalcTransferMarginFromPrice);
+  document.getElementById('t-shipping').addEventListener('input', updateTransferTotal);
   document.getElementById('transfer-contact-select').addEventListener('change', updateTransferConfirmState);
 
   function openTransferScreen(){
     populateContactSelect();
-    populateTransferBeanSelect();
-    document.getElementById('transfer-new-name-group').style.display = 'none';
     document.getElementById('transfer-new-name').value = '';
     fillTransferFieldsFromBean(null);
     document.getElementById('t-quantity').value = '';
     document.getElementById('t-price-in').value = '';
     document.getElementById('t-margin-pct').value = '';
     document.getElementById('t-price-out').value = '';
+    document.getElementById('t-shipping').value = '';
     setTransferDirection('in');
     updateTransferTotal();
     showScreen('screen-transfer');
@@ -1733,6 +1822,7 @@
       beanName: beanName,
       quantity: qty,
       pricePerKg: 0,
+      shippingCost: 0,
       totalAmount: 0
     };
 
@@ -1770,8 +1860,10 @@
       }
     } else {
       var priceOut = parseFloat(document.getElementById('t-price-out').value) || 0;
+      var shippingOut = parseFloat(document.getElementById('t-shipping').value) || 0;
       record.pricePerKg = priceOut;
-      record.totalAmount = qty * priceOut;
+      record.shippingCost = shippingOut;
+      record.totalAmount = (qty * priceOut) + shippingOut;
 
       if (existingBean) {
         var remainingQty = Math.max(0, (parseFloat(existingBean.quantity) || 0) - qty);
@@ -1799,18 +1891,26 @@
   document.getElementById('transfer-record-back-btn').addEventListener('click', function(){ showScreen('screen-list'); });
   document.getElementById('transfer-record-done-btn').addEventListener('click', function(){ showScreen('screen-list'); });
 
+  var RATIO_LOGO_BASE64 = 'data:image/png;base64,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';
+
   document.getElementById('download-invoice-btn').addEventListener('click', function(){
     if (!lastTransferRecord || !window.jspdf) return;
     var r = lastTransferRecord;
+    var beanSubtotal = r.quantity * r.pricePerKg;
+    var shipping = r.shippingCost || 0;
     var doc = new window.jspdf.jsPDF();
     var brown = [70, 62, 58];
 
+    try {
+      doc.addImage(RATIO_LOGO_BASE64, 'PNG', 20, 14, 16, 16);
+    } catch(e) { console.error('Could not add logo to PDF', e); }
+
     doc.setFontSize(20);
     doc.setTextColor.apply(doc, brown);
-    doc.text('Ratio Coffee', 20, 25);
+    doc.text('Ratio Coffee', 42, 25);
     doc.setFontSize(11);
     doc.setTextColor(120, 120, 120);
-    doc.text('Green bean stock transfer invoice', 20, 32);
+    doc.text('Green bean stock transfer invoice', 42, 32);
 
     doc.setDrawColor(220, 210, 194);
     doc.line(20, 38, 190, 38);
@@ -1839,8 +1939,14 @@
     doc.text(r.beanName, 20, y);
     doc.text(r.quantity.toFixed(1), 110, y);
     doc.text('$' + r.pricePerKg.toFixed(2), 145, y);
-    doc.text('$' + r.totalAmount.toFixed(2), 175, y);
-    y += 14;
+    doc.text('$' + beanSubtotal.toFixed(2), 175, y);
+    y += 12;
+
+    if (shipping > 0) {
+      doc.text('Shipping', 20, y);
+      doc.text('$' + shipping.toFixed(2), 175, y);
+      y += 12;
+    }
 
     doc.line(20, y, 190, y);
     y += 10;
@@ -1850,6 +1956,54 @@
 
     var fileName = 'ratio-transfer-' + new Date(r.date).toISOString().slice(0,10) + '.pdf';
     doc.save(fileName);
+  });
+
+  // ---------- Transfer history ----------
+  function renderTransferHistory(){
+    var listEl = document.getElementById('transfer-history-list');
+    if (transferHistory.length === 0) {
+      listEl.innerHTML = '<p class="field-hint">No transfers recorded yet.</p>';
+      return;
+    }
+    var sorted = transferHistory.slice().sort(function(a, b){ return new Date(b.date) - new Date(a.date); });
+    var html = '';
+    sorted.forEach(function(r){
+      var dirLabel = r.direction === 'in' ? 'In' : 'Out';
+      var withLabel = r.direction === 'in' ? 'from' : 'to';
+      var dateStr = new Date(r.date).toLocaleDateString();
+      html += '<div class="transfer-history-row" data-id="' + r.id + '">';
+      html += '  <div class="transfer-history-top">';
+      html += '    <div>';
+      html += '      <span class="transfer-history-direction ' + r.direction + '">' + dirLabel + '</span>';
+      html += '      <div class="transfer-history-bean">' + esc(r.beanName) + '</div>';
+      html += '      <div class="transfer-history-meta">' + fmtKg(r.quantity) + ' ' + withLabel + ' ' + esc(r.contactName) + ' \u00b7 ' + dateStr + '</div>';
+      html += '    </div>';
+      html += '  </div>';
+      html += '  <div class="transfer-history-bottom">';
+      html += '    <span class="transfer-history-amount">' + fmtMoney(r.totalAmount) + '</span>';
+      html += '    <button class="transfer-history-delete-btn" data-action="delete-transfer" aria-label="Delete record"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+      html += '  </div>';
+      html += '</div>';
+    });
+    listEl.innerHTML = html;
+
+    listEl.querySelectorAll('[data-action="delete-transfer"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var row = btn.closest('.transfer-history-row');
+        var id = row.getAttribute('data-id');
+        transferHistory = transferHistory.filter(function(r){ return r.id !== id; });
+        try { saveTransfersToServer(transferHistory); } catch(e) { console.error('Save transfer history failed', e); }
+        renderTransferHistory();
+      });
+    });
+  }
+
+  document.getElementById('open-transfer-history-btn').addEventListener('click', function(){
+    renderTransferHistory();
+    showScreen('screen-transfer-history');
+  });
+  document.getElementById('transfer-history-back-btn').addEventListener('click', function(){
+    showScreen('screen-transfer');
   });
 
   // ---------- Password gate ----------
