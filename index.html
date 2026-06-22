@@ -3886,6 +3886,7 @@
         gateError.textContent = "Couldn't connect. Check your internet connection and try again.";
       }
       setSessionPassword('');
+      document.getElementById('gate-password-input').value = '';
     } finally {
       gateSubmitBtn.disabled = false;
       gateSubmitBtn.textContent = 'Unlock';
