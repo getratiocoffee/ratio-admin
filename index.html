@@ -12,21 +12,26 @@
 <link rel="icon" href="/logo.png">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { width: 100%; }
+  html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     background: #EFE8DE;
-    display: block;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
     padding: max(16px, env(safe-area-inset-top)) 10px max(16px, env(safe-area-inset-bottom));
     min-height: 100vh;
+    min-height: 100dvh;
+    overscroll-behavior: none;
+    touch-action: pan-x pan-y;
   }
-  .phone { width: 100%; max-width: 420px; margin: 0 auto; }
+  .phone { width: 100%; max-width: 420px; margin: 0 auto; height: 100%; flex: 1; }
   .card {
     background: #FAF6F0;
     border: 0.5px solid #DCD2C2;
     border-radius: 28px;
     overflow: hidden;
-    min-height: 90vh;
+    height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
