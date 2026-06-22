@@ -2246,6 +2246,20 @@
         </button>
       </div>
 
+      <!-- Stock totals at top -->
+      <div class="inventory-summary" style="flex-shrink:0; margin:0; border-radius:0; border-left:none; border-right:none; border-top:none;">
+        <div class="inventory-summary-item">
+          <span class="inventory-summary-label">Total green stock</span>
+          <span class="inventory-summary-value" id="summary-total-kg">0.0 kg</span>
+        </div>
+        <div class="inventory-summary-item">
+          <span class="inventory-summary-label">Total stock value</span>
+          <span class="inventory-summary-value" id="summary-total-value">$0.00</span>
+        </div>
+      </div>
+
+      </div>
+
       <div class="form-scroll">
 
         <div class="section-label" style="margin-bottom: 10px;">Direction</div>
@@ -2381,9 +2395,6 @@
         </div>
 
         <div class="delivery-summary">
-          <div class="summary-line"><span>Total green stock</span><span id="summary-total-kg">0.0 kg</span></div>
-          <div class="summary-line"><span>Total stock value</span><span id="summary-total-value">$0.00</span></div>
-          <div class="divider" style="margin:10px 0;"></div>
           <div class="summary-line"><span>Bean subtotal</span><span id="transfer-bean-subtotal">$0.00</span></div>
           <div class="summary-line" id="transfer-handling-row" style="display:none;"><span>Handling fee <span class="summary-gst-note" id="transfer-handling-gst-note"></span></span><span id="transfer-handling-amount">$0.00</span></div>
           <div class="summary-line" id="transfer-delivery-row" style="display:none;"><span>Delivery fee <span class="summary-gst-note" id="transfer-delivery-gst-note"></span></span><span id="transfer-delivery-amount">$0.00</span></div>
