@@ -949,13 +949,9 @@
 
   function renderDeliveryRows(){
     var container = document.getElementById('delivery-rows');
-    var shipping = parseFloat(document.getElementById('delivery-shipping').value) || 0;
-    var totalWeight = deliveryRows.reduce(function(sum, r){ return sum + (parseFloat(r.kg) || 0); }, 0);
-    var shippingPerKg = totalWeight > 0 ? shipping / totalWeight : 0;
 
     var html = '';
     deliveryRows.forEach(function(row){
-      var landedCost = (parseFloat(row.price) || 0) + shippingPerKg;
       html += '<div class="delivery-bean-row" data-row-id="' + row.id + '">';
       html += '  <div class="delivery-row-top">';
       html += '    <select class="delivery-bean-select">' + beanOptionsHtml(row.beanId) + '</select>';
@@ -967,7 +963,7 @@
       html += '    <div><label>Kg received</label><input type="number" class="delivery-kg-input" min="0" step="0.5" value="' + esc(row.kg) + '" inputmode="decimal"></div>';
       html += '    <div><label>Bean price / kg ($)</label><input type="number" class="delivery-price-input" min="0" step="0.1" value="' + esc(row.price) + '" inputmode="decimal"></div>';
       html += '  </div>';
-      html += '  <div class="delivery-row-result"><span class="label">Landed cost / kg</span><span class="value">' + (row.kg ? fmtMoney(landedCost) + ' /kg' : '\u2014') + '</span></div>';
+      html += '  <div class="delivery-row-result"><span class="label">Landed cost / kg</span><span class="value delivery-landed-cost">\u2014</span></div>';
       html += '</div>';
     });
     container.innerHTML = html;
@@ -982,12 +978,10 @@
       });
       rowEl.querySelector('.delivery-kg-input').addEventListener('input', function(e){
         rowData.kg = e.target.value;
-        renderDeliveryRows();
         updateDeliverySummary();
       });
       rowEl.querySelector('.delivery-price-input').addEventListener('input', function(e){
         rowData.price = e.target.value;
-        renderDeliveryRows();
         updateDeliverySummary();
       });
       var removeBtn = rowEl.querySelector('[data-action="remove-row"]');
@@ -1007,6 +1001,17 @@
     var shipping = parseFloat(document.getElementById('delivery-shipping').value) || 0;
     var totalWeight = deliveryRows.reduce(function(sum, r){ return sum + (parseFloat(r.kg) || 0); }, 0);
     var totalBeanCost = deliveryRows.reduce(function(sum, r){ return sum + (parseFloat(r.kg) || 0) * (parseFloat(r.price) || 0); }, 0);
+    var shippingPerKg = totalWeight > 0 ? shipping / totalWeight : 0;
+
+    document.querySelectorAll('.delivery-bean-row').forEach(function(rowEl){
+      var rowId = rowEl.getAttribute('data-row-id');
+      var rowData = deliveryRows.find(function(r){ return r.id == rowId; });
+      var landedCostEl = rowEl.querySelector('.delivery-landed-cost');
+      if (rowData && landedCostEl) {
+        var landedCost = (parseFloat(rowData.price) || 0) + shippingPerKg;
+        landedCostEl.textContent = rowData.kg ? fmtMoney(landedCost) + ' /kg' : '\u2014';
+      }
+    });
 
     document.getElementById('delivery-total-weight').textContent = fmtKg(totalWeight);
     document.getElementById('delivery-total-bean-cost').textContent = fmtMoney(totalBeanCost);
@@ -1022,7 +1027,6 @@
   }
 
   document.getElementById('delivery-shipping').addEventListener('input', function(){
-    renderDeliveryRows();
     updateDeliverySummary();
   });
 
