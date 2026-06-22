@@ -797,6 +797,9 @@
         </div>
       </div>
 
+      <!-- Dashboard handover banner -->
+      <div id="dashboard-handover-banner" style="display:none; margin:0 20px 4px; padding:10px 14px; border-radius:14px; border:1.5px solid #FFD966; flex-shrink:0; cursor:pointer;"></div>
+
       <div class="app-grid-body">
         <button class="app-grid-item" id="menu-open-greenbean-btn">
           <span class="app-grid-icon" style="background:#D6EBDB;">
@@ -1126,6 +1129,11 @@
         <h1>Manage Tasks</h1>
       </div>
       <div class="form-scroll">
+        <div class="field-group">
+          <label class="field-label">Date</label>
+          <select class="field-input" id="handover-manage-date-select"></select>
+        </div>
+        <div class="section-label" id="handover-manage-date-label" style="margin-bottom:10px;"></div>
         <div id="handover-manage-list"></div>
         <div class="divider"></div>
         <div class="section-label" style="margin-bottom:10px;">Add task</div>
@@ -1776,7 +1784,7 @@
 
   async function loadHandoverFromServer(){
     var data = await apiRequest('handover', 'GET');
-    return data && data.tasks !== undefined ? data : { tasks: [], checks: {} };
+    return data && (data.tasksByDate !== undefined || data.tasks !== undefined) ? data : { tasksByDate: {}, checks: {} };
   }
   async function saveHandoverToServer(data){
     await apiRequest('handover', 'POST', data);
@@ -1827,7 +1835,15 @@
       document.getElementById('gate-password-input').value = '';
       document.getElementById('gate-error').textContent = '';
     }
+    if (id === 'screen-menu') {
+      renderDashboardHandoverBanner();
+    }
   }
+
+  document.getElementById('dashboard-handover-banner').addEventListener('click', function(){
+    renderHandover();
+    showScreen('screen-handover');
+  });
 
   // ---------- List rendering ----------
   function render(){
@@ -3980,6 +3996,10 @@
     saveHandoverToServer(handoverData).catch(function(e){ console.error('Save handover failed', e); });
   }
 
+  function getHandoverTasksForDate(dateIso){
+    return (handoverData.tasksByDate && handoverData.tasksByDate[dateIso]) || [];
+  }
+
   function renderHandover(){
     var today = new Date();
     var todayIso = isoDate(today);
@@ -3987,10 +4007,13 @@
     var dateLabel = today.toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' });
 
     document.getElementById('handover-date-header').innerHTML =
+      '<div style="display:flex;align-items:baseline;gap:10px;">' +
       '<div class="handover-date-title">' + dayName + '</div>' +
+      '<div style="font-size:14px;font-weight:600;color:#8A7F6F;">Check List</div>' +
+      '</div>' +
       '<div class="handover-date-sub">' + dateLabel + '</div>';
 
-    var tasks = handoverData.tasks || [];
+    var tasks = getHandoverTasksForDate(todayIso);
     var todayChecks = (handoverData.checks && handoverData.checks[todayIso]) || {};
     var doneCount = tasks.filter(function(t){ return todayChecks[t.id]; }).length;
     var total = tasks.length;
@@ -3998,7 +4021,7 @@
     var listEl = document.getElementById('handover-task-list');
 
     if (tasks.length === 0) {
-      listEl.innerHTML = '<p class="field-hint">No tasks yet. Tap the list icon to add tasks.</p>';
+      listEl.innerHTML = '<p class="field-hint">No tasks set for today. Tap \u2261 to manage tasks.</p>';
       return;
     }
 
@@ -4009,16 +4032,14 @@
       var done = !!todayChecks[t.id];
       html += '<div class="handover-task-item' + (done ? ' done' : '') + '" data-id="' + t.id + '">';
       html += '  <div class="handover-task-checkbox">';
-      if (done) {
-        html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
-      }
+      if (done) html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
       html += '  </div>';
       html += '  <span class="handover-task-label">' + esc(t.name) + '</span>';
       html += '</div>';
     });
 
     if (doneCount === total && total > 0) {
-      html += '<div class="handover-all-done">✓ All tasks done for today!</div>';
+      html += '<div class="handover-all-done">\u2713 All tasks done for today!</div>';
     }
 
     listEl.innerHTML = html;
@@ -4026,45 +4047,102 @@
     listEl.querySelectorAll('.handover-task-item:not(.done)').forEach(function(item){
       item.addEventListener('click', function(){
         var id = item.getAttribute('data-id');
+        if (!handoverData.checks) handoverData.checks = {};
         if (!handoverData.checks[todayIso]) handoverData.checks[todayIso] = {};
         handoverData.checks[todayIso][id] = true;
         persistHandover();
         renderHandover();
+        renderDashboardHandoverBanner();
       });
     });
   }
 
+  // Manage tasks for a specific date
+  var manageDate = null;
+
   function renderHandoverManage(){
+    var tasks = getHandoverTasksForDate(manageDate);
+    var displayDate = new Date(manageDate + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' });
+    document.getElementById('handover-manage-date-label').textContent = displayDate;
+
     var listEl = document.getElementById('handover-manage-list');
-    var tasks = handoverData.tasks || [];
     if (tasks.length === 0) {
-      listEl.innerHTML = '<p class="field-hint">No tasks yet. Add one below.</p>';
+      listEl.innerHTML = '<p class="field-hint">No tasks for this day. Add one below.</p>';
+    } else {
+      var html = '';
+      tasks.forEach(function(t){
+        html += '<div class="contact-row" data-id="' + t.id + '">';
+        html += '  <div class="contact-row-name">' + esc(t.name) + '</div>';
+        html += '  <button class="contact-delete-btn" data-action="delete-task" aria-label="Delete task"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+        html += '</div>';
+      });
+      listEl.innerHTML = html;
+      listEl.querySelectorAll('[data-action="delete-task"]').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var id = btn.closest('.contact-row').getAttribute('data-id');
+          if (!handoverData.tasksByDate) handoverData.tasksByDate = {};
+          handoverData.tasksByDate[manageDate] = handoverData.tasksByDate[manageDate].filter(function(t){ return t.id !== id; });
+          persistHandover();
+          renderHandoverManage();
+          renderDashboardHandoverBanner();
+        });
+      });
+    }
+  }
+
+  function openHandoverManage(dateIso){
+    manageDate = dateIso;
+    document.getElementById('handover-new-task-input').value = '';
+    renderHandoverManage();
+    showScreen('screen-handover-manage');
+  }
+
+  function renderDashboardHandoverBanner(){
+    var banner = document.getElementById('dashboard-handover-banner');
+    if (!banner) return;
+    var todayIso = isoDate(new Date());
+    var tasks = getHandoverTasksForDate(todayIso);
+    var todayChecks = (handoverData.checks && handoverData.checks[todayIso]) || {};
+    var remaining = tasks.filter(function(t){ return !todayChecks[t.id]; });
+    if (tasks.length === 0) {
+      banner.style.display = 'none';
       return;
     }
-    var html = '';
-    tasks.forEach(function(t){
-      html += '<div class="contact-row" data-id="' + t.id + '">';
-      html += '  <div class="contact-row-name">' + esc(t.name) + '</div>';
-      html += '  <button class="contact-delete-btn" data-action="delete-task" aria-label="Delete task"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
-      html += '</div>';
-    });
-    listEl.innerHTML = html;
-    listEl.querySelectorAll('[data-action="delete-task"]').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        var id = btn.closest('.contact-row').getAttribute('data-id');
-        handoverData.tasks = handoverData.tasks.filter(function(t){ return t.id !== id; });
-        persistHandover();
-        renderHandoverManage();
-      });
-    });
+    banner.style.display = 'block';
+    if (remaining.length === 0) {
+      banner.innerHTML = '<div style="font-size:13px;font-weight:600;color:#27500A;">\u2713 All handover tasks done for today</div>';
+      banner.style.background = '#EAF3DE';
+      banner.style.borderColor = '#A8D5A2';
+    } else {
+      var names = remaining.slice(0,3).map(function(t){ return t.name; }).join(', ');
+      if (remaining.length > 3) names += ' +' + (remaining.length - 3) + ' more';
+      banner.innerHTML =
+        '<div style="font-size:12px;font-weight:700;color:#7A5C00;margin-bottom:4px;">\u26a0 Today\'s Check List (' + remaining.length + ' remaining)</div>' +
+        '<div style="font-size:13px;color:#7A5C00;">' + esc(names) + '</div>';
+      banner.style.background = '#FFF3CD';
+      banner.style.borderColor = '#FFD966';
+    }
   }
 
   document.getElementById('handover-back-btn').addEventListener('click', function(){
     showScreen('screen-menu');
   });
   document.getElementById('handover-manage-btn').addEventListener('click', function(){
-    renderHandoverManage();
-    showScreen('screen-handover-manage');
+    var tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    var tomorrowIso = isoDate(tomorrow);
+    // Build date options (today + next 13 days)
+    var sel = document.getElementById('handover-manage-date-select');
+    var opts = '';
+    for (var i = 0; i < 14; i++) {
+      var d = new Date(); d.setDate(d.getDate() + i);
+      var iso = isoDate(d);
+      var label = (i === 0 ? 'Today – ' : i === 1 ? 'Tomorrow – ' : '') +
+        d.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+      opts += '<option value="' + iso + '"' + (iso === tomorrowIso ? ' selected' : '') + '>' + label + '</option>';
+    }
+    sel.innerHTML = opts;
+    openHandoverManage(tomorrowIso);
   });
   document.getElementById('handover-manage-back-btn').addEventListener('click', function(){
     renderHandover();
@@ -4074,15 +4152,22 @@
     renderHandover();
     showScreen('screen-handover');
   });
+  document.getElementById('handover-manage-date-select').addEventListener('change', function(){
+    manageDate = this.value;
+    document.getElementById('handover-new-task-input').value = '';
+    renderHandoverManage();
+  });
   document.getElementById('handover-add-task-btn').addEventListener('click', function(){
     var input = document.getElementById('handover-new-task-input');
     var name = input.value.trim();
-    if (!name) return;
-    if (!handoverData.tasks) handoverData.tasks = [];
-    handoverData.tasks.push({ id: uid(), name: name });
+    if (!name || !manageDate) return;
+    if (!handoverData.tasksByDate) handoverData.tasksByDate = {};
+    if (!handoverData.tasksByDate[manageDate]) handoverData.tasksByDate[manageDate] = [];
+    handoverData.tasksByDate[manageDate].push({ id: uid(), name: name });
     persistHandover();
     input.value = '';
     renderHandoverManage();
+    renderDashboardHandoverBanner();
   });
 
   // ---------- Password gate ----------
@@ -4118,8 +4203,14 @@
         try { saveNaToServer(naRequests); } catch(e) {}
       }
       handoverData = await loadHandoverFromServer();
-      if (!handoverData.tasks) handoverData.tasks = [];
+      if (!handoverData.tasksByDate) handoverData.tasksByDate = {};
       if (!handoverData.checks) handoverData.checks = {};
+      // Migrate old format if needed
+      if (handoverData.tasks && handoverData.tasks.length > 0 && Object.keys(handoverData.tasksByDate).length === 0) {
+        var todayMigrate = isoDate(new Date());
+        handoverData.tasksByDate[todayMigrate] = handoverData.tasks;
+        delete handoverData.tasks;
+      }
       // Clean up check records older than 30 days
       var cutoff = isoDate(new Date(Date.now() - 30 * 86400000));
       Object.keys(handoverData.checks).forEach(function(d){
