@@ -852,17 +852,6 @@
           </span>
           <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-
-        <button class="menu-card" id="ts-manage-staff-btn">
-          <span class="menu-card-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </span>
-          <span class="menu-card-text">
-            <span class="menu-card-title">Manage Staff List</span>
-            <span class="menu-card-sub">Add or remove staff members</span>
-          </span>
-          <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
       </div>
     </div>
 
@@ -923,24 +912,13 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
         <h1>Staff Contacts</h1>
+        <button class="icon-btn" id="staff-add-open-btn" aria-label="Add staff member" title="Add staff member">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
       </div>
-      <div class="form-scroll">
-        <div id="staff-contacts-list"></div>
-      </div>
-    </div>
 
-    <!-- ===== MANAGE STAFF SCREEN ===== -->
-    <div class="screen" id="screen-staff">
-      <div class="form-topbar">
-        <div class="back-btn" id="staff-back-btn" aria-label="Back">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        </div>
-        <h1>Manage Staff List</h1>
-      </div>
-      <div class="form-scroll">
-        <div id="staff-list"></div>
-        <div class="divider"></div>
-        <div class="section-label" style="margin-bottom: 12px;">Add staff member</div>
+      <!-- Add staff inline form (hidden by default) -->
+      <div id="staff-add-form" style="display:none; padding: 0 20px 4px; flex-shrink:0;">
         <div class="field-group">
           <label class="field-label">Name <span style="color:#A32D2D;">*</span></label>
           <input type="text" class="field-input" id="staff-name-input" placeholder="e.g. Jordan Pak">
@@ -953,7 +931,15 @@
           <label class="field-label">Email</label>
           <input type="email" class="field-input" id="staff-email-input" placeholder="e.g. jordan@example.com" inputmode="email">
         </div>
-        <button class="add-row-btn" id="staff-add-btn" type="button">+ Add staff member</button>
+        <div style="display:flex; gap:8px; margin-bottom:14px;">
+          <button class="btn-save" id="staff-add-btn" type="button" style="flex:1; padding:13px 0; border-radius:14px; font-size:15px;">Save</button>
+          <button class="import-confirm-btn cancel" id="staff-add-cancel-btn" type="button" style="flex:0.5; padding:13px 0;">Cancel</button>
+        </div>
+        <div class="divider" style="margin-bottom:4px;"></div>
+      </div>
+
+      <div class="form-scroll">
+        <div id="staff-contacts-list"></div>
       </div>
     </div>
 
@@ -3079,37 +3065,12 @@
   }
 
   // ----- Manage staff -----
-  function renderStaffList(){
-    var listEl = document.getElementById('staff-list');
-    if (staffList.length === 0) {
-      listEl.innerHTML = '<p class="field-hint">No staff added yet.</p>';
-      return;
-    }
-    var html = '';
-    staffList.forEach(function(s){
-      html += '<div class="contact-row" data-id="' + s.id + '">';
-      html += '  <div class="contact-row-name">' + esc(s.name) + '</div>';
-      html += '  <button class="contact-delete-btn" data-action="delete-staff" aria-label="Delete staff member"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
-      html += '</div>';
-    });
-    listEl.innerHTML = html;
-    listEl.querySelectorAll('[data-action="delete-staff"]').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        var row = btn.closest('.contact-row');
-        var id = row.getAttribute('data-id');
-        staffList = staffList.filter(function(s){ return s.id !== id; });
-        persistStaff();
-        renderStaffList();
-      });
-    });
-  }
-
   var expandedStaffContact = null;
 
   function renderStaffContacts(){
     var listEl = document.getElementById('staff-contacts-list');
     if (staffList.length === 0) {
-      listEl.innerHTML = '<p class="field-hint">No staff added yet. Add staff members from Manage Staff List.</p>';
+      listEl.innerHTML = '<p class="field-hint">No staff added yet. Tap the + button to add a staff member.</p>';
       return;
     }
     var html = '';
@@ -3133,7 +3094,10 @@
         html += '      <input type="tel" class="field-input sc-phone" value="' + esc(s.phone || '') + '" placeholder="e.g. 0412 345 678" inputmode="tel"></div>';
         html += '    <div class="field-group"><label class="field-label">Email</label>';
         html += '      <input type="email" class="field-input sc-email" value="' + esc(s.email || '') + '" placeholder="e.g. jordan@example.com" inputmode="email"></div>';
-        html += '    <button class="btn-save" data-action="save-contact" style="width:100%;padding:13px 0;border-radius:14px;font-size:15px;">Save</button>';
+        html += '    <div class="card-actions">';
+        html += '      <button class="btn-edit" data-action="save-contact" style="flex:1;">Save</button>';
+        html += '      <button class="btn-delete" data-action="delete-contact" aria-label="Delete staff member"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+        html += '    </div>';
         html += '  </div>';
       }
       html += '</div>';
@@ -3165,6 +3129,17 @@
         renderStaffContacts();
       });
     });
+
+    listEl.querySelectorAll('[data-action="delete-contact"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var card = btn.closest('.bean-card');
+        var id = card.getAttribute('data-id');
+        staffList = staffList.filter(function(s){ return s.id !== id; });
+        persistStaff();
+        expandedStaffContact = null;
+        renderStaffContacts();
+      });
+    });
   }
 
   document.getElementById('staff-add-btn').addEventListener('click', function(){
@@ -3183,16 +3158,24 @@
     nameInput.value = '';
     phoneInput.value = '';
     emailInput.value = '';
-    renderStaffList();
+    document.getElementById('staff-add-form').style.display = 'none';
+    renderStaffContacts();
   });
 
-  document.getElementById('ts-manage-staff-btn').addEventListener('click', function(){
-    renderStaffList();
-    showScreen('screen-staff');
+  document.getElementById('staff-add-cancel-btn').addEventListener('click', function(){
+    document.getElementById('staff-add-form').style.display = 'none';
+    document.getElementById('staff-name-input').value = '';
+    document.getElementById('staff-phone-input').value = '';
+    document.getElementById('staff-email-input').value = '';
   });
-  document.getElementById('staff-back-btn').addEventListener('click', function(){
-    showScreen('screen-timesheet');
+
+  document.getElementById('staff-add-open-btn').addEventListener('click', function(){
+    var form = document.getElementById('staff-add-form');
+    var isVisible = form.style.display !== 'none';
+    form.style.display = isVisible ? 'none' : 'block';
+    if (!isVisible) document.getElementById('staff-name-input').focus();
   });
+
   document.getElementById('ts-open-contacts-btn').addEventListener('click', function(){
     renderStaffContacts();
     showScreen('screen-staff-contacts');
