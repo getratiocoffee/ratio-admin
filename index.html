@@ -831,6 +831,10 @@
 
       <!-- Dashboard handover banner -->
       <div id="dashboard-handover-banner" style="display:none; margin:0 20px 4px; padding:10px 14px; border-radius:14px; border:1.5px solid #90C4E4; flex-shrink:0; cursor:pointer;"></div>
+      <div id="dashboard-schedule-banner" style="display:none; margin:0 20px 4px; padding:10px 14px; border-radius:14px; border:1.5px solid #B8A6E8; background:#E8E0F5; flex-shrink:0; cursor:pointer;">
+        <div style="font-size:12px;font-weight:700;color:#3D2875;margin-bottom:3px;">⚠ Next week's timesheet not set</div>
+        <div style="font-size:13px;color:#3D2875;">Tap to add the schedule now.</div>
+      </div>
 
       <div class="app-grid-body">
         <button class="app-grid-item" id="menu-open-greenbean-btn">
@@ -1898,8 +1902,31 @@
     }
     if (id === 'screen-menu') {
       renderDashboardHandoverBanner();
+      renderDashboardScheduleBanner();
     }
   }
+
+  function renderDashboardScheduleBanner(){
+    var banner = document.getElementById('dashboard-schedule-banner');
+    if (!banner) return;
+    // Get next week's Monday
+    var nextMonday = getMonday(new Date());
+    nextMonday.setDate(nextMonday.getDate() + 7);
+    var nextWeekIso = isoDate(nextMonday);
+    // Check if any timesheet exists for next week with at least one shift entry
+    var nextWeek = timesheets.find(function(w){ return w.weekStart === nextWeekIso; });
+    var hasEntries = nextWeek && nextWeek.days && DAY_KEYS.some(function(dk){
+      return nextWeek.days[dk] && nextWeek.days[dk].length > 0;
+    });
+    banner.style.display = hasEntries ? 'none' : 'block';
+  }
+
+  document.getElementById('dashboard-schedule-banner').addEventListener('click', function(){
+    // Open Add New Timesheet with next week pre-selected
+    tsAddWeekOffset = 1;
+    openAddTimesheetScreen();
+    showScreen('screen-ts-add');
+  });
 
   document.getElementById('dashboard-handover-banner').addEventListener('click', function(){
     renderHandover();
