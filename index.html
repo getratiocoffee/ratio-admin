@@ -444,37 +444,66 @@
   .ts-staff-name { font-size: 16px; font-weight: 600; color: #2E2925; }
   .ts-staff-total { font-size: 12px; color: #8A7F6F; margin-top: 2px; }
   .ts-staff-body { padding: 0 14px 14px; }
-  .ts-day-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 0; border-top: 1px solid #EFE8DE;
-  }
-  .ts-day-row:first-child { border-top: none; }
-  .ts-day-label-group { display: flex; align-items: baseline; gap: 8px; }
-  .ts-day-name { font-size: 16px; font-weight: 700; color: #2E2925; }
-  .ts-day-date { font-size: 11px; color: #B0A491; }
-  .ts-day-hours { font-size: 13px; color: #463E3A; font-weight: 600; }
-  .ts-day-hours.empty { color: #B0A491; font-weight: 400; font-style: italic; }
 
-  .ts-add-staff-row {
-    border: 1.5px solid #DCD2C2; border-radius: 16px; padding: 14px; margin-bottom: 14px; background: #FFFFFF;
+  /* Day-first card (used in Current / Previous) */
+  .ts-day-card {
+    border: 1.5px solid #DCD2C2; border-radius: 16px; margin-bottom: 12px; background: #FFFFFF; overflow: hidden;
   }
-  .ts-add-staff-top { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-  .ts-add-staff-top select {
-    flex: 1; width: 100%; padding: 12px 14px; font-size: 16px; border: 1.5px solid #DCD2C2; border-radius: 14px;
+  .ts-day-card-header { padding: 14px 14px 10px; }
+  .ts-day-card-label-group { display: flex; align-items: baseline; gap: 8px; }
+  .ts-day-name { font-size: 18px; font-weight: 700; color: #2E2925; }
+  .ts-day-date { font-size: 12px; color: #B0A491; }
+  .ts-day-card-body { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 8px; }
+  .ts-day-empty { font-size: 13px; color: #B0A491; font-style: italic; padding: 4px 0 10px; }
+
+  .ts-shift-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 10px 12px; border: 1px solid #EFE8DE; border-radius: 12px; background: #FAF6F0;
+  }
+  .ts-shift-name { font-size: 14px; font-weight: 600; color: #2E2925; }
+  .ts-shift-time { font-size: 13px; color: #463E3A; margin-top: 2px; }
+  .ts-shift-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .ts-shift-edit-btn, .ts-shift-delete-btn {
+    width: 32px; height: 32px; border-radius: 10px; border: 1.5px solid #DCD2C2;
+    background: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+  }
+  .ts-shift-edit-btn { color: #463E3A; }
+  .ts-shift-delete-btn { color: #A32D2D; }
+
+  .ts-add-shift-btn {
+    width: 100%; padding: 10px 0; background: #FFFFFF; color: #463E3A;
+    border: 1.5px dashed #DCD2C2; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: inherit;
+  }
+
+  .ts-week-total-bar {
+    display: flex; gap: 10px; margin-top: 4px; margin-bottom: 14px;
+  }
+  .ts-week-total-item {
+    flex: 1; padding: 12px; background: #FFFFFF; border: 1.5px solid #DCD2C2; border-radius: 14px; text-align: center;
+  }
+  .ts-week-total-label { font-size: 11px; color: #8A7F6F; display: block; margin-bottom: 4px; }
+  .ts-week-total-value { font-size: 15px; font-weight: 700; color: #2E2925; display: block; }
+
+  /* Add New Timesheet: day block with multi-staff entry */
+  .ts-add-day-block {
+    border: 1.5px solid #DCD2C2; border-radius: 16px; margin-bottom: 14px; background: #FFFFFF; padding: 14px;
+  }
+  .ts-add-day-block-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
+  .ts-add-shift-row {
+    border: 1px solid #EFE8DE; border-radius: 12px; padding: 10px; margin-bottom: 8px; background: #FAF6F0;
+  }
+  .ts-add-shift-row-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .ts-add-shift-row-top select {
+    flex: 1; width: 100%; padding: 10px 12px; font-size: 15px; border: 1.5px solid #DCD2C2; border-radius: 12px;
     background: #FFFFFF; color: #2E2925; font-family: inherit; box-sizing: border-box;
   }
-  .ts-day-input-row {
-    display: flex; align-items: center; justify-content: space-between; gap: 10px;
-    padding: 10px 0; border-top: 1px solid #EFE8DE;
-  }
-  .ts-day-input-row:first-child { border-top: none; }
-  .ts-day-input-label { display: flex; align-items: baseline; gap: 8px; flex-shrink: 0; width: 86px; }
-  .ts-day-input-fields { display: flex; align-items: center; gap: 6px; flex: 1; }
-  .ts-day-input-fields input {
+  .ts-add-shift-time-fields { display: flex; align-items: center; gap: 6px; }
+  .ts-add-shift-time-fields input {
     flex: 1; min-width: 0; padding: 9px 8px; font-size: 14px; border: 1.5px solid #DCD2C2; border-radius: 10px;
     background: #FFFFFF; color: #2E2925; font-family: inherit; box-sizing: border-box;
   }
-  .ts-day-input-fields span { font-size: 12px; color: #B0A491; flex-shrink: 0; }
+  .ts-add-shift-time-fields span { font-size: 12px; color: #B0A491; flex-shrink: 0; }
 
   .ts-previous-row {
     border: 1.5px solid #DCD2C2; border-radius: 16px; margin-bottom: 12px; background: #FFFFFF; overflow: hidden;
@@ -757,10 +786,7 @@
       <div class="form-scroll">
         <p class="field-hint" id="ts-current-range" style="margin-bottom: 14px;"></p>
         <div id="ts-current-list"></div>
-      </div>
-      <div class="form-bottom-bar" id="ts-current-complete-bar" style="display:none;">
-        <button class="btn-save" id="ts-complete-week-btn">Complete this week</button>
-        <p class="required-hint">This will move the week to Previous Timesheet. This cannot be undone.</p>
+        <p class="field-hint" style="margin-top: 6px;">This week moves to Previous Timesheet automatically once Sunday has passed.</p>
       </div>
     </div>
 
@@ -787,11 +813,10 @@
       </div>
       <div class="form-scroll">
         <p class="field-hint" id="ts-add-range" style="margin-bottom: 14px;"></p>
-        <div id="ts-add-rows"></div>
-        <button class="add-row-btn" id="ts-add-row-btn" type="button">+ Add staff member</button>
+        <div id="ts-add-days"></div>
       </div>
       <div class="form-bottom-bar">
-        <button class="btn-save" id="ts-save-week-btn" disabled>Save timesheet</button>
+        <button class="btn-save" id="ts-save-week-btn">Save timesheet</button>
         <p class="required-hint">Hours will be added to this week's timesheet.</p>
       </div>
     </div>
@@ -2728,20 +2753,26 @@
     return diff / 60;
   }
   function fmtHours(h){
-    if (h == null) return null;
+    if (h == null) return '0 hrs';
     return (Math.round(h * 100) / 100) + ' hrs';
   }
-
   function getCurrentWeekIso(){
     return isoDate(getMonday(new Date()));
   }
-  function getOrCreateCurrentWeek(){
-    var weekStart = getCurrentWeekIso();
-    var week = timesheets.find(function(w){ return w.weekStart === weekStart && w.status === 'current'; });
+  function isWeekPast(weekStartIso){
+    var dates = weekDates(weekStartIso);
+    var sunday = new Date(dates.sun + 'T23:59:59');
+    return new Date() > sunday;
+  }
+  function getOrCreateWeek(weekStartIso){
+    var week = timesheets.find(function(w){ return w.weekStart === weekStartIso; });
     if (!week) {
-      week = { id: uid(), weekStart: weekStart, status: 'current', entries: [] };
+      week = { id: uid(), weekStart: weekStartIso, days: {} };
+      DAY_KEYS.forEach(function(dk){ week.days[dk] = []; });
       timesheets.push(week);
     }
+    if (!week.days) week.days = {};
+    DAY_KEYS.forEach(function(dk){ if (!week.days[dk]) week.days[dk] = []; });
     return week;
   }
 
@@ -2796,74 +2827,151 @@
     showScreen('screen-timesheet');
   });
 
-  // ----- Current timesheet -----
-  var expandedStaffRows = {};
+  // ----- Week totals (weekday / saturday / sunday) -----
+  function computeWeekTotals(week){
+    var totals = { weekday: 0, sat: 0, sun: 0 };
+    DAY_KEYS.forEach(function(dk){
+      var shifts = week.days[dk] || [];
+      shifts.forEach(function(shift){
+        var h = hoursBetween(shift.start, shift.end);
+        if (h == null) return;
+        if (dk === 'sat') totals.sat += h;
+        else if (dk === 'sun') totals.sun += h;
+        else totals.weekday += h;
+      });
+    });
+    return totals;
+  }
 
-  function renderCurrentTimesheet(){
-    var weekStart = getCurrentWeekIso();
-    var week = timesheets.find(function(w){ return w.weekStart === weekStart && w.status === 'current'; });
-    var dates = weekDates(weekStart);
-    var sundayIso = dates.sun;
+  function renderWeekTotalsBar(week){
+    var totals = computeWeekTotals(week);
+    return '<div class="ts-week-total-bar">'
+      + '<div class="ts-week-total-item"><span class="ts-week-total-label">Weekday</span><span class="ts-week-total-value">' + fmtHours(totals.weekday) + '</span></div>'
+      + '<div class="ts-week-total-item"><span class="ts-week-total-label">Saturday</span><span class="ts-week-total-value">' + fmtHours(totals.sat) + '</span></div>'
+      + '<div class="ts-week-total-item"><span class="ts-week-total-label">Sunday</span><span class="ts-week-total-value">' + fmtHours(totals.sun) + '</span></div>'
+      + '</div>';
+  }
 
-    document.getElementById('ts-current-range').textContent =
-      fmtShortDate(weekStart) + ' \u2013 ' + fmtShortDate(sundayIso) + ' (Mon\u2013Sun)';
+  // ----- Shared: render a week's days (editable), used by Current and Previous -----
+  var tsEditingShift = null; // { weekId, dayKey, shiftIndex } or null
 
-    var listEl = document.getElementById('ts-current-list');
-    var completeBar = document.getElementById('ts-current-complete-bar');
-
-    if (!week || week.entries.length === 0) {
-      listEl.innerHTML = '<p class="field-hint">No timesheet entries for this week yet. Use Add New Timesheet to log hours.</p>';
-      completeBar.style.display = 'none';
-      return;
-    }
-
-    completeBar.style.display = 'block';
-
+  function renderWeekDays(week, containerEl, dates){
     var html = '';
-    week.entries.forEach(function(entry, idx){
-      var rowKey = week.id + '-' + idx;
-      var expanded = !!expandedStaffRows[rowKey];
-      var totalHours = 0;
-      DAY_KEYS.forEach(function(dk){
-        var d = entry.days[dk];
-        if (d && d.start && d.end) {
-          var h = hoursBetween(d.start, d.end);
-          if (h != null) totalHours += h;
+    DAY_KEYS.forEach(function(dk){
+      var shifts = week.days[dk] || [];
+      html += '<div class="ts-day-card" data-week-id="' + week.id + '" data-day="' + dk + '">';
+      html += '  <div class="ts-day-card-header">';
+      html += '    <div class="ts-day-card-label-group"><span class="ts-day-name">' + DAY_LABELS[dk] + '</span><span class="ts-day-date">' + fmtShortDate(dates[dk]) + '</span></div>';
+      html += '  </div>';
+      html += '  <div class="ts-day-card-body">';
+      if (shifts.length === 0) {
+        html += '    <div class="ts-day-empty">No one scheduled</div>';
+      }
+      shifts.forEach(function(shift, idx){
+        var isEditing = tsEditingShift && tsEditingShift.weekId === week.id && tsEditingShift.dayKey === dk && tsEditingShift.shiftIndex === idx;
+        if (isEditing) {
+          html += '    <div class="ts-add-shift-row" data-shift-idx="' + idx + '">';
+          html += '      <div class="ts-add-shift-row-top"><select class="ts-edit-staff-select">' + staffOptionsHtml(shift.staffId) + '</select></div>';
+          html += '      <div class="ts-add-shift-time-fields">';
+          html += '        <input type="time" class="ts-edit-start-input" value="' + esc(shift.start || '') + '">';
+          html += '        <span>to</span>';
+          html += '        <input type="time" class="ts-edit-end-input" value="' + esc(shift.end || '') + '">';
+          html += '      </div>';
+          html += '      <div style="display:flex; gap:8px; margin-top:8px;">';
+          html += '        <button class="import-confirm-btn confirm" data-action="save-edit-shift" type="button" style="flex:1;">Save</button>';
+          html += '        <button class="import-confirm-btn cancel" data-action="cancel-edit-shift" type="button" style="flex:1;">Cancel</button>';
+          html += '      </div>';
+          html += '    </div>';
+        } else {
+          var hrs = hoursBetween(shift.start, shift.end);
+          html += '    <div class="ts-shift-row" data-shift-idx="' + idx + '">';
+          html += '      <div><div class="ts-shift-name">' + esc(shift.staffName) + '</div><div class="ts-shift-time">' + esc(shift.start) + ' \u2013 ' + esc(shift.end) + ' \u00b7 ' + fmtHours(hrs) + '</div></div>';
+          html += '      <div class="ts-shift-actions">';
+          html += '        <button class="ts-shift-edit-btn" data-action="edit-shift" aria-label="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>';
+          html += '        <button class="ts-shift-delete-btn" data-action="delete-shift" aria-label="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+          html += '      </div>';
+          html += '    </div>';
         }
       });
-
-      html += '<div class="ts-staff-card" data-row-key="' + rowKey + '">';
-      html += '  <div class="ts-staff-header" data-action="toggle-staff-row">';
-      html += '    <div>';
-      html += '      <div class="ts-staff-name">' + esc(entry.staffName) + '</div>';
-      html += '      <div class="ts-staff-total">' + fmtHours(totalHours) + ' this week</div>';
-      html += '    </div>';
-      html += '    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(' + (expanded ? '180deg' : '0deg') + ');"><polyline points="6 9 12 15 18 9"/></svg>';
+      html += '    <button class="ts-add-shift-btn" data-action="add-shift-inline" type="button">+ Add staff to this day</button>';
       html += '  </div>';
-      if (expanded) {
-        html += '  <div class="ts-staff-body">';
-        DAY_KEYS.forEach(function(dk){
-          var d = entry.days[dk] || {};
-          var hoursLabel = (d.start && d.end) ? fmtHours(hoursBetween(d.start, d.end)) : 'Not set';
-          html += '    <div class="ts-day-row">';
-          html += '      <div class="ts-day-label-group"><span class="ts-day-name">' + DAY_LABELS[dk] + '</span><span class="ts-day-date">' + fmtShortDate(dates[dk]) + '</span></div>';
-          html += '      <span class="ts-day-hours' + ((d.start && d.end) ? '' : ' empty') + '">' + (d.start && d.end ? (d.start + ' \u2013 ' + d.end) : hoursLabel) + '</span>';
-          html += '    </div>';
-        });
-        html += '  </div>';
-      }
       html += '</div>';
     });
-    listEl.innerHTML = html;
+    containerEl.innerHTML = html;
+  }
 
-    listEl.querySelectorAll('[data-action="toggle-staff-row"]').forEach(function(header){
-      header.addEventListener('click', function(){
-        var card = header.closest('.ts-staff-card');
-        var key = card.getAttribute('data-row-key');
-        expandedStaffRows[key] = !expandedStaffRows[key];
-        renderCurrentTimesheet();
+  function attachWeekDayListeners(containerEl, week, dates, onChange){
+    containerEl.querySelectorAll('[data-action="edit-shift"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var dayCard = btn.closest('.ts-day-card');
+        var dk = dayCard.getAttribute('data-day');
+        var row = btn.closest('.ts-shift-row');
+        var idx = parseInt(row.getAttribute('data-shift-idx'), 10);
+        tsEditingShift = { weekId: week.id, dayKey: dk, shiftIndex: idx };
+        onChange();
       });
     });
+    containerEl.querySelectorAll('[data-action="delete-shift"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var dayCard = btn.closest('.ts-day-card');
+        var dk = dayCard.getAttribute('data-day');
+        var row = btn.closest('.ts-shift-row');
+        var idx = parseInt(row.getAttribute('data-shift-idx'), 10);
+        week.days[dk].splice(idx, 1);
+        persistTimesheets();
+        onChange();
+      });
+    });
+    containerEl.querySelectorAll('[data-action="save-edit-shift"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var shiftRow = btn.closest('.ts-add-shift-row');
+        var dayCard = btn.closest('.ts-day-card');
+        var dk = dayCard.getAttribute('data-day');
+        var idx = parseInt(shiftRow.getAttribute('data-shift-idx'), 10);
+        var staffId = shiftRow.querySelector('.ts-edit-staff-select').value;
+        var start = shiftRow.querySelector('.ts-edit-start-input').value;
+        var end = shiftRow.querySelector('.ts-edit-end-input').value;
+        var staffMember = staffList.find(function(s){ return s.id === staffId; });
+        if (staffId && start && end) {
+          week.days[dk][idx] = { staffId: staffId, staffName: staffMember ? staffMember.name : 'Unknown', start: start, end: end };
+          persistTimesheets();
+        }
+        tsEditingShift = null;
+        onChange();
+      });
+    });
+    containerEl.querySelectorAll('[data-action="cancel-edit-shift"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        tsEditingShift = null;
+        onChange();
+      });
+    });
+    containerEl.querySelectorAll('[data-action="add-shift-inline"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var dayCard = btn.closest('.ts-day-card');
+        var dk = dayCard.getAttribute('data-day');
+        if (staffList.length === 0) { alert('Add staff members first from the Staff Timesheet menu.'); return; }
+        week.days[dk].push({ staffId: staffList[0].id, staffName: staffList[0].name, start: '', end: '' });
+        tsEditingShift = { weekId: week.id, dayKey: dk, shiftIndex: week.days[dk].length - 1 };
+        onChange();
+      });
+    });
+  }
+
+  // ----- Current timesheet -----
+  function renderCurrentTimesheet(){
+    var weekStart = getCurrentWeekIso();
+    var week = getOrCreateWeek(weekStart);
+    var dates = weekDates(weekStart);
+
+    document.getElementById('ts-current-range').textContent =
+      fmtShortDate(weekStart) + ' \u2013 ' + fmtShortDate(dates.sun) + ' (Mon\u2013Sun)';
+
+    var listEl = document.getElementById('ts-current-list');
+    listEl.innerHTML = renderWeekTotalsBar(week) + '<div id="ts-current-days"></div>';
+    var daysEl = document.getElementById('ts-current-days');
+    renderWeekDays(week, daysEl, dates);
+    attachWeekDayListeners(daysEl, week, dates, renderCurrentTimesheet);
   }
 
   document.getElementById('ts-open-current-btn').addEventListener('click', function(){
@@ -2874,19 +2982,8 @@
     showScreen('screen-timesheet');
   });
 
-  document.getElementById('ts-complete-week-btn').addEventListener('click', function(){
-    var weekStart = getCurrentWeekIso();
-    var week = timesheets.find(function(w){ return w.weekStart === weekStart && w.status === 'current'; });
-    if (!week) return;
-    if (!confirm('Complete this week and move it to Previous Timesheet?')) return;
-    week.status = 'completed';
-    persistTimesheets();
-    showScreen('screen-timesheet');
-  });
-
   // ----- Add new timesheet -----
-  var tsAddRows = [];
-  var tsAddRowCounter = 0;
+  var tsAddDraft = {}; // { mon: [{staffId, start, end}], tue: [...], ... }
 
   function staffOptionsHtml(selectedId){
     return staffList.map(function(s){
@@ -2894,11 +2991,10 @@
     }).join('');
   }
 
-  function renderAddRows(){
-    var container = document.getElementById('ts-add-rows');
+  function renderAddDays(){
+    var container = document.getElementById('ts-add-days');
     if (staffList.length === 0) {
       container.innerHTML = '<p class="field-hint">No staff in your list yet. Add staff members first from the Staff Timesheet menu.</p>';
-      document.getElementById('ts-save-week-btn').disabled = true;
       return;
     }
 
@@ -2906,74 +3002,55 @@
     var dates = weekDates(weekStart);
 
     var html = '';
-    tsAddRows.forEach(function(row){
-      html += '<div class="ts-add-staff-row" data-row-id="' + row.id + '">';
-      html += '  <div class="ts-add-staff-top">';
-      html += '    <select class="ts-staff-select">' + staffOptionsHtml(row.staffId) + '</select>';
-      if (tsAddRows.length > 1) {
-        html += '    <button class="remove-row-btn" data-action="remove-ts-row" aria-label="Remove"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
-      }
-      html += '  </div>';
-      DAY_KEYS.forEach(function(dk){
-        var val = row.days[dk] || {};
-        html += '  <div class="ts-day-input-row">';
-        html += '    <div class="ts-day-input-label"><span class="ts-day-name" style="font-size:14px;">' + DAY_LABELS[dk].slice(0,3) + '</span><span class="ts-day-date">' + fmtShortDate(dates[dk]) + '</span></div>';
-        html += '    <div class="ts-day-input-fields">';
-        html += '      <input type="time" class="ts-start-input" data-day="' + dk + '" value="' + esc(val.start || '') + '">';
+    DAY_KEYS.forEach(function(dk){
+      var shifts = tsAddDraft[dk] || [];
+      html += '<div class="ts-add-day-block" data-day="' + dk + '">';
+      html += '  <div class="ts-add-day-block-header"><span class="ts-day-name">' + DAY_LABELS[dk] + '</span><span class="ts-day-date">' + fmtShortDate(dates[dk]) + '</span></div>';
+      shifts.forEach(function(shift, idx){
+        html += '  <div class="ts-add-shift-row" data-shift-idx="' + idx + '">';
+        html += '    <div class="ts-add-shift-row-top">';
+        html += '      <select class="ts-add-staff-select">' + staffOptionsHtml(shift.staffId) + '</select>';
+        html += '      <button class="remove-row-btn" data-action="remove-add-shift" aria-label="Remove"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+        html += '    </div>';
+        html += '    <div class="ts-add-shift-time-fields">';
+        html += '      <input type="time" class="ts-add-start-input" value="' + esc(shift.start || '') + '">';
         html += '      <span>to</span>';
-        html += '      <input type="time" class="ts-end-input" data-day="' + dk + '" value="' + esc(val.end || '') + '">';
+        html += '      <input type="time" class="ts-add-end-input" value="' + esc(shift.end || '') + '">';
         html += '    </div>';
         html += '  </div>';
       });
+      html += '  <button class="ts-add-shift-btn" data-action="add-draft-shift" type="button">+ Add staff to ' + DAY_LABELS[dk] + '</button>';
       html += '</div>';
     });
     container.innerHTML = html;
 
-    container.querySelectorAll('.ts-add-staff-row').forEach(function(rowEl){
-      var rowId = rowEl.getAttribute('data-row-id');
-      var rowData = tsAddRows.find(function(r){ return r.id == rowId; });
+    container.querySelectorAll('.ts-add-day-block').forEach(function(dayBlock){
+      var dk = dayBlock.getAttribute('data-day');
 
-      rowEl.querySelector('.ts-staff-select').addEventListener('change', function(e){
-        rowData.staffId = e.target.value;
-        updateAddSaveState();
-      });
-      rowEl.querySelectorAll('.ts-start-input, .ts-end-input').forEach(function(input){
-        input.addEventListener('input', function(){
-          var dk = input.getAttribute('data-day');
-          if (!rowData.days[dk]) rowData.days[dk] = {};
-          if (input.classList.contains('ts-start-input')) {
-            rowData.days[dk].start = input.value;
-          } else {
-            rowData.days[dk].end = input.value;
-          }
-          updateAddSaveState();
+      dayBlock.querySelectorAll('.ts-add-shift-row').forEach(function(row){
+        var idx = parseInt(row.getAttribute('data-shift-idx'), 10);
+        row.querySelector('.ts-add-staff-select').addEventListener('change', function(e){
+          tsAddDraft[dk][idx].staffId = e.target.value;
+        });
+        row.querySelector('.ts-add-start-input').addEventListener('input', function(e){
+          tsAddDraft[dk][idx].start = e.target.value;
+        });
+        row.querySelector('.ts-add-end-input').addEventListener('input', function(e){
+          tsAddDraft[dk][idx].end = e.target.value;
+        });
+        row.querySelector('[data-action="remove-add-shift"]').addEventListener('click', function(){
+          tsAddDraft[dk].splice(idx, 1);
+          renderAddDays();
         });
       });
-      var removeBtn = rowEl.querySelector('[data-action="remove-ts-row"]');
-      if (removeBtn) {
-        removeBtn.addEventListener('click', function(){
-          tsAddRows = tsAddRows.filter(function(r){ return r.id != rowId; });
-          renderAddRows();
-        });
-      }
+
+      dayBlock.querySelector('[data-action="add-draft-shift"]').addEventListener('click', function(){
+        if (!tsAddDraft[dk]) tsAddDraft[dk] = [];
+        tsAddDraft[dk].push({ staffId: staffList[0].id, start: '', end: '' });
+        renderAddDays();
+      });
     });
-
-    updateAddSaveState();
   }
-
-  function updateAddSaveState(){
-    var canSave = tsAddRows.some(function(r){
-      return r.staffId && DAY_KEYS.some(function(dk){ return r.days[dk] && r.days[dk].start && r.days[dk].end; });
-    });
-    document.getElementById('ts-save-week-btn').disabled = !canSave;
-  }
-
-  document.getElementById('ts-add-row-btn').addEventListener('click', function(){
-    if (staffList.length === 0) return;
-    tsAddRowCounter++;
-    tsAddRows.push({ id: tsAddRowCounter, staffId: staffList[0].id, days: {} });
-    renderAddRows();
-  });
 
   function openAddTimesheetScreen(){
     var weekStart = getCurrentWeekIso();
@@ -2981,9 +3058,9 @@
     document.getElementById('ts-add-range').textContent =
       fmtShortDate(weekStart) + ' \u2013 ' + fmtShortDate(dates.sun) + ' (Mon\u2013Sun)';
 
-    tsAddRowCounter = 1;
-    tsAddRows = staffList.length > 0 ? [{ id: 1, staffId: staffList[0].id, days: {} }] : [];
-    renderAddRows();
+    tsAddDraft = {};
+    DAY_KEYS.forEach(function(dk){ tsAddDraft[dk] = []; });
+    renderAddDays();
     showScreen('screen-ts-add');
   }
 
@@ -2993,27 +3070,23 @@
   });
 
   document.getElementById('ts-save-week-btn').addEventListener('click', function(){
-    var week = getOrCreateCurrentWeek();
-    tsAddRows.forEach(function(row){
-      if (!row.staffId) return;
-      var hasAnyHours = DAY_KEYS.some(function(dk){ return row.days[dk] && row.days[dk].start && row.days[dk].end; });
-      if (!hasAnyHours) return;
-      var staffMember = staffList.find(function(s){ return s.id === row.staffId; });
-      var existingEntry = week.entries.find(function(e){ return e.staffId === row.staffId; });
-      if (existingEntry) {
-        DAY_KEYS.forEach(function(dk){
-          if (row.days[dk] && row.days[dk].start && row.days[dk].end) {
-            existingEntry.days[dk] = { start: row.days[dk].start, end: row.days[dk].end };
-          }
-        });
-      } else {
-        week.entries.push({
-          staffId: row.staffId,
+    var weekStart = getCurrentWeekIso();
+    var week = getOrCreateWeek(weekStart);
+
+    DAY_KEYS.forEach(function(dk){
+      var shifts = tsAddDraft[dk] || [];
+      shifts.forEach(function(shift){
+        if (!shift.staffId || !shift.start || !shift.end) return;
+        var staffMember = staffList.find(function(s){ return s.id === shift.staffId; });
+        week.days[dk].push({
+          staffId: shift.staffId,
           staffName: staffMember ? staffMember.name : 'Unknown',
-          days: row.days
+          start: shift.start,
+          end: shift.end
         });
-      }
+      });
     });
+
     persistTimesheets();
     showScreen('screen-timesheet');
   });
@@ -3023,7 +3096,7 @@
 
   function renderPreviousTimesheets(){
     var listEl = document.getElementById('ts-previous-list');
-    var completed = timesheets.filter(function(w){ return w.status === 'completed'; })
+    var completed = timesheets.filter(function(w){ return isWeekPast(w.weekStart); })
       .sort(function(a, b){ return new Date(b.weekStart) - new Date(a.weekStart); });
 
     if (completed.length === 0) {
@@ -3035,43 +3108,18 @@
     completed.forEach(function(week){
       var dates = weekDates(week.weekStart);
       var expanded = !!expandedPreviousWeeks[week.id];
-      var totalStaff = week.entries.length;
+      var totals = computeWeekTotals(week);
 
       html += '<div class="ts-previous-row" data-week-id="' + week.id + '">';
       html += '  <div class="ts-previous-header" data-action="toggle-previous-week">';
       html += '    <div>';
       html += '      <div class="ts-previous-range">' + fmtShortDate(week.weekStart) + ' \u2013 ' + fmtShortDate(dates.sun) + '</div>';
-      html += '      <div class="ts-previous-meta">' + totalStaff + ' staff member' + (totalStaff === 1 ? '' : 's') + '</div>';
+      html += '      <div class="ts-previous-meta">Weekday ' + fmtHours(totals.weekday) + ' \u00b7 Sat ' + fmtHours(totals.sat) + ' \u00b7 Sun ' + fmtHours(totals.sun) + '</div>';
       html += '    </div>';
       html += '    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(' + (expanded ? '180deg' : '0deg') + ');"><polyline points="6 9 12 15 18 9"/></svg>';
       html += '  </div>';
       if (expanded) {
-        html += '  <div class="ts-previous-body">';
-        week.entries.forEach(function(entry){
-          var totalHours = 0;
-          DAY_KEYS.forEach(function(dk){
-            var d = entry.days[dk];
-            if (d && d.start && d.end) {
-              var h = hoursBetween(d.start, d.end);
-              if (h != null) totalHours += h;
-            }
-          });
-          html += '    <div class="ts-staff-card">';
-          html += '      <div class="ts-staff-header" style="cursor:default;">';
-          html += '        <div><div class="ts-staff-name">' + esc(entry.staffName) + '</div><div class="ts-staff-total">' + fmtHours(totalHours) + ' total</div></div>';
-          html += '      </div>';
-          html += '      <div class="ts-staff-body">';
-          DAY_KEYS.forEach(function(dk){
-            var d = entry.days[dk] || {};
-            html += '        <div class="ts-day-row">';
-            html += '          <div class="ts-day-label-group"><span class="ts-day-name">' + DAY_LABELS[dk] + '</span><span class="ts-day-date">' + fmtShortDate(dates[dk]) + '</span></div>';
-            html += '          <span class="ts-day-hours' + ((d.start && d.end) ? '' : ' empty') + '">' + (d.start && d.end ? (d.start + ' \u2013 ' + d.end) : 'Not set') + '</span>';
-            html += '        </div>';
-          });
-          html += '      </div>';
-          html += '    </div>';
-        });
-        html += '  </div>';
+        html += '  <div class="ts-previous-body" id="ts-previous-body-' + week.id + '"></div>';
       }
       html += '</div>';
     });
@@ -3084,6 +3132,17 @@
         expandedPreviousWeeks[weekId] = !expandedPreviousWeeks[weekId];
         renderPreviousTimesheets();
       });
+    });
+
+    completed.forEach(function(week){
+      if (!expandedPreviousWeeks[week.id]) return;
+      var bodyEl = document.getElementById('ts-previous-body-' + week.id);
+      if (!bodyEl) return;
+      var dates = weekDates(week.weekStart);
+      bodyEl.innerHTML = renderWeekTotalsBar(week) + '<div id="ts-previous-days-' + week.id + '"></div>';
+      var daysEl = document.getElementById('ts-previous-days-' + week.id);
+      renderWeekDays(week, daysEl, dates);
+      attachWeekDayListeners(daysEl, week, dates, renderPreviousTimesheets);
     });
   }
 
