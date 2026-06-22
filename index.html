@@ -353,9 +353,10 @@
   }
   .delivery-row-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .delivery-row-fields label { font-size: 11px; color: #B0A491; display: block; margin-bottom: 4px; }
-  .delivery-row-fields input {
+  .delivery-row-fields input,
+  .delivery-supplier-input {
     width: 100%; padding: 8px; font-size: 14px; border: 1px solid #DCD2C2; border-radius: 10px;
-    background: #FFFFFF; color: #2E2925; font-family: inherit;
+    background: #FFFFFF; color: #2E2925; font-family: inherit; box-sizing: border-box;
   }
   .delivery-row-result {
     margin-top: 8px; padding-top: 8px; border-top: 1px solid #EFE8DE;
