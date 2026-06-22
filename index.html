@@ -4091,7 +4091,15 @@
     showScreen('screen-ts-na');
   }
 
-  document.getElementById('na-start-select').addEventListener('change', updateNaPreview);
+  document.getElementById('na-start-select').addEventListener('change', function(){
+    var startSel = document.getElementById('na-start-select');
+    var endSel = document.getElementById('na-end-select');
+    // If end date is before new start date, sync end to match start
+    if (endSel.value < startSel.value) {
+      endSel.value = startSel.value;
+    }
+    updateNaPreview();
+  });
   document.getElementById('na-end-select').addEventListener('change', updateNaPreview);
   document.getElementById('ts-open-na-btn').addEventListener('click', openNaScreen);
   document.getElementById('ts-na-back-btn').addEventListener('click', function(){
