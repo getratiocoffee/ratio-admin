@@ -49,8 +49,8 @@
 
   /* iOS-style app grid (Dashboard only) */
   .app-grid-body {
-    flex: 1; padding: 16px 20px 24px;
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px 12px; align-content: start;
+    flex: 1; padding: 16px 20px max(24px, env(safe-area-inset-bottom));
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px 12px; align-content: end;
   }
   .app-grid-item {
     display: flex; flex-direction: column; align-items: center; gap: 8px;
@@ -755,28 +755,48 @@
       <div class="app-grid-body">
         <button class="app-grid-item" id="menu-open-greenbean-btn">
           <span class="app-grid-icon" style="background:#D6EBDB;">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2.59 12.58a2 2 0 0 1 0-2.83L9.76 2.58a2 2 0 0 1 2.83 0l7.99 7.99a2 2 0 0 1 0 2.83Z"/><circle cx="7.5" cy="7.5" r="1"/></svg>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <!-- Sack / burlap bag shape -->
+              <path d="M8 3h8l1 3H7L8 3z"/>
+              <path d="M6.5 6C4.5 7 3 9.5 3 12.5 3 17.5 6 21 12 21s9-3.5 9-8.5C21 9.5 19.5 7 17.5 6"/>
+              <path d="M9 13c0-1.7 1.3-3 3-3s3 1.3 3 3-1.3 3-3 3-3-1.3-3-3z"/>
+              <path d="M12 10V8M10 11.5 8.5 10M14 11.5l1.5-1.5"/>
+            </svg>
           </span>
           <span class="app-grid-label">Green Bean</span>
         </button>
 
         <button class="app-grid-item" id="menu-open-timesheet-btn">
           <span class="app-grid-icon" style="background:#E8E0F5;">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#5B3FA6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5B3FA6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="8" r="3.5"/>
+              <path d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6"/>
+            </svg>
           </span>
           <span class="app-grid-label">Staff</span>
         </button>
 
         <button class="app-grid-item" id="menu-open-sensory-btn">
           <span class="app-grid-icon" style="background:#FDE8D8;">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#B04A10" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#B04A10" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 2c0 2.5 3 2.5 3 5"/>
+              <path d="M11 2c0 2.5 3 2.5 3 5"/>
+              <path d="M3 10h18v2a7 7 0 0 1-7 7h-4a7 7 0 0 1-7-7v-2z"/>
+              <path d="M21 12h1a2 2 0 0 1 0 4h-1"/>
+              <path d="M8 22h8"/>
+              <path d="M12 19v3"/>
+            </svg>
           </span>
           <span class="app-grid-label">Sensory</span>
         </button>
 
         <button class="app-grid-item" id="menu-open-roasting-btn">
           <span class="app-grid-icon" style="background:#FEF0C7;">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#92560C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#92560C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <!-- Coffee bean shape: two halves with a centre line -->
+              <path d="M12 3C7.5 3 4 7 4 12s3.5 9 8 9 8-4 8-9-3.5-9-8-9z"/>
+              <path d="M12 3c2.5 2.5 2.5 6.5 0 9s-2.5 6.5 0 9"/>
+            </svg>
           </span>
           <span class="app-grid-label">Roasting</span>
         </button>
