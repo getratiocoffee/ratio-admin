@@ -3482,9 +3482,6 @@
       : "Sending beans to another roaster. This will deduct from your stock and use your current cost per kg as the pricing baseline.";
     populateTransferBeanSelect();
     document.getElementById('transfer-new-name-group').style.display = 'none';
-    document.getElementById('transfer-bean-hint').textContent = dir === 'in'
-      ? "Select an existing bean from your stock, or type a new name if this bean isn't in your inventory yet."
-      : "Select a bean from your stock to send.";
     if (dir === 'out') {
       recalcTransferOutPriceFromMargin();
     }
