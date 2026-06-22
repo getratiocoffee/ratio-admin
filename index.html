@@ -891,6 +891,7 @@
         <div style="font-size:13px;color:#3D2875;">Tap to add the schedule now.</div>
       </div>
       <div id="dashboard-beans-banner" style="display:none; margin:0 20px 4px; padding:10px 14px; border-radius:14px; border:1.5px solid #7DC49A; background:#D6EBDB; flex-shrink:0; cursor:pointer;"></div>
+      <div id="dashboard-roasted-banner" style="display:none; margin:0 20px 4px; padding:10px 14px; border-radius:14px; border:1.5px solid #C4A882; background:#F5EBD8; flex-shrink:0; cursor:pointer;"></div>
 
       <div class="app-grid-body">
         <button class="app-grid-item" id="menu-open-greenbean-btn">
@@ -1770,8 +1771,15 @@
         </button>
       </div>
 
-      <!-- Add form -->
-      <div id="roasted-add-form" style="display:none; flex-shrink:0; padding:12px 20px 4px; border-bottom:1px solid #DCD2C2;">
+      <!-- List pushed to bottom -->
+      <div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; overflow:hidden; min-height:0;">
+        <div style="overflow-y:auto; overscroll-behavior:contain; padding:16px 20px 8px; flex-shrink:0; max-height:100%;">
+          <div id="roasted-bean-list"></div>
+        </div>
+      </div>
+
+      <!-- Add form fixed at bottom -->
+      <div id="roasted-add-form" style="display:none; flex-shrink:0; padding:12px 20px 4px; border-top:1px solid #DCD2C2;">
         <div class="field-group">
           <label class="field-label">Bean name <span style="color:#A32D2D;">*</span></label>
           <input type="text" class="field-input" id="roasted-bean-name" placeholder="e.g. Ethiopia Yirgacheffe">
@@ -1786,10 +1794,6 @@
           <button class="btn-save" id="roasted-add-btn" type="button" style="flex:1; padding:13px 0; border-radius:14px; font-size:15px;">Add to list</button>
           <button class="import-confirm-btn cancel" id="roasted-add-cancel-btn" type="button" style="flex:0.5;">Cancel</button>
         </div>
-      </div>
-
-      <div class="form-scroll">
-        <div id="roasted-bean-list"></div>
       </div>
     </div>
 
@@ -2655,8 +2659,13 @@
       renderDashboardHandoverBanner();
       renderDashboardScheduleBanner();
       renderDashboardBeansBanner();
+      renderDashboardRoastedBanner();
     }
   }
+
+  document.getElementById('dashboard-roasted-banner').addEventListener('click', function(){
+    openRoastedScreen();
+  });
 
   function renderDashboardBeansBanner(){
     var banner = document.getElementById('dashboard-beans-banner');
@@ -5453,22 +5462,54 @@
     }
     var html = '';
     roastedBeans.forEach(function(r){
-      html += '<div class="contact-row" data-id="' + r.id + '" style="align-items:center;">';
+      var done = !!r.sensoryDone;
+      html += '<div class="contact-row" data-id="' + r.id + '" style="align-items:center;gap:10px;">';
       html += '  <div style="flex:1;">';
-      html += '    <div style="font-size:16px;font-weight:700;color:#2E2925;">' + esc(r.name) + '</div>';
+      html += '    <div style="font-size:16px;font-weight:700;color:' + (done ? '#27500A' : '#2E2925') + ';">' + esc(r.name) + '</div>';
+      if (done) html += '    <div style="font-size:11px;color:#27500A;font-weight:600;margin-top:2px;">✓ Sensory done</div>';
+      else html += '    <div style="font-size:11px;color:#B04A10;margin-top:2px;">Sensory not done</div>';
       html += '  </div>';
+      html += '  <button class="sn-chip' + (done ? ' selected' : '') + '" data-action="toggle-sensory" style="font-size:12px;white-space:nowrap;" aria-label="Toggle sensory done">' + (done ? '✓ Done' : 'Mark done') + '</button>';
       html += '  <button class="contact-delete-btn" data-action="delete-roasted" aria-label="Remove"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
       html += '</div>';
     });
     listEl.innerHTML = html;
+    listEl.querySelectorAll('[data-action="toggle-sensory"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.closest('.contact-row').getAttribute('data-id');
+        roastedBeans = roastedBeans.map(function(r){
+          return r.id === id ? Object.assign({}, r, { sensoryDone: !r.sensoryDone }) : r;
+        });
+        saveRoastedToServer(roastedBeans).catch(function(e){ console.error(e); });
+        renderRoastedBeans();
+        renderDashboardRoastedBanner();
+      });
+    });
     listEl.querySelectorAll('[data-action="delete-roasted"]').forEach(function(btn){
       btn.addEventListener('click', function(){
         var id = btn.closest('.contact-row').getAttribute('data-id');
         roastedBeans = roastedBeans.filter(function(r){ return r.id !== id; });
         saveRoastedToServer(roastedBeans).catch(function(e){ console.error(e); });
         renderRoastedBeans();
+        renderDashboardRoastedBanner();
       });
     });
+  }
+
+  function renderDashboardRoastedBanner(){
+    var banner = document.getElementById('dashboard-roasted-banner');
+    if (!banner) return;
+    var pending = roastedBeans.filter(function(r){ return !r.sensoryDone; });
+    if (roastedBeans.length === 0 || pending.length === 0) {
+      banner.style.display = 'none';
+      return;
+    }
+    banner.style.display = 'block';
+    var names = pending.slice(0,3).map(function(r){ return r.name; }).join(', ');
+    if (pending.length > 3) names += ' +' + (pending.length - 3) + ' more';
+    banner.innerHTML =
+      '<div style="font-size:12px;font-weight:700;color:#7A4A00;margin-bottom:3px;">⚠ Sensory not done (' + pending.length + ')</div>' +
+      '<div style="font-size:13px;color:#7A4A00;">' + esc(names) + '</div>';
   }
 
   function openRoastedScreen(){
