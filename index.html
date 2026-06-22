@@ -568,6 +568,47 @@
     font-size: 15px; font-weight: 600; color: #27500A;
   }
 
+  /* Sensory cupping form */
+  .sn-section {
+    border: 1.5px solid #DCD2C2; border-radius: 16px; padding: 14px;
+    margin-bottom: 12px; background: #FFFFFF;
+  }
+  .sn-section-title {
+    font-size: 15px; font-weight: 700; color: #2E2925; margin-bottom: 12px;
+  }
+  .sn-slider-row {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+  }
+  .sn-slider { flex: 1; accent-color: #463E3A; height: 4px; }
+  .sn-slider-label { font-size: 11px; color: #8A7F6F; white-space: nowrap; }
+  .sn-slider-val {
+    min-width: 28px; text-align: center; font-size: 15px; font-weight: 700;
+    color: #463E3A; background: #EFE8DE; border-radius: 8px; padding: 2px 6px;
+  }
+  .sn-cata-group { margin-bottom: 6px; }
+  .sn-cata-label { font-size: 11px; color: #8A7F6F; display: block; margin-bottom: 6px; }
+  .sn-cata-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .sn-chip {
+    padding: 6px 11px; border-radius: 20px; border: 1.5px solid #DCD2C2;
+    background: #FAF6F0; color: #463E3A; font-size: 12px; font-weight: 500;
+    cursor: pointer; font-family: inherit; white-space: nowrap;
+  }
+  .sn-chip.selected { background: #463E3A; color: #fff; border-color: #463E3A; }
+  .sn-chip-wide { white-space: normal; text-align: left; }
+
+  /* Sensory session list */
+  .sn-session-card {
+    border: 1.5px solid #DCD2C2; border-radius: 16px; padding: 14px;
+    margin-bottom: 10px; background: #FFFFFF; cursor: pointer;
+  }
+  .sn-session-bean { font-size: 15px; font-weight: 700; color: #2E2925; }
+  .sn-session-date { font-size: 12px; color: #8A7F6F; margin-top: 3px; }
+  .sn-session-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+  .sn-session-chip {
+    font-size: 11px; padding: 3px 8px; border-radius: 12px;
+    background: #EFE8DE; color: #463E3A; font-weight: 500;
+  }
+
   .na-date-chip {
     padding: 8px 12px; border-radius: 10px; border: 1.5px solid #DCD2C2;
     background: #FFFFFF; color: #463E3A; font-size: 13px; font-weight: 500;
@@ -1114,16 +1155,236 @@
         <div class="back-btn" id="sensory-back-btn" aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
-        <h1>Sensory Notes</h1>
+        <h1>Sensory</h1>
+        <button class="icon-btn" id="sensory-new-btn" aria-label="New session" style="margin-left:auto;" title="New cupping session">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
       </div>
-      <div class="form-scroll">
-        <div class="placeholder-screen">
-          <div class="placeholder-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+
+      <!-- Session list view -->
+      <div id="sensory-list-panel" class="form-scroll">
+        <div id="sensory-session-list"></div>
+      </div>
+
+      <!-- Session form view (hidden initially) -->
+      <div id="sensory-form-panel" style="display:none; flex:1; display:none; flex-direction:column; min-height:0;">
+        <div class="form-scroll" id="sensory-form-scroll">
+
+          <!-- Bean & date header -->
+          <div class="field-group">
+            <label class="field-label">Bean / Coffee name</label>
+            <input type="text" class="field-input" id="sn-bean" placeholder="e.g. Ethiopia Yirgacheffe">
           </div>
-          <p class="field-hint" style="text-align:center;">Sensory Notes is coming soon.</p>
+          <div class="field-group">
+            <label class="field-label">Date</label>
+            <input type="date" class="field-input" id="sn-date">
+          </div>
+
+          <!-- 1. Fragrance / Aroma -->
+          <div class="sn-section">
+            <div class="sn-section-title">Fragrance / Aroma</div>
+            <div class="sn-slider-row">
+              <span class="sn-slider-label">Low</span>
+              <input type="range" class="sn-slider" id="sn-aroma-intensity" min="0" max="15" value="0" step="1">
+              <span class="sn-slider-label">High</span>
+              <span class="sn-slider-val" id="sn-aroma-intensity-val">0</span>
+            </div>
+            <div class="sn-cata-group">
+              <label class="sn-cata-label">Select up to 5:</label>
+              <div class="sn-cata-chips" id="sn-aroma-cata">
+                <button type="button" class="sn-chip" data-val="FLORAL">Floral</button>
+                <button type="button" class="sn-chip" data-val="FRUITY_BERRY">Berry</button>
+                <button type="button" class="sn-chip" data-val="FRUITY_DRIED">Dried Fruit</button>
+                <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus Fruit</button>
+                <button type="button" class="sn-chip" data-val="SOUR_FERMENTED">Sour</button>
+                <button type="button" class="sn-chip" data-val="SOUR_FERMENTED2">Fermented</button>
+                <button type="button" class="sn-chip" data-val="GREEN_VEG">Green/Vegetative</button>
+                <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
+                <button type="button" class="sn-chip" data-val="NUTTY">Nutty</button>
+                <button type="button" class="sn-chip" data-val="COCOA">Cocoa</button>
+                <button type="button" class="sn-chip" data-val="SPICY">Spicy</button>
+                <button type="button" class="sn-chip" data-val="SWEET_VANILLA">Vanilla/Vanillin</button>
+                <button type="button" class="sn-chip" data-val="SWEET_BROWN_SUGAR">Brown Sugar</button>
+                <button type="button" class="sn-chip" data-val="CHEMICAL">Chemical</button>
+                <button type="button" class="sn-chip" data-val="MUSTY_EARTHY">Musty/Earthy</button>
+                <button type="button" class="sn-chip" data-val="PAPERY">Papery</button>
+              </div>
+            </div>
+            <div class="field-group" style="margin-top:8px;">
+              <input type="text" class="field-input" id="sn-aroma-notes" placeholder="Notes…" style="font-size:13px;">
+            </div>
+          </div>
+
+          <!-- 2. Flavor -->
+          <div class="sn-section">
+            <div class="sn-section-title">Flavor</div>
+            <div class="sn-slider-row">
+              <span class="sn-slider-label">Low</span>
+              <input type="range" class="sn-slider" id="sn-flavor-intensity" min="0" max="15" value="0" step="1">
+              <span class="sn-slider-label">High</span>
+              <span class="sn-slider-val" id="sn-flavor-intensity-val">0</span>
+            </div>
+            <div class="sn-cata-group">
+              <label class="sn-cata-label">Select up to 5:</label>
+              <div class="sn-cata-chips" id="sn-flavor-cata">
+                <button type="button" class="sn-chip" data-val="FLORAL">Floral</button>
+                <button type="button" class="sn-chip" data-val="FRUITY_BERRY">Berry</button>
+                <button type="button" class="sn-chip" data-val="FRUITY_DRIED">Dried Fruit</button>
+                <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus Fruit</button>
+                <button type="button" class="sn-chip" data-val="SOUR_FERMENTED">Sour</button>
+                <button type="button" class="sn-chip" data-val="SOUR_FERMENTED2">Fermented</button>
+                <button type="button" class="sn-chip" data-val="GREEN_VEG">Green/Vegetative</button>
+                <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
+                <button type="button" class="sn-chip" data-val="NUTTY">Nutty</button>
+                <button type="button" class="sn-chip" data-val="COCOA">Cocoa</button>
+                <button type="button" class="sn-chip" data-val="SPICY">Spicy</button>
+                <button type="button" class="sn-chip" data-val="SWEET_VANILLA">Vanilla/Vanillin</button>
+                <button type="button" class="sn-chip" data-val="SWEET_BROWN_SUGAR">Brown Sugar</button>
+                <button type="button" class="sn-chip" data-val="CHEMICAL">Chemical</button>
+                <button type="button" class="sn-chip" data-val="MUSTY_EARTHY">Musty/Earthy</button>
+                <button type="button" class="sn-chip" data-val="PAPERY">Papery</button>
+              </div>
+            </div>
+            <div class="sn-cata-group" style="margin-top:8px;">
+              <label class="sn-cata-label">Main tastes (select 2):</label>
+              <div class="sn-cata-chips" id="sn-flavor-main">
+                <button type="button" class="sn-chip" data-val="SALTY">Salty</button>
+                <button type="button" class="sn-chip" data-val="BITTER">Bitter</button>
+                <button type="button" class="sn-chip" data-val="SOUR">Sour</button>
+                <button type="button" class="sn-chip" data-val="UMAMI">Umami</button>
+                <button type="button" class="sn-chip" data-val="SWEET">Sweet</button>
+              </div>
+            </div>
+            <div class="field-group" style="margin-top:8px;">
+              <input type="text" class="field-input" id="sn-flavor-notes" placeholder="Notes…" style="font-size:13px;">
+            </div>
+          </div>
+
+          <!-- 3. Aftertaste -->
+          <div class="sn-section">
+            <div class="sn-section-title">Aftertaste</div>
+            <div class="sn-slider-row">
+              <span class="sn-slider-label">Low</span>
+              <input type="range" class="sn-slider" id="sn-aftertaste-intensity" min="0" max="15" value="0" step="1">
+              <span class="sn-slider-label">High</span>
+              <span class="sn-slider-val" id="sn-aftertaste-intensity-val">0</span>
+            </div>
+            <div class="sn-cata-group">
+              <label class="sn-cata-label">Select up to 5:</label>
+              <div class="sn-cata-chips" id="sn-aftertaste-cata">
+                <button type="button" class="sn-chip" data-val="FLORAL">Floral</button>
+                <button type="button" class="sn-chip" data-val="FRUITY_BERRY">Berry</button>
+                <button type="button" class="sn-chip" data-val="FRUITY_DRIED">Dried Fruit</button>
+                <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus Fruit</button>
+                <button type="button" class="sn-chip" data-val="SOUR_FERMENTED">Sour</button>
+                <button type="button" class="sn-chip" data-val="SOUR_FERMENTED2">Fermented</button>
+                <button type="button" class="sn-chip" data-val="GREEN_VEG">Green/Vegetative</button>
+                <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
+                <button type="button" class="sn-chip" data-val="NUTTY">Nutty</button>
+                <button type="button" class="sn-chip" data-val="COCOA">Cocoa</button>
+                <button type="button" class="sn-chip" data-val="SPICY">Spicy</button>
+                <button type="button" class="sn-chip" data-val="SWEET_VANILLA">Vanilla/Vanillin</button>
+                <button type="button" class="sn-chip" data-val="SWEET_BROWN_SUGAR">Brown Sugar</button>
+                <button type="button" class="sn-chip" data-val="CHEMICAL">Chemical</button>
+                <button type="button" class="sn-chip" data-val="MUSTY_EARTHY">Musty/Earthy</button>
+                <button type="button" class="sn-chip" data-val="PAPERY">Papery</button>
+              </div>
+            </div>
+            <div class="sn-cata-group" style="margin-top:8px;">
+              <label class="sn-cata-label">Main tastes (select 2):</label>
+              <div class="sn-cata-chips" id="sn-aftertaste-main">
+                <button type="button" class="sn-chip" data-val="SALTY">Salty</button>
+                <button type="button" class="sn-chip" data-val="BITTER">Bitter</button>
+                <button type="button" class="sn-chip" data-val="SOUR">Sour</button>
+                <button type="button" class="sn-chip" data-val="UMAMI">Umami</button>
+                <button type="button" class="sn-chip" data-val="SWEET">Sweet</button>
+              </div>
+            </div>
+            <div class="field-group" style="margin-top:8px;">
+              <input type="text" class="field-input" id="sn-aftertaste-notes" placeholder="Notes…" style="font-size:13px;">
+            </div>
+          </div>
+
+          <!-- 4. Acidity -->
+          <div class="sn-section">
+            <div class="sn-section-title">Acidity</div>
+            <div class="sn-slider-row">
+              <span class="sn-slider-label">Low</span>
+              <input type="range" class="sn-slider" id="sn-acidity-intensity" min="0" max="15" value="0" step="1">
+              <span class="sn-slider-label">High</span>
+              <span class="sn-slider-val" id="sn-acidity-intensity-val">0</span>
+            </div>
+            <div class="sn-cata-group">
+              <label class="sn-cata-label">Select 1:</label>
+              <div class="sn-cata-chips" id="sn-acidity-type">
+                <button type="button" class="sn-chip sn-chip-wide" data-val="DRY">Dry (Herby, Grassy, Tart)</button>
+                <button type="button" class="sn-chip sn-chip-wide" data-val="SWEET">Sweet (Juicy, Fruit-like, Bright)</button>
+              </div>
+            </div>
+            <div class="field-group" style="margin-top:8px;">
+              <input type="text" class="field-input" id="sn-acidity-notes" placeholder="Notes…" style="font-size:13px;">
+            </div>
+          </div>
+
+          <!-- 5. Sweetness -->
+          <div class="sn-section">
+            <div class="sn-section-title">Sweetness</div>
+            <div class="sn-slider-row">
+              <span class="sn-slider-label">Low</span>
+              <input type="range" class="sn-slider" id="sn-sweetness-intensity" min="0" max="15" value="0" step="1">
+              <span class="sn-slider-label">High</span>
+              <span class="sn-slider-val" id="sn-sweetness-intensity-val">0</span>
+            </div>
+            <div class="sn-cata-group">
+              <label class="sn-cata-label">Present in:</label>
+              <div class="sn-cata-chips" id="sn-sweetness-present">
+                <button type="button" class="sn-chip" data-val="AROMA">Fragrance/Aroma</button>
+                <button type="button" class="sn-chip" data-val="FLAVOR">Flavor</button>
+                <button type="button" class="sn-chip" data-val="AFTERTASTE">Aftertaste</button>
+              </div>
+            </div>
+            <div class="field-group" style="margin-top:8px;">
+              <input type="text" class="field-input" id="sn-sweetness-notes" placeholder="Notes…" style="font-size:13px;">
+            </div>
+          </div>
+
+          <!-- 6. Mouthfeel -->
+          <div class="sn-section">
+            <div class="sn-section-title">Mouthfeel</div>
+            <div class="sn-slider-row">
+              <span class="sn-slider-label">Low</span>
+              <input type="range" class="sn-slider" id="sn-mouthfeel-intensity" min="0" max="15" value="0" step="1">
+              <span class="sn-slider-label">High</span>
+              <span class="sn-slider-val" id="sn-mouthfeel-intensity-val">0</span>
+            </div>
+            <div class="sn-cata-group">
+              <label class="sn-cata-label">Select up to 2:</label>
+              <div class="sn-cata-chips" id="sn-mouthfeel-cata">
+                <button type="button" class="sn-chip sn-chip-wide" data-val="SMOOTH">Smooth (Velvety, Silky, Syrupy)</button>
+                <button type="button" class="sn-chip sn-chip-wide" data-val="ROUGH">Rough (Gritty, Chalky, Sandy)</button>
+                <button type="button" class="sn-chip" data-val="MOUTH_DRYING">Mouth-drying</button>
+                <button type="button" class="sn-chip" data-val="OILY">Oily</button>
+                <button type="button" class="sn-chip" data-val="METALLIC">Metallic</button>
+              </div>
+            </div>
+            <div class="field-group" style="margin-top:8px;">
+              <input type="text" class="field-input" id="sn-mouthfeel-notes" placeholder="Notes…" style="font-size:13px;">
+            </div>
+          </div>
+
+          <!-- Overall notes -->
+          <div class="sn-section">
+            <div class="sn-section-title">Overall Notes</div>
+            <div class="field-group">
+              <textarea class="field-input" id="sn-overall-notes" placeholder="Overall impression…" style="min-height:80px; resize:none; font-size:13px;"></textarea>
+            </div>
+          </div>
+
+        </div><!-- /sensory-form-scroll -->
+        <div class="form-bottom-bar">
+          <button class="btn-save" id="sn-save-btn">Save Session</button>
         </div>
-      </div>
+      </div><!-- /sensory-form-panel -->
     </div>
 
     <!-- ===== ROASTING SCREEN (placeholder) ===== -->
@@ -1924,6 +2185,15 @@
     return true;
   }
 
+  async function loadSensoryFromServer(){
+    var data = await apiRequest('sensory', 'GET');
+    return data && Array.isArray(data.items) ? data.items : [];
+  }
+  async function saveSensoryToServer(items){
+    await apiRequest('sensory', 'POST', { items: items });
+    return true;
+  }
+
   async function loadHandoverFromServer(){
     var data = await apiRequest('handover', 'GET');
     // stored as items: [handoverData]
@@ -1945,6 +2215,7 @@
   var timesheets = [];
   var naRequests = [];
   var customers = [];
+  var sensorySessions = [];
   var handoverData = { tasks: [], checks: {} }; // checks: { 'YYYY-MM-DD': { taskId: true } }
 
   var state = {
@@ -3278,12 +3549,6 @@
   document.getElementById('timesheet-back-btn').addEventListener('click', function(){
     showScreen('screen-menu');
   });
-  document.getElementById('menu-open-sensory-btn').addEventListener('click', function(){
-    showScreen('screen-sensory');
-  });
-  document.getElementById('sensory-back-btn').addEventListener('click', function(){
-    showScreen('screen-menu');
-  });
   document.getElementById('menu-open-roasting-btn').addEventListener('click', function(){
     showScreen('screen-roasting');
   });
@@ -4528,6 +4793,184 @@
     renderDashboardHandoverBanner();
   });
 
+  // ---------- Sensory ----------
+  var snEditId = null; // null = new, string = editing existing
+
+  var SN_LIMITS = {
+    'sn-aroma-cata': 5, 'sn-flavor-cata': 5, 'sn-aftertaste-cata': 5,
+    'sn-flavor-main': 2, 'sn-aftertaste-main': 2,
+    'sn-acidity-type': 1, 'sn-sweetness-present': 3, 'sn-mouthfeel-cata': 2
+  };
+
+  function snInitChips(){
+    document.querySelectorAll('.sn-cata-chips').forEach(function(group){
+      var limit = SN_LIMITS[group.id] || 5;
+      group.querySelectorAll('.sn-chip').forEach(function(chip){
+        chip.addEventListener('click', function(){
+          var selected = chip.classList.contains('selected');
+          if (!selected) {
+            var count = group.querySelectorAll('.sn-chip.selected').length;
+            if (count >= limit) return;
+          }
+          chip.classList.toggle('selected');
+        });
+      });
+    });
+    // Wire sliders to value displays
+    ['aroma','flavor','aftertaste','acidity','sweetness','mouthfeel'].forEach(function(dim){
+      var slider = document.getElementById('sn-' + dim + '-intensity');
+      var val = document.getElementById('sn-' + dim + '-intensity-val');
+      if (slider && val) {
+        slider.addEventListener('input', function(){ val.textContent = slider.value; });
+      }
+    });
+  }
+
+  function snGetChips(groupId){
+    return Array.from(document.querySelectorAll('#' + groupId + ' .sn-chip.selected'))
+      .map(function(c){ return c.getAttribute('data-val'); });
+  }
+
+  function snSetChips(groupId, vals){
+    document.querySelectorAll('#' + groupId + ' .sn-chip').forEach(function(c){
+      c.classList.toggle('selected', vals && vals.indexOf(c.getAttribute('data-val')) !== -1);
+    });
+  }
+
+  function snResetForm(){
+    document.getElementById('sn-bean').value = '';
+    document.getElementById('sn-date').value = isoDate(new Date());
+    ['aroma','flavor','aftertaste','acidity','sweetness','mouthfeel'].forEach(function(dim){
+      var slider = document.getElementById('sn-' + dim + '-intensity');
+      var val = document.getElementById('sn-' + dim + '-intensity-val');
+      if (slider) slider.value = 0;
+      if (val) val.textContent = '0';
+      var notesEl = document.getElementById('sn-' + dim + '-notes');
+      if (notesEl) notesEl.value = '';
+    });
+    document.getElementById('sn-overall-notes').value = '';
+    Object.keys(SN_LIMITS).forEach(function(gid){ snSetChips(gid, []); });
+    snEditId = null;
+  }
+
+  function snReadForm(){
+    return {
+      id: snEditId || uid(),
+      bean: document.getElementById('sn-bean').value.trim(),
+      date: document.getElementById('sn-date').value,
+      aroma: { intensity: +document.getElementById('sn-aroma-intensity').value, cata: snGetChips('sn-aroma-cata'), notes: document.getElementById('sn-aroma-notes').value.trim() },
+      flavor: { intensity: +document.getElementById('sn-flavor-intensity').value, cata: snGetChips('sn-flavor-cata'), main: snGetChips('sn-flavor-main'), notes: document.getElementById('sn-flavor-notes').value.trim() },
+      aftertaste: { intensity: +document.getElementById('sn-aftertaste-intensity').value, cata: snGetChips('sn-aftertaste-cata'), main: snGetChips('sn-aftertaste-main'), notes: document.getElementById('sn-aftertaste-notes').value.trim() },
+      acidity: { intensity: +document.getElementById('sn-acidity-intensity').value, type: snGetChips('sn-acidity-type'), notes: document.getElementById('sn-acidity-notes').value.trim() },
+      sweetness: { intensity: +document.getElementById('sn-sweetness-intensity').value, present: snGetChips('sn-sweetness-present'), notes: document.getElementById('sn-sweetness-notes').value.trim() },
+      mouthfeel: { intensity: +document.getElementById('sn-mouthfeel-intensity').value, cata: snGetChips('sn-mouthfeel-cata'), notes: document.getElementById('sn-mouthfeel-notes').value.trim() },
+      overallNotes: document.getElementById('sn-overall-notes').value.trim()
+    };
+  }
+
+  function snLoadForm(session){
+    document.getElementById('sn-bean').value = session.bean || '';
+    document.getElementById('sn-date').value = session.date || isoDate(new Date());
+    var dims = ['aroma','flavor','aftertaste','acidity','sweetness','mouthfeel'];
+    dims.forEach(function(dim){
+      var d = session[dim] || {};
+      var slider = document.getElementById('sn-' + dim + '-intensity');
+      var val = document.getElementById('sn-' + dim + '-intensity-val');
+      if (slider) slider.value = d.intensity || 0;
+      if (val) val.textContent = d.intensity || 0;
+      var notesEl = document.getElementById('sn-' + dim + '-notes');
+      if (notesEl) notesEl.value = d.notes || '';
+    });
+    snSetChips('sn-aroma-cata', session.aroma && session.aroma.cata);
+    snSetChips('sn-flavor-cata', session.flavor && session.flavor.cata);
+    snSetChips('sn-flavor-main', session.flavor && session.flavor.main);
+    snSetChips('sn-aftertaste-cata', session.aftertaste && session.aftertaste.cata);
+    snSetChips('sn-aftertaste-main', session.aftertaste && session.aftertaste.main);
+    snSetChips('sn-acidity-type', session.acidity && session.acidity.type);
+    snSetChips('sn-sweetness-present', session.sweetness && session.sweetness.present);
+    snSetChips('sn-mouthfeel-cata', session.mouthfeel && session.mouthfeel.cata);
+    document.getElementById('sn-overall-notes').value = session.overallNotes || '';
+    snEditId = session.id;
+  }
+
+  function renderSensoryList(){
+    var listEl = document.getElementById('sensory-session-list');
+    if (sensorySessions.length === 0) {
+      listEl.innerHTML = '<p class="field-hint">No cupping sessions yet. Tap + to start one.</p>';
+      return;
+    }
+    var sorted = sensorySessions.slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+    var html = '';
+    sorted.forEach(function(s){
+      var allChips = [];
+      if (s.aroma && s.aroma.cata) allChips = allChips.concat(s.aroma.cata.slice(0,2));
+      if (s.flavor && s.flavor.cata) allChips = allChips.concat(s.flavor.cata.slice(0,2));
+      var chipHtml = allChips.slice(0,4).map(function(c){
+        return '<span class="sn-session-chip">' + esc(c.replace(/_/g,' ').toLowerCase().replace(/\b\w/g,function(l){return l.toUpperCase();})) + '</span>';
+      }).join('');
+      var dateStr = s.date ? new Date(s.date + 'T00:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+      html += '<div class="sn-session-card" data-id="' + s.id + '">';
+      html += '  <div class="sn-session-bean">' + esc(s.bean || 'Untitled') + '</div>';
+      html += '  <div class="sn-session-date">' + dateStr + '</div>';
+      if (chipHtml) html += '  <div class="sn-session-chips">' + chipHtml + '</div>';
+      html += '</div>';
+    });
+    listEl.innerHTML = html;
+    listEl.querySelectorAll('.sn-session-card').forEach(function(card){
+      card.addEventListener('click', function(){
+        var id = card.getAttribute('data-id');
+        var session = sensorySessions.find(function(s){ return s.id === id; });
+        if (!session) return;
+        snLoadForm(session);
+        snShowForm();
+      });
+    });
+  }
+
+  function snShowForm(){
+    document.getElementById('sensory-list-panel').style.display = 'none';
+    document.getElementById('sensory-form-panel').style.display = 'flex';
+    document.getElementById('sensory-new-btn').style.display = 'none';
+    document.getElementById('sensory-form-scroll').scrollTop = 0;
+  }
+
+  function snShowList(){
+    document.getElementById('sensory-list-panel').style.display = '';
+    document.getElementById('sensory-form-panel').style.display = 'none';
+    document.getElementById('sensory-new-btn').style.display = '';
+    renderSensoryList();
+  }
+
+  document.getElementById('sensory-new-btn').addEventListener('click', function(){
+    snResetForm();
+    snShowForm();
+  });
+  document.getElementById('sensory-back-btn').addEventListener('click', function(){
+    if (document.getElementById('sensory-form-panel').style.display !== 'none') {
+      snShowList();
+    } else {
+      showScreen('screen-menu');
+    }
+  });
+  document.getElementById('menu-open-sensory-btn').addEventListener('click', function(){
+    snShowList();
+    showScreen('screen-sensory');
+  });
+  document.getElementById('sn-save-btn').addEventListener('click', function(){
+    var session = snReadForm();
+    if (!session.bean) { document.getElementById('sn-bean').focus(); return; }
+    if (snEditId) {
+      sensorySessions = sensorySessions.map(function(s){ return s.id === snEditId ? session : s; });
+    } else {
+      sensorySessions.push(session);
+    }
+    saveSensoryToServer(sensorySessions).catch(function(e){ console.error(e); });
+    snShowList();
+  });
+
+  // init chips once
+  snInitChips();
+
   // ---------- Customers ----------
   var expandedCustomer = null;
 
@@ -4693,6 +5136,7 @@
         try { saveNaToServer(naRequests); } catch(e) {}
       }
       customers = await loadCustomersFromServer();
+      sensorySessions = await loadSensoryFromServer();
       handoverData = await loadHandoverFromServer();
       if (!handoverData.tasksByDate) handoverData.tasksByDate = {};
       if (!handoverData.checks) handoverData.checks = {};

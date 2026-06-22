@@ -22,6 +22,7 @@ const ALLOWED_KEYS = {
   na: 'staff-na-requests',
   handover: 'handover-data',
   customers: 'customer-details',
+  sensory: 'sensory-sessions',
 };
 
 export default async function handler(req, res) {
