@@ -1189,7 +1189,15 @@
 
       <!-- Session list view -->
       <div id="sensory-list-panel" class="form-scroll">
-        <div id="sensory-session-list"></div>
+        <!-- Roasted beans pending sensory -->
+        <div id="sensory-pending-section" style="display:none; margin-bottom:16px;">
+          <div class="section-label" style="margin-bottom:8px; color:#B04A10;">Pending — Tap to start cupping</div>
+          <div id="sensory-pending-list"></div>
+        </div>
+        <!-- Past sessions -->
+        <div id="sensory-sessions-section">
+          <div id="sensory-session-list"></div>
+        </div>
       </div>
 
       <!-- Session form view (hidden initially) -->
@@ -5386,10 +5394,45 @@
   }
 
   function renderSensoryList(){
+    // Pending roasted beans (no sensory done)
+    var pending = roastedBeans.filter(function(r){ return !r.sensoryDone; });
+    var pendingSection = document.getElementById('sensory-pending-section');
+    var pendingList = document.getElementById('sensory-pending-list');
+    if (pending.length > 0) {
+      pendingSection.style.display = 'block';
+      var pHtml = '';
+      pending.forEach(function(r){
+        pHtml += '<div class="sn-session-card" data-roasted-id="' + r.id + '" data-name="' + esc(r.name) + '" style="border-color:#F0C8A0;background:#FDF5EC;">';
+        pHtml += '  <div class="sn-session-bean" style="color:#7A4A00;">' + esc(r.name) + '</div>';
+        pHtml += '  <div class="sn-session-date" style="color:#B04A10;">Sensory not done — tap to start</div>';
+        pHtml += '</div>';
+      });
+      pendingList.innerHTML = pHtml;
+      pendingList.querySelectorAll('.sn-session-card').forEach(function(card){
+        card.addEventListener('click', function(){
+          snResetForm();
+          document.getElementById('sn-bean').value = card.getAttribute('data-name');
+          snRoastedIdForSession = card.getAttribute('data-roasted-id');
+          snShowForm();
+        });
+      });
+    } else {
+      pendingSection.style.display = 'none';
+    }
+
+    // Past sessions
     var listEl = document.getElementById('sensory-session-list');
     if (sensorySessions.length === 0) {
-      listEl.innerHTML = '<p class="field-hint">No cupping sessions yet. Tap + to start one.</p>';
+      listEl.innerHTML = pending.length === 0 ? '<p class="field-hint">No cupping sessions yet. Tap + to start one.</p>' : '';
       return;
+    }
+    if (sensorySessions.length > 0) {
+      var label = document.createElement('div');
+      label.className = 'section-label';
+      label.style.marginBottom = '8px';
+      label.textContent = 'Past Sessions';
+      listEl.innerHTML = '';
+      listEl.appendChild(label);
     }
     var sorted = sensorySessions.slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
     var html = '';
@@ -5407,12 +5450,15 @@
       if (chipHtml) html += '  <div class="sn-session-chips">' + chipHtml + '</div>';
       html += '</div>';
     });
-    listEl.innerHTML = html;
-    listEl.querySelectorAll('.sn-session-card').forEach(function(card){
+    var sessionsDiv = document.createElement('div');
+    sessionsDiv.innerHTML = html;
+    listEl.appendChild(sessionsDiv);
+    listEl.querySelectorAll('.sn-session-card[data-id]').forEach(function(card){
       card.addEventListener('click', function(){
         var id = card.getAttribute('data-id');
         var s = sensorySessions.find(function(x){ return x.id === id; });
         if (!s) return;
+        snRoastedIdForSession = null;
         snLoadForm(s);
         snShowForm();
       });
@@ -5433,7 +5479,13 @@
     renderSensoryList();
   }
 
-  document.getElementById('sensory-new-btn').addEventListener('click', function(){ snResetForm(); snShowForm(); });
+  var snRoastedIdForSession = null;
+
+  document.getElementById('sensory-new-btn').addEventListener('click', function(){
+    snRoastedIdForSession = null;
+    snResetForm();
+    snShowForm();
+  });
   document.getElementById('sensory-back-btn').addEventListener('click', function(){
     if (document.getElementById('sensory-form-panel').style.display !== 'none') { snShowList(); }
     else { showScreen('screen-menu'); }
@@ -5446,6 +5498,15 @@
       sensorySessions = sensorySessions.map(function(s){ return s.id === snEditId ? session : s; });
     } else {
       sensorySessions.push(session);
+      // Auto-mark roasted bean as sensory done
+      if (snRoastedIdForSession) {
+        roastedBeans = roastedBeans.map(function(r){
+          return r.id === snRoastedIdForSession ? Object.assign({}, r, { sensoryDone: true }) : r;
+        });
+        saveRoastedToServer(roastedBeans).catch(function(e){ console.error(e); });
+        renderDashboardRoastedBanner();
+        snRoastedIdForSession = null;
+      }
     }
     saveSensoryToServer(sensorySessions).catch(function(e){ console.error(e); });
     snShowList();
