@@ -502,17 +502,27 @@
           <input type="text" class="field-input" id="f-name" placeholder="e.g. Yirgacheffe Kochere">
         </div>
         <div class="field-group">
-          <label class="field-label">Region</label>
-          <input type="text" class="field-input" id="f-region" placeholder="e.g. Ethiopia">
+          <label class="field-label">Country</label>
+          <input type="text" class="field-input" id="f-country" placeholder="e.g. Ethiopia">
         </div>
         <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Region</label>
+            <input type="text" class="field-input" id="f-region" placeholder="e.g. Yirgacheffe">
+          </div>
           <div class="field-group">
             <label class="field-label">Station / Farm</label>
             <input type="text" class="field-input" id="f-station" placeholder="e.g. Kochere">
           </div>
+        </div>
+        <div class="field-row">
           <div class="field-group">
             <label class="field-label">Process</label>
             <input type="text" class="field-input" id="f-process" placeholder="e.g. Washed">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Altitude</label>
+            <input type="text" class="field-input" id="f-altitude" placeholder="e.g. 1900m">
           </div>
         </div>
         <div class="field-row">
@@ -568,7 +578,7 @@
       <div class="form-scroll">
         <div class="section-label" style="margin-bottom: 4px;">Beans in this delivery</div>
         <p style="font-size: 12px; color: #8A7F6F; margin-bottom: 14px; line-height: 1.5;">
-          Shipping cost is split evenly across every kg in the delivery, regardless of bean.
+          Enter the supplier for each bean. If the supplier doesn't match an existing bean, this will be added as a new bean. Shipping cost is split evenly across every kg in the delivery, regardless of bean.
         </p>
 
         <div id="delivery-rows"></div>
@@ -607,17 +617,17 @@
   var LOW_STOCK_THRESHOLD = 10;
 
   var SEED_BEANS = [
-    { id: 'seed1', name: 'Brazil Cerrado', region: 'Brazil', station: 'Fazenda Santa In\u00eas', process: 'Natural', variety: 'Mundo Novo', harvest: '2025', quantity: '68.0', supplier: 'Falcon Coffees', costPerKg: '15.20' },
-    { id: 'seed2', name: 'Yirgacheffe Kochere', region: 'Ethiopia', station: 'Kochere station', process: 'Washed', variety: 'Heirloom', harvest: '2025', quantity: '42.0', supplier: 'Trabocca', costPerKg: '18.00' },
-    { id: 'seed3', name: 'Indonesia Mandheling', region: 'Indonesia', station: 'Sumatra', process: 'Wet-hulled', variety: 'Tim Tim', harvest: '2024', quantity: '0.0', supplier: '', costPerKg: '12.80' },
-    { id: 'seed4', name: 'Panama Boquete', region: 'Panama', station: 'Finca La Mula', process: 'Washed', variety: 'Geisha', harvest: '2025', quantity: '6.5', supplier: 'Mercanta', costPerKg: '32.00' }
+    { id: 'seed1', name: 'Brazil Cerrado', country: 'Brazil', region: 'Cerrado', station: 'Fazenda Santa In\u00eas', process: 'Natural', altitude: '1100m', variety: 'Mundo Novo', harvest: '2025', quantity: '68.0', supplier: 'Falcon Coffees', costPerKg: '15.20' },
+    { id: 'seed2', name: 'Yirgacheffe Kochere', country: 'Ethiopia', region: 'Yirgacheffe', station: 'Kochere station', process: 'Washed', altitude: '1900m', variety: 'Heirloom', harvest: '2025', quantity: '42.0', supplier: 'Trabocca', costPerKg: '18.00' },
+    { id: 'seed3', name: 'Indonesia Mandheling', country: 'Indonesia', region: 'Sumatra', station: 'Sumatra', process: 'Wet-hulled', altitude: '1200m', variety: 'Tim Tim', harvest: '2024', quantity: '0.0', supplier: '', costPerKg: '12.80' },
+    { id: 'seed4', name: 'Panama Boquete', country: 'Panama', region: 'Boquete', station: 'Finca La Mula', process: 'Washed', altitude: '1600m', variety: 'Geisha', harvest: '2025', quantity: '6.5', supplier: 'Mercanta', costPerKg: '32.00' }
   ];
 
   function uid(){ return 'bean_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); }
   function fmtKg(n){ var v = parseFloat(n); return (isNaN(v)?0:v).toFixed(1) + ' kg'; }
   function fmtMoney(n){ var v = parseFloat(n); return '$' + (isNaN(v)?0:v).toFixed(2); }
   function stockStatus(q){ var v = parseFloat(q)||0; if (v<=0) return 'out'; if (v<=LOW_STOCK_THRESHOLD) return 'low'; return 'healthy'; }
-  function isIncomplete(b){ return !b.region || !b.station || !b.process || !b.variety || !b.harvest || !b.supplier || !b.costPerKg; }
+  function isIncomplete(b){ return !b.country || !b.region || !b.station || !b.process || !b.altitude || !b.variety || !b.harvest || !b.supplier || !b.costPerKg; }
   function esc(s){
     var div = document.createElement('div');
     div.textContent = s == null ? '' : s;
@@ -713,7 +723,7 @@
       var matchesFilter = state.filter === 'all' ? true :
         state.filter === 'incomplete' ? isIncomplete(b) :
         stockStatus(b.quantity) === state.filter;
-      var matchesSearch = !q || b.name.toLowerCase().indexOf(q) !== -1 || (b.region||'').toLowerCase().indexOf(q) !== -1;
+      var matchesSearch = !q || b.name.toLowerCase().indexOf(q) !== -1 || (b.country||'').toLowerCase().indexOf(q) !== -1 || (b.region||'').toLowerCase().indexOf(q) !== -1;
       return matchesFilter && matchesSearch;
     });
 
@@ -726,7 +736,7 @@
 
     var grouped = {};
     filtered.forEach(function(b){
-      var key = (b.region || 'Unspecified').trim() || 'Unspecified';
+      var key = (b.country || 'Unspecified').trim() || 'Unspecified';
       if (!grouped[key]) grouped[key] = [];
       grouped[key].push(b);
     });
@@ -753,9 +763,11 @@
     var expanded = state.expandedId === bean.id;
 
     var missingFields = [
+      !bean.country && 'Country',
       !bean.region && 'Region',
       !bean.station && 'Station / Farm',
       !bean.process && 'Process',
+      !bean.altitude && 'Altitude',
       !bean.variety && 'Variety',
       !bean.harvest && 'Harvest',
       !bean.supplier && 'Supplier',
@@ -780,8 +792,10 @@
     html += '    <div class="bean-card-detail-inner">';
     if (incomplete) html += '      <div class="incomplete-note">Missing: ' + esc(missingFields) + '</div>';
     html += '      <div class="detail-grid">';
+    html += detailField('Country', bean.country);
     html += detailField('Region', bean.region);
     html += detailField('Station / Farm', bean.station);
+    html += detailField('Altitude', bean.altitude);
     html += detailField('Variety', bean.variety);
     html += detailField('Harvest', bean.harvest);
     html += detailField('Supplier', bean.supplier);
@@ -865,8 +879,8 @@
   });
 
   // ---------- Add / Edit form ----------
-  var formFields = ['name','region','station','process','variety','harvest','quantity','cost','supplier'];
-  var fieldToBeanKey = { name:'name', region:'region', station:'station', process:'process', variety:'variety', harvest:'harvest', quantity:'quantity', cost:'costPerKg', supplier:'supplier' };
+  var formFields = ['name','country','region','station','process','altitude','variety','harvest','quantity','cost','supplier'];
+  var fieldToBeanKey = { name:'name', country:'country', region:'region', station:'station', process:'process', altitude:'altitude', variety:'variety', harvest:'harvest', quantity:'quantity', cost:'costPerKg', supplier:'supplier' };
 
   function clearForm(){
     formFields.forEach(function(f){ document.getElementById('f-' + f).value = ''; });
@@ -874,9 +888,11 @@
 
   function fillForm(bean){
     document.getElementById('f-name').value = bean.name || '';
+    document.getElementById('f-country').value = bean.country || '';
     document.getElementById('f-region').value = bean.region || '';
     document.getElementById('f-station').value = bean.station || '';
     document.getElementById('f-process').value = bean.process || '';
+    document.getElementById('f-altitude').value = bean.altitude || '';
     document.getElementById('f-variety').value = bean.variety || '';
     document.getElementById('f-harvest').value = bean.harvest || '';
     document.getElementById('f-quantity').value = bean.quantity || '';
@@ -959,6 +975,11 @@
         html += '    <button class="remove-row-btn" data-action="remove-row" aria-label="Remove"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
       }
       html += '  </div>';
+      html += '  <div class="field-group" style="margin-bottom:8px;">';
+      html += '    <label style="font-size:11px; color:#B0A491; display:block; margin-bottom:4px;">Supplier</label>';
+      html += '    <input type="text" class="delivery-supplier-input" placeholder="e.g. Trabocca" value="' + esc(row.supplier) + '">';
+      html += '  </div>';
+      html += '  <div class="delivery-supplier-note" style="display:none;"></div>';
       html += '  <div class="delivery-row-fields">';
       html += '    <div><label>Kg received</label><input type="number" class="delivery-kg-input" min="0" step="0.5" value="' + esc(row.kg) + '" inputmode="decimal"></div>';
       html += '    <div><label>Bean price / kg ($)</label><input type="number" class="delivery-price-input" min="0" step="0.1" value="' + esc(row.price) + '" inputmode="decimal"></div>';
@@ -974,6 +995,13 @@
 
       rowEl.querySelector('.delivery-bean-select').addEventListener('change', function(e){
         rowData.beanId = e.target.value;
+        var selectedBean = beans.find(function(b){ return b.id === rowData.beanId; });
+        rowData.supplier = (selectedBean && selectedBean.supplier) || '';
+        rowEl.querySelector('.delivery-supplier-input').value = rowData.supplier;
+        updateDeliverySummary();
+      });
+      rowEl.querySelector('.delivery-supplier-input').addEventListener('input', function(e){
+        rowData.supplier = e.target.value;
         updateDeliverySummary();
       });
       rowEl.querySelector('.delivery-kg-input').addEventListener('input', function(e){
@@ -997,6 +1025,10 @@
     updateConfirmButtonState();
   }
 
+  function supplierMatches(a, b){
+    return (a || '').trim().toLowerCase() === (b || '').trim().toLowerCase();
+  }
+
   function updateDeliverySummary(){
     var shipping = parseFloat(document.getElementById('delivery-shipping').value) || 0;
     var totalWeight = deliveryRows.reduce(function(sum, r){ return sum + (parseFloat(r.kg) || 0); }, 0);
@@ -1007,9 +1039,25 @@
       var rowId = rowEl.getAttribute('data-row-id');
       var rowData = deliveryRows.find(function(r){ return r.id == rowId; });
       var landedCostEl = rowEl.querySelector('.delivery-landed-cost');
+      var noteEl = rowEl.querySelector('.delivery-supplier-note');
       if (rowData && landedCostEl) {
         var landedCost = (parseFloat(rowData.price) || 0) + shippingPerKg;
         landedCostEl.textContent = rowData.kg ? fmtMoney(landedCost) + ' /kg' : '\u2014';
+      }
+      if (rowData && noteEl) {
+        var existingBean = beans.find(function(b){ return b.id === rowData.beanId; });
+        if (existingBean && rowData.supplier.trim() && !supplierMatches(existingBean.supplier, rowData.supplier)) {
+          noteEl.style.display = 'block';
+          noteEl.style.fontSize = '11px';
+          noteEl.style.color = '#854F0B';
+          noteEl.style.background = '#FAEEDA';
+          noteEl.style.padding = '6px 9px';
+          noteEl.style.borderRadius = '8px';
+          noteEl.style.marginBottom = '8px';
+          noteEl.textContent = 'Different supplier from existing "' + existingBean.name + '" (' + (existingBean.supplier || 'no supplier set') + '). This will be added as a new, separate bean.';
+        } else {
+          noteEl.style.display = 'none';
+        }
       }
     });
 
@@ -1032,14 +1080,16 @@
 
   document.getElementById('add-delivery-row-btn').addEventListener('click', function(){
     deliveryRowCounter++;
-    deliveryRows.push({ id: deliveryRowCounter, beanId: beans[0] ? beans[0].id : '', kg: '', price: '' });
+    var firstBean = beans[0];
+    deliveryRows.push({ id: deliveryRowCounter, beanId: firstBean ? firstBean.id : '', supplier: (firstBean && firstBean.supplier) || '', kg: '', price: '' });
     renderDeliveryRows();
     updateDeliverySummary();
   });
 
   function openDeliveryScreen(){
     deliveryRowCounter = 1;
-    deliveryRows = [{ id: 1, beanId: beans[0] ? beans[0].id : '', kg: '', price: '' }];
+    var firstBean = beans[0];
+    deliveryRows = [{ id: 1, beanId: firstBean ? firstBean.id : '', supplier: (firstBean && firstBean.supplier) || '', kg: '', price: '' }];
     document.getElementById('delivery-shipping').value = '';
     renderDeliveryRows();
     updateDeliverySummary();
@@ -1054,27 +1104,54 @@
     var totalWeight = deliveryRows.reduce(function(sum, r){ return sum + (parseFloat(r.kg) || 0); }, 0);
     var shippingPerKg = totalWeight > 0 ? shipping / totalWeight : 0;
 
-    var updates = deliveryRows
-      .filter(function(r){ return r.beanId && parseFloat(r.kg) > 0; })
-      .map(function(r){
-        return {
-          beanId: r.beanId,
-          addKg: parseFloat(r.kg) || 0,
-          landedCostPerKg: (parseFloat(r.price) || 0) + shippingPerKg
-        };
-      });
+    var validRows = deliveryRows.filter(function(r){ return r.beanId && parseFloat(r.kg) > 0; });
+    if (validRows.length === 0) return;
 
-    if (updates.length === 0) return;
+    var updatedBeans = beans.slice();
+    var newBeansToAdd = [];
 
-    beans = beans.map(function(b){
-      var update = updates.find(function(u){ return u.beanId === b.id; });
-      if (!update) return b;
-      var newQty = (parseFloat(b.quantity) || 0) + update.addKg;
-      return Object.assign({}, b, {
-        quantity: newQty.toFixed(1),
-        costPerKg: update.landedCostPerKg.toFixed(2)
-      });
+    validRows.forEach(function(row){
+      var addKg = parseFloat(row.kg) || 0;
+      var landedCostPerKg = (parseFloat(row.price) || 0) + shippingPerKg;
+      var existingBean = updatedBeans.find(function(b){ return b.id === row.beanId; });
+
+      if (existingBean && supplierMatches(existingBean.supplier, row.supplier)) {
+        // Same bean, same supplier: merge into existing stock with weighted-average cost
+        var existingQty = parseFloat(existingBean.quantity) || 0;
+        var existingValue = existingQty * (parseFloat(existingBean.costPerKg) || 0);
+        var incomingValue = addKg * landedCostPerKg;
+        var newQty = existingQty + addKg;
+        var newCostPerKg = newQty > 0 ? (existingValue + incomingValue) / newQty : landedCostPerKg;
+
+        updatedBeans = updatedBeans.map(function(b){
+          if (b.id !== existingBean.id) return b;
+          return Object.assign({}, b, {
+            quantity: newQty.toFixed(1),
+            costPerKg: newCostPerKg.toFixed(2),
+            supplier: row.supplier.trim() || b.supplier
+          });
+        });
+      } else {
+        // Different supplier (or no existing bean matched): create a new, separate bean entry
+        var sourceBean = existingBean || {};
+        newBeansToAdd.push({
+          id: uid(),
+          name: sourceBean.name || '',
+          country: sourceBean.country || '',
+          region: sourceBean.region || '',
+          station: sourceBean.station || '',
+          process: sourceBean.process || '',
+          altitude: sourceBean.altitude || '',
+          variety: sourceBean.variety || '',
+          harvest: sourceBean.harvest || '',
+          quantity: addKg.toFixed(1),
+          supplier: row.supplier.trim(),
+          costPerKg: landedCostPerKg.toFixed(2)
+        });
+      }
     });
+
+    beans = updatedBeans.concat(newBeansToAdd);
 
     persist();
     showScreen('screen-list');
