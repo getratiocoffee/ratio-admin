@@ -1249,8 +1249,15 @@
         </button>
       </div>
 
-      <!-- Add customer inline form -->
-      <div id="customer-add-form" style="display:none; padding:0 20px 4px; flex-shrink:0;">
+      <!-- Customer list — pushes to bottom -->
+      <div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; overflow:hidden; min-height:0;">
+        <div style="overflow-y:auto; overscroll-behavior:contain; padding:16px 20px 8px; flex-shrink:0; max-height:100%;">
+          <div id="customer-list"></div>
+        </div>
+      </div>
+
+      <!-- Add customer inline form fixed at bottom -->
+      <div id="customer-add-form" style="display:none; flex-shrink:0; padding:12px 20px 4px; border-top:1px solid #DCD2C2;">
         <div class="field-group">
           <label class="field-label">Name <span style="color:#A32D2D;">*</span></label>
           <input type="text" class="field-input" id="customer-name-input" placeholder="e.g. Jane Smith">
@@ -1271,11 +1278,6 @@
           <button class="btn-save" id="customer-add-btn" type="button" style="flex:1; padding:13px 0; border-radius:14px; font-size:15px;">Save</button>
           <button class="import-confirm-btn cancel" id="customer-add-cancel-btn" type="button" style="flex:0.5;">Cancel</button>
         </div>
-        <div class="divider" style="margin-bottom:4px;"></div>
-      </div>
-
-      <div class="form-scroll">
-        <div id="customer-list"></div>
       </div>
     </div>
 
@@ -4543,12 +4545,14 @@
     customers.forEach(function(c){
       var isExpanded = expandedCustomer === c.id;
       html += '<div class="bean-card" data-id="' + c.id + '">';
-      html += '  <div class="bean-card-header" data-action="toggle-customer" style="cursor:pointer;">';
-      html += '    <div class="bean-info">';
-      html += '      <div class="bean-name">' + esc(c.name) + '</div>';
-      if (c.phone) html += '      <div class="bean-process">' + esc(c.phone) + '</div>';
-      if (c.email) html += '      <div class="bean-process">' + esc(c.email) + '</div>';
-      if (!c.phone && !c.email) html += '      <div class="bean-process" style="color:#B0A491;font-style:italic;">No contact details</div>';
+      html += '  <div class="bean-card-header" data-action="toggle-customer" style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px;">';
+      html += '    <div class="bean-info" style="gap:2px;">';
+      html += '      <div style="font-size:16px;font-weight:700;color:#2E2925;line-height:1.3;">' + esc(c.name) + '</div>';
+      if (c.address) {
+        html += '      <div style="font-size:12px;color:#8A7F6F;margin-top:3px;line-height:1.4;">' + esc(c.address) + '</div>';
+      } else {
+        html += '      <div style="font-size:12px;color:#B0A491;font-style:italic;margin-top:3px;">No address</div>';
+      }
       html += '    </div>';
       html += '    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:rotate(' + (isExpanded ? '180deg' : '0deg') + ');flex-shrink:0;color:#B0A491;"><polyline points="6 9 12 15 18 9"/></svg>';
       html += '  </div>';
