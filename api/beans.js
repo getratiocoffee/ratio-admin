@@ -12,9 +12,14 @@ async function getRedisClient() {
   return client;
 }
 
+const ALLOWED_KEYS = {
+  beans: 'green-bean-inventory',
+  contacts: 'roaster-contacts',
+  transfers: 'transfer-history',
+};
+
 export default async function handler(req, res) {
   const APP_PASSWORD = process.env.RATIO_APP_PASSWORD || 'ratio2026';
-  const STORE_KEY = 'green-bean-inventory';
 
   const providedPassword = req.headers['x-app-password'] || '';
   if (providedPassword !== APP_PASSWORD) {
@@ -22,24 +27,31 @@ export default async function handler(req, res) {
     return;
   }
 
+  const dataset = (req.query && req.query.dataset) || 'beans';
+  const storeKey = ALLOWED_KEYS[dataset];
+  if (!storeKey) {
+    res.status(400).json({ error: 'Unknown dataset' });
+    return;
+  }
+
   try {
     const client = await getRedisClient();
 
     if (req.method === 'GET') {
-      const raw = await client.get(STORE_KEY);
-      const beans = raw ? JSON.parse(raw) : null;
-      res.status(200).json({ beans });
+      const raw = await client.get(storeKey);
+      const items = raw ? JSON.parse(raw) : null;
+      res.status(200).json({ items });
       return;
     }
 
     if (req.method === 'POST') {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-      const beans = body && body.beans;
-      if (!Array.isArray(beans)) {
-        res.status(400).json({ error: 'Expected { beans: [...] }' });
+      const items = body && body.items;
+      if (!Array.isArray(items)) {
+        res.status(400).json({ error: 'Expected { items: [...] }' });
         return;
       }
-      await client.set(STORE_KEY, JSON.stringify(beans));
+      await client.set(storeKey, JSON.stringify(items));
       res.status(200).json({ ok: true });
       return;
     }
@@ -50,3 +62,4 @@ export default async function handler(req, res) {
     res.status(500).json({ error: 'Server error', detail: String(err && err.message || err) });
   }
 }
+

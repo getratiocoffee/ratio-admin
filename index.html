@@ -269,13 +269,18 @@
 
   .empty-state { text-align: center; padding: 50px 16px; color: #8A7F6F; font-size: 14px; }
 
-  .bottom-bar {
+  .bottom-bar-wrap {
     padding: 12px 16px 18px;
     display: flex;
+    flex-direction: column;
     gap: 10px;
     border-top: 1px solid #DCD2C2;
     background: #FAF6F0;
     flex-shrink: 0;
+  }
+  .bottom-bar {
+    display: flex;
+    gap: 10px;
   }
   .btn {
     flex: 1;
@@ -384,6 +389,36 @@
   .summary-line.total {
     font-size: 15px; font-weight: 600; color: #2E2925; margin-top: 4px;
     padding-top: 8px; border-top: 1px solid #DCD2C2;
+  }
+
+  /* ===== Stock Transfer ===== */
+  .toggle-row { display: flex; gap: 8px; }
+  .toggle-btn {
+    flex: 1; padding: 12px 0; border-radius: 14px; font-size: 14px; font-weight: 600;
+    border: 1.5px solid #DCD2C2; background: #FFFFFF; color: #463E3A; cursor: pointer; font-family: inherit;
+  }
+  .toggle-btn.active { background: #463E3A; color: #fff; border-color: #463E3A; }
+  .field-hint { font-size: 12px; color: #8A7F6F; line-height: 1.5; }
+  .transfer-out-base-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 14px; background: #FAF6F0; border-radius: 14px; margin-bottom: 14px;
+  }
+  .transfer-out-base-row .label { font-size: 13px; color: #8A7F6F; }
+  .transfer-out-base-row .value { font-size: 14px; font-weight: 600; color: #2E2925; }
+  .transfer-success-icon {
+    width: 56px; height: 56px; border-radius: 50%; background: #EAF3DE; color: #27500A;
+    display: flex; align-items: center; justify-content: center; margin: 10px auto 18px;
+  }
+  .contact-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px; border: 1.5px solid #DCD2C2; border-radius: 14px; margin-bottom: 10px; background: #FFFFFF;
+  }
+  .contact-row-name { font-size: 15px; font-weight: 600; color: #2E2925; }
+  .contact-row-email { font-size: 13px; color: #8A7F6F; margin-top: 2px; }
+  .contact-delete-btn {
+    width: 38px; height: 38px; border-radius: 12px; border: 1.5px solid #DCD2C2;
+    background: #FFFFFF; color: #A32D2D; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
   }
 
   .inventory-summary {
@@ -527,15 +562,23 @@
 
       <div class="save-status" id="save-status" style="opacity:0;">Saved</div>
 
-      <div class="bottom-bar">
-        <button class="btn btn-secondary" id="open-delivery-btn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96 12 12.01l8.73-5.05M12 22.08V12"/></svg>
-          Stock delivery
-        </button>
-        <button class="btn btn-primary" id="open-add-btn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-          Add bean
-        </button>
+      <div class="bottom-bar-wrap">
+        <div class="bottom-bar">
+          <button class="btn btn-secondary" id="open-delivery-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96 12 12.01l8.73-5.05M12 22.08V12"/></svg>
+            Stock delivery
+          </button>
+          <button class="btn btn-secondary" id="open-transfer-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            Stock Transfer
+          </button>
+        </div>
+        <div class="bottom-bar">
+          <button class="btn btn-primary" id="open-add-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            Add bean
+          </button>
+        </div>
       </div>
     </div>
 
@@ -663,9 +706,188 @@
       </div>
     </div>
 
+    <!-- ===== STOCK TRANSFER SCREEN ===== -->
+    <div class="screen" id="screen-transfer">
+      <div class="form-topbar">
+        <div class="back-btn" id="transfer-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        <h1>Stock transfer</h1>
+      </div>
+
+      <div class="form-scroll">
+
+        <div class="section-label" style="margin-bottom: 10px;">Direction</div>
+        <div class="toggle-row" style="margin-bottom: 18px;">
+          <button class="toggle-btn active" id="transfer-dir-in" data-dir="in">Transfer in</button>
+          <button class="toggle-btn" id="transfer-dir-out" data-dir="out">Transfer out</button>
+        </div>
+        <p class="field-hint" id="transfer-dir-hint">Receiving beans from another roaster. Stock and cost will be merged with your existing inventory (weighted average) if the bean and source match.</p>
+
+        <div class="divider"></div>
+
+        <div class="section-label" style="margin-bottom: 10px;">Roaster contact</div>
+        <div class="field-group">
+          <label class="field-label">Select contact</label>
+          <select class="field-input" id="transfer-contact-select"></select>
+        </div>
+        <button class="add-row-btn" id="manage-contacts-btn" type="button">Manage roaster contacts</button>
+
+        <div class="divider"></div>
+
+        <div class="section-label" style="margin-bottom: 4px;">Bean details</div>
+        <p class="field-hint" style="margin-bottom: 14px;">Select an existing bean from your stock, or type a new name if this bean isn't in your inventory yet.</p>
+
+        <div class="field-group">
+          <label class="field-label">Bean</label>
+          <select class="field-input" id="transfer-bean-select"></select>
+        </div>
+        <div class="field-group" id="transfer-new-name-group" style="display:none;">
+          <label class="field-label">New bean name</label>
+          <input type="text" class="field-input" id="transfer-new-name" placeholder="e.g. Yirgacheffe Kochere">
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Country</label>
+            <input type="text" class="field-input" id="t-country" placeholder="e.g. Ethiopia">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Region</label>
+            <input type="text" class="field-input" id="t-region" placeholder="e.g. Yirgacheffe">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Station / Farm</label>
+            <input type="text" class="field-input" id="t-station" placeholder="e.g. Kochere">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Process</label>
+            <input type="text" class="field-input" id="t-process" placeholder="e.g. Washed">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Altitude</label>
+            <input type="text" class="field-input" id="t-altitude" placeholder="e.g. 1900m">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Variety</label>
+            <input type="text" class="field-input" id="t-variety" placeholder="e.g. Heirloom">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Harvest</label>
+          <input type="text" class="field-input" id="t-harvest" placeholder="e.g. 2025">
+        </div>
+
+        <div class="divider"></div>
+        <div class="section-label" style="margin-bottom: 10px;">Quantity &amp; price</div>
+
+        <div class="field-group">
+          <label class="field-label">Quantity</label>
+          <div class="qty-input-wrap">
+            <input type="number" class="field-input" id="t-quantity" min="0" step="0.1" placeholder="0.0" inputmode="decimal">
+            <span class="qty-unit">kg</span>
+          </div>
+        </div>
+
+        <div id="transfer-in-price-group">
+          <div class="field-group">
+            <label class="field-label">Price per kg (what you're paying)</label>
+            <div class="cost-input-wrap">
+              <span class="cost-prefix">$</span>
+              <input type="number" class="field-input" id="t-price-in" min="0" step="0.1" placeholder="0.00" inputmode="decimal">
+              <span class="cost-suffix">/kg</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="transfer-out-price-group" style="display:none;">
+          <div class="transfer-out-base-row">
+            <span class="label">Your current cost per kg</span>
+            <span class="value" id="transfer-out-base-cost">$0.00 /kg</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Margin %</label>
+            <div class="cost-input-wrap">
+              <input type="number" class="field-input" id="t-margin-pct" min="0" step="1" placeholder="0" inputmode="decimal">
+              <span class="cost-suffix">%</span>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Sale price per kg</label>
+            <div class="cost-input-wrap">
+              <span class="cost-prefix">$</span>
+              <input type="number" class="field-input" id="t-price-out" min="0" step="0.1" placeholder="0.00" inputmode="decimal">
+              <span class="cost-suffix">/kg</span>
+            </div>
+          </div>
+          <p class="field-hint">Sale price = cost per kg \u00d7 (1 + margin %). Adjust either field \u2014 they stay in sync.</p>
+        </div>
+
+        <div class="delivery-summary">
+          <div class="summary-line"><span>Total amount</span><span id="transfer-total-amount">$0.00</span></div>
+        </div>
+
+      </div>
+
+      <div class="form-bottom-bar">
+        <button class="btn-save" id="confirm-transfer-btn" disabled>Confirm transfer</button>
+        <p class="required-hint" id="transfer-confirm-hint">This will update your stock and save a record for the invoice.</p>
+      </div>
+    </div>
+
+    <!-- ===== TRANSFER RECORD / INVOICE SCREEN ===== -->
+    <div class="screen" id="screen-transfer-record">
+      <div class="form-topbar">
+        <div class="back-btn" id="transfer-record-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        <h1>Transfer recorded</h1>
+      </div>
+      <div class="form-scroll">
+        <div class="transfer-success-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <p class="field-hint" style="text-align:center; margin-bottom: 18px;" id="transfer-record-summary"></p>
+        <button class="btn-save" id="download-invoice-btn" style="margin-bottom: 10px;">Download invoice (PDF)</button>
+        <p class="required-hint">Attach this PDF to an email and send it to your contact.</p>
+      </div>
+      <div class="form-bottom-bar">
+        <button class="btn-save" id="transfer-record-done-btn">Done</button>
+      </div>
+    </div>
+
+    <!-- ===== ROASTER CONTACTS SCREEN ===== -->
+    <div class="screen" id="screen-contacts">
+      <div class="form-topbar">
+        <div class="back-btn" id="contacts-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        <h1>Roaster contacts</h1>
+      </div>
+      <div class="form-scroll">
+        <div id="contacts-list"></div>
+        <div class="divider"></div>
+        <div class="section-label" style="margin-bottom: 10px;">Add a contact</div>
+        <div class="field-group">
+          <label class="field-label">Name</label>
+          <input type="text" class="field-input" id="contact-name" placeholder="e.g. Marco at Three Hills Coffee">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Email</label>
+          <input type="email" class="field-input" id="contact-email" placeholder="e.g. marco@threehills.com">
+        </div>
+        <button class="add-row-btn" id="add-contact-btn" type="button">+ Add contact</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 (function(){
   var STORAGE_KEY = 'ratio-admin-inventory-v1';
@@ -700,14 +922,14 @@
     try { sessionStorage.setItem(SESSION_PASSWORD_KEY, pw); } catch(e) {}
   }
 
-  async function apiRequest(method, body){
+  async function apiRequest(dataset, method, body){
     var headers = { 'x-app-password': getSessionPassword() };
     var opts = { method: method, headers: headers };
     if (body) {
       headers['Content-Type'] = 'application/json';
       opts.body = JSON.stringify(body);
     }
-    var resp = await fetch('/api/beans', opts);
+    var resp = await fetch('/api/beans?dataset=' + dataset, opts);
     if (resp.status === 401) {
       var err = new Error('unauthorized');
       err.unauthorized = true;
@@ -720,15 +942,35 @@
   }
 
   async function loadBeansFromServer(){
-    var data = await apiRequest('GET');
-    return data && Array.isArray(data.beans) ? data.beans : null;
+    var data = await apiRequest('beans', 'GET');
+    return data && Array.isArray(data.items) ? data.items : null;
   }
   async function saveBeansToServer(beans){
-    await apiRequest('POST', { beans: beans });
+    await apiRequest('beans', 'POST', { items: beans });
+    return true;
+  }
+
+  async function loadContactsFromServer(){
+    var data = await apiRequest('contacts', 'GET');
+    return data && Array.isArray(data.items) ? data.items : [];
+  }
+  async function saveContactsToServer(contacts){
+    await apiRequest('contacts', 'POST', { items: contacts });
+    return true;
+  }
+
+  async function loadTransfersFromServer(){
+    var data = await apiRequest('transfers', 'GET');
+    return data && Array.isArray(data.items) ? data.items : [];
+  }
+  async function saveTransfersToServer(transfers){
+    await apiRequest('transfers', 'POST', { items: transfers });
     return true;
   }
 
   var beans = [];
+  var contacts = [];
+  var transferHistory = [];
 
   var state = {
     search: '',
@@ -1269,6 +1511,347 @@
     render();
   });
 
+  // ---------- Roaster contacts ----------
+  async function persistContacts(){
+    try { await saveContactsToServer(contacts); } catch(e) { console.error('Save contacts failed', e); }
+  }
+
+  function renderContactsList(){
+    var listEl = document.getElementById('contacts-list');
+    if (contacts.length === 0) {
+      listEl.innerHTML = '<p class="field-hint">No contacts saved yet. Add one below.</p>';
+      return;
+    }
+    var html = '';
+    contacts.forEach(function(c){
+      html += '<div class="contact-row" data-id="' + c.id + '">';
+      html += '  <div><div class="contact-row-name">' + esc(c.name) + '</div><div class="contact-row-email">' + esc(c.email) + '</div></div>';
+      html += '  <button class="contact-delete-btn" data-action="delete-contact" aria-label="Delete contact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+      html += '</div>';
+    });
+    listEl.innerHTML = html;
+    listEl.querySelectorAll('[data-action="delete-contact"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var row = btn.closest('.contact-row');
+        var id = row.getAttribute('data-id');
+        contacts = contacts.filter(function(c){ return c.id !== id; });
+        persistContacts();
+        renderContactsList();
+        populateContactSelect();
+      });
+    });
+  }
+
+  function populateContactSelect(){
+    var sel = document.getElementById('transfer-contact-select');
+    if (contacts.length === 0) {
+      sel.innerHTML = '<option value="">No contacts saved \u2014 add one first</option>';
+      return;
+    }
+    sel.innerHTML = contacts.map(function(c){
+      return '<option value="' + c.id + '">' + esc(c.name) + ' (' + esc(c.email) + ')</option>';
+    }).join('');
+  }
+
+  document.getElementById('add-contact-btn').addEventListener('click', function(){
+    var nameInput = document.getElementById('contact-name');
+    var emailInput = document.getElementById('contact-email');
+    var name = nameInput.value.trim();
+    var email = emailInput.value.trim();
+    if (!name || !email) return;
+    contacts.push({ id: uid(), name: name, email: email });
+    persistContacts();
+    nameInput.value = '';
+    emailInput.value = '';
+    renderContactsList();
+    populateContactSelect();
+  });
+
+  document.getElementById('manage-contacts-btn').addEventListener('click', function(){
+    renderContactsList();
+    showScreen('screen-contacts');
+  });
+  document.getElementById('contacts-back-btn').addEventListener('click', function(){
+    showScreen('screen-transfer');
+    populateContactSelect();
+  });
+
+  // ---------- Stock transfer ----------
+  var transferDirection = 'in';
+
+  function populateTransferBeanSelect(){
+    var sel = document.getElementById('transfer-bean-select');
+    var options = '<option value="__new__">+ New bean (not in my stock)</option>';
+    options += beans.map(function(b){
+      return '<option value="' + b.id + '">' + esc(b.name) + '</option>';
+    }).join('');
+    sel.innerHTML = options;
+  }
+
+  function fillTransferFieldsFromBean(bean){
+    document.getElementById('t-country').value = bean ? (bean.country || '') : '';
+    document.getElementById('t-region').value = bean ? (bean.region || '') : '';
+    document.getElementById('t-station').value = bean ? (bean.station || '') : '';
+    document.getElementById('t-process').value = bean ? (bean.process || '') : '';
+    document.getElementById('t-altitude').value = bean ? (bean.altitude || '') : '';
+    document.getElementById('t-variety').value = bean ? (bean.variety || '') : '';
+    document.getElementById('t-harvest').value = bean ? (bean.harvest || '') : '';
+  }
+
+  function updateTransferOutBase(){
+    var sel = document.getElementById('transfer-bean-select');
+    var bean = beans.find(function(b){ return b.id === sel.value; });
+    var baseCost = bean ? (parseFloat(bean.costPerKg) || 0) : 0;
+    document.getElementById('transfer-out-base-cost').textContent = fmtMoney(baseCost) + ' /kg';
+    return baseCost;
+  }
+
+  function recalcTransferOutPriceFromMargin(){
+    var baseCost = updateTransferOutBase();
+    var pct = parseFloat(document.getElementById('t-margin-pct').value) || 0;
+    var price = baseCost * (1 + pct / 100);
+    document.getElementById('t-price-out').value = price > 0 ? price.toFixed(2) : '';
+    updateTransferTotal();
+  }
+
+  function recalcTransferMarginFromPrice(){
+    var baseCost = updateTransferOutBase();
+    var price = parseFloat(document.getElementById('t-price-out').value) || 0;
+    if (baseCost > 0) {
+      var pct = ((price / baseCost) - 1) * 100;
+      document.getElementById('t-margin-pct').value = Math.round(pct);
+    }
+    updateTransferTotal();
+  }
+
+  function updateTransferTotal(){
+    var qty = parseFloat(document.getElementById('t-quantity').value) || 0;
+    var price = transferDirection === 'in'
+      ? (parseFloat(document.getElementById('t-price-in').value) || 0)
+      : (parseFloat(document.getElementById('t-price-out').value) || 0);
+    document.getElementById('transfer-total-amount').textContent = fmtMoney(qty * price);
+    updateTransferConfirmState();
+  }
+
+  function updateTransferConfirmState(){
+    var contactSel = document.getElementById('transfer-contact-select');
+    var beanSel = document.getElementById('transfer-bean-select');
+    var qty = parseFloat(document.getElementById('t-quantity').value) || 0;
+    var hasContact = !!contactSel.value;
+    var hasBeanName = beanSel.value !== '__new__' || document.getElementById('transfer-new-name').value.trim().length > 0;
+    var hasPrice = transferDirection === 'in'
+      ? (parseFloat(document.getElementById('t-price-in').value) || 0) >= 0 && document.getElementById('t-price-in').value !== ''
+      : (parseFloat(document.getElementById('t-price-out').value) || 0) > 0;
+    document.getElementById('confirm-transfer-btn').disabled = !(hasContact && hasBeanName && qty > 0 && hasPrice);
+  }
+
+  function setTransferDirection(dir){
+    transferDirection = dir;
+    document.getElementById('transfer-dir-in').classList.toggle('active', dir === 'in');
+    document.getElementById('transfer-dir-out').classList.toggle('active', dir === 'out');
+    document.getElementById('transfer-in-price-group').style.display = dir === 'in' ? 'block' : 'none';
+    document.getElementById('transfer-out-price-group').style.display = dir === 'out' ? 'block' : 'none';
+    document.getElementById('transfer-dir-hint').textContent = dir === 'in'
+      ? "Receiving beans from another roaster. Stock and cost will be merged with your existing inventory (weighted average) if the bean and source match."
+      : "Sending beans to another roaster. This will deduct from your stock and use your current cost per kg as the pricing baseline.";
+    if (dir === 'out') {
+      recalcTransferOutPriceFromMargin();
+    }
+    updateTransferTotal();
+  }
+
+  document.getElementById('transfer-dir-in').addEventListener('click', function(){ setTransferDirection('in'); });
+  document.getElementById('transfer-dir-out').addEventListener('click', function(){ setTransferDirection('out'); });
+
+  document.getElementById('transfer-bean-select').addEventListener('change', function(e){
+    var isNew = e.target.value === '__new__';
+    document.getElementById('transfer-new-name-group').style.display = isNew ? 'block' : 'none';
+    var bean = beans.find(function(b){ return b.id === e.target.value; });
+    fillTransferFieldsFromBean(bean);
+    if (transferDirection === 'out') recalcTransferOutPriceFromMargin();
+    updateTransferConfirmState();
+  });
+
+  document.getElementById('transfer-new-name').addEventListener('input', updateTransferConfirmState);
+  document.getElementById('t-quantity').addEventListener('input', updateTransferTotal);
+  document.getElementById('t-price-in').addEventListener('input', updateTransferTotal);
+  document.getElementById('t-margin-pct').addEventListener('input', recalcTransferOutPriceFromMargin);
+  document.getElementById('t-price-out').addEventListener('input', recalcTransferMarginFromPrice);
+  document.getElementById('transfer-contact-select').addEventListener('change', updateTransferConfirmState);
+
+  function openTransferScreen(){
+    populateContactSelect();
+    populateTransferBeanSelect();
+    document.getElementById('transfer-new-name-group').style.display = 'none';
+    document.getElementById('transfer-new-name').value = '';
+    fillTransferFieldsFromBean(null);
+    document.getElementById('t-quantity').value = '';
+    document.getElementById('t-price-in').value = '';
+    document.getElementById('t-margin-pct').value = '';
+    document.getElementById('t-price-out').value = '';
+    setTransferDirection('in');
+    updateTransferTotal();
+    showScreen('screen-transfer');
+  }
+
+  document.getElementById('open-transfer-btn').addEventListener('click', openTransferScreen);
+  document.getElementById('transfer-back-btn').addEventListener('click', function(){ showScreen('screen-list'); });
+
+  var lastTransferRecord = null;
+
+  document.getElementById('confirm-transfer-btn').addEventListener('click', function(){
+    var contactSel = document.getElementById('transfer-contact-select');
+    var contact = contacts.find(function(c){ return c.id === contactSel.value; });
+    if (!contact) return;
+
+    var beanSel = document.getElementById('transfer-bean-select');
+    var isNewBean = beanSel.value === '__new__';
+    var existingBean = isNewBean ? null : beans.find(function(b){ return b.id === beanSel.value; });
+
+    var qty = parseFloat(document.getElementById('t-quantity').value) || 0;
+    if (qty <= 0) return;
+
+    var beanName = isNewBean ? document.getElementById('transfer-new-name').value.trim() : (existingBean ? existingBean.name : '');
+    if (!beanName) return;
+
+    var fieldsSnapshot = {
+      country: document.getElementById('t-country').value.trim(),
+      region: document.getElementById('t-region').value.trim(),
+      station: document.getElementById('t-station').value.trim(),
+      process: document.getElementById('t-process').value.trim(),
+      altitude: document.getElementById('t-altitude').value.trim(),
+      variety: document.getElementById('t-variety').value.trim(),
+      harvest: document.getElementById('t-harvest').value.trim()
+    };
+
+    var record = {
+      id: uid(),
+      date: new Date().toISOString(),
+      direction: transferDirection,
+      contactName: contact.name,
+      contactEmail: contact.email,
+      beanName: beanName,
+      quantity: qty,
+      pricePerKg: 0,
+      totalAmount: 0
+    };
+
+    if (transferDirection === 'in') {
+      var priceIn = parseFloat(document.getElementById('t-price-in').value) || 0;
+      record.pricePerKg = priceIn;
+      record.totalAmount = qty * priceIn;
+
+      if (existingBean && supplierMatches(existingBean.supplier, contact.name)) {
+        var existingQty = parseFloat(existingBean.quantity) || 0;
+        var existingValue = existingQty * (parseFloat(existingBean.costPerKg) || 0);
+        var incomingValue = qty * priceIn;
+        var newQty = existingQty + qty;
+        var newCostPerKg = newQty > 0 ? (existingValue + incomingValue) / newQty : priceIn;
+        beans = beans.map(function(b){
+          if (b.id !== existingBean.id) return b;
+          return Object.assign({}, b, { quantity: newQty.toFixed(1), costPerKg: newCostPerKg.toFixed(2) });
+        });
+      } else {
+        var base = existingBean || fieldsSnapshot;
+        beans.push(Object.assign({
+          id: uid(),
+          name: beanName,
+          country: base.country || '',
+          region: base.region || '',
+          station: base.station || '',
+          process: base.process || '',
+          altitude: base.altitude || '',
+          variety: base.variety || '',
+          harvest: base.harvest || '',
+          supplier: contact.name,
+          quantity: qty.toFixed(1),
+          costPerKg: priceIn.toFixed(2)
+        }));
+      }
+    } else {
+      var priceOut = parseFloat(document.getElementById('t-price-out').value) || 0;
+      record.pricePerKg = priceOut;
+      record.totalAmount = qty * priceOut;
+
+      if (existingBean) {
+        var remainingQty = Math.max(0, (parseFloat(existingBean.quantity) || 0) - qty);
+        beans = beans.map(function(b){
+          if (b.id !== existingBean.id) return b;
+          return Object.assign({}, b, { quantity: remainingQty.toFixed(1) });
+        });
+      }
+    }
+
+    transferHistory.push(record);
+    try { saveTransfersToServer(transferHistory); } catch(e) { console.error('Save transfer history failed', e); }
+
+    lastTransferRecord = record;
+
+    persist();
+    render();
+
+    var dirLabel = transferDirection === 'in' ? 'Received' : 'Sent';
+    document.getElementById('transfer-record-summary').textContent =
+      dirLabel + ' ' + fmtKg(qty) + ' of ' + beanName + ' ' + (transferDirection === 'in' ? 'from' : 'to') + ' ' + contact.name + ' \u2014 ' + fmtMoney(record.totalAmount) + ' total.';
+    showScreen('screen-transfer-record');
+  });
+
+  document.getElementById('transfer-record-back-btn').addEventListener('click', function(){ showScreen('screen-list'); });
+  document.getElementById('transfer-record-done-btn').addEventListener('click', function(){ showScreen('screen-list'); });
+
+  document.getElementById('download-invoice-btn').addEventListener('click', function(){
+    if (!lastTransferRecord || !window.jspdf) return;
+    var r = lastTransferRecord;
+    var doc = new window.jspdf.jsPDF();
+    var brown = [70, 62, 58];
+
+    doc.setFontSize(20);
+    doc.setTextColor.apply(doc, brown);
+    doc.text('Ratio Coffee', 20, 25);
+    doc.setFontSize(11);
+    doc.setTextColor(120, 120, 120);
+    doc.text('Green bean stock transfer invoice', 20, 32);
+
+    doc.setDrawColor(220, 210, 194);
+    doc.line(20, 38, 190, 38);
+
+    doc.setFontSize(10);
+    doc.setTextColor(40, 40, 40);
+    var y = 50;
+    var direction = r.direction === 'in' ? 'Purchase from' : 'Sale to';
+    doc.text('Date: ' + new Date(r.date).toLocaleDateString(), 20, y); y += 8;
+    doc.text(direction + ': ' + r.contactName, 20, y); y += 6;
+    doc.text('Email: ' + r.contactEmail, 20, y); y += 14;
+
+    doc.setFontSize(11);
+    doc.setTextColor.apply(doc, brown);
+    doc.text('Item', 20, y);
+    doc.text('Qty (kg)', 110, y);
+    doc.text('Price/kg', 145, y);
+    doc.text('Total', 175, y);
+    y += 4;
+    doc.setDrawColor(220, 210, 194);
+    doc.line(20, y, 190, y);
+    y += 8;
+
+    doc.setFontSize(10);
+    doc.setTextColor(40, 40, 40);
+    doc.text(r.beanName, 20, y);
+    doc.text(r.quantity.toFixed(1), 110, y);
+    doc.text('$' + r.pricePerKg.toFixed(2), 145, y);
+    doc.text('$' + r.totalAmount.toFixed(2), 175, y);
+    y += 14;
+
+    doc.line(20, y, 190, y);
+    y += 10;
+    doc.setFontSize(12);
+    doc.setTextColor.apply(doc, brown);
+    doc.text('Total: $' + r.totalAmount.toFixed(2), 145, y);
+
+    var fileName = 'ratio-transfer-' + new Date(r.date).toISOString().slice(0,10) + '.pdf';
+    doc.save(fileName);
+  });
+
   // ---------- Password gate ----------
   var gateInput = document.getElementById('gate-password-input');
   var gateError = document.getElementById('gate-error');
@@ -1288,6 +1871,8 @@
         beans = SEED_BEANS.slice();
         await saveBeansToServer(beans);
       }
+      contacts = await loadContactsFromServer();
+      transferHistory = await loadTransfersFromServer();
       showScreen('screen-list');
       render();
     } catch(e) {
