@@ -17,6 +17,8 @@ const ALLOWED_KEYS = {
   contacts: 'roaster-contacts',
   transfers: 'transfer-history',
   invoices: 'invoice-log',
+  staff: 'staff-contacts',
+  timesheets: 'staff-timesheets',
 };
 
 export default async function handler(req, res) {

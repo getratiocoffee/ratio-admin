@@ -433,6 +433,59 @@
     width: 56px; height: 56px; border-radius: 50%; background: #EFE8DE; color: #8A7F6F;
     display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;
   }
+
+  /* ===== Staff Timesheet ===== */
+  .ts-staff-card {
+    border: 1.5px solid #DCD2C2; border-radius: 16px; margin-bottom: 12px; background: #FFFFFF; overflow: hidden;
+  }
+  .ts-staff-header {
+    padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer;
+  }
+  .ts-staff-name { font-size: 16px; font-weight: 600; color: #2E2925; }
+  .ts-staff-total { font-size: 12px; color: #8A7F6F; margin-top: 2px; }
+  .ts-staff-body { padding: 0 14px 14px; }
+  .ts-day-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0; border-top: 1px solid #EFE8DE;
+  }
+  .ts-day-row:first-child { border-top: none; }
+  .ts-day-label-group { display: flex; align-items: baseline; gap: 8px; }
+  .ts-day-name { font-size: 16px; font-weight: 700; color: #2E2925; }
+  .ts-day-date { font-size: 11px; color: #B0A491; }
+  .ts-day-hours { font-size: 13px; color: #463E3A; font-weight: 600; }
+  .ts-day-hours.empty { color: #B0A491; font-weight: 400; font-style: italic; }
+
+  .ts-add-staff-row {
+    border: 1.5px solid #DCD2C2; border-radius: 16px; padding: 14px; margin-bottom: 14px; background: #FFFFFF;
+  }
+  .ts-add-staff-top { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .ts-add-staff-top select {
+    flex: 1; width: 100%; padding: 12px 14px; font-size: 16px; border: 1.5px solid #DCD2C2; border-radius: 14px;
+    background: #FFFFFF; color: #2E2925; font-family: inherit; box-sizing: border-box;
+  }
+  .ts-day-input-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 10px 0; border-top: 1px solid #EFE8DE;
+  }
+  .ts-day-input-row:first-child { border-top: none; }
+  .ts-day-input-label { display: flex; align-items: baseline; gap: 8px; flex-shrink: 0; width: 86px; }
+  .ts-day-input-fields { display: flex; align-items: center; gap: 6px; flex: 1; }
+  .ts-day-input-fields input {
+    flex: 1; min-width: 0; padding: 9px 8px; font-size: 14px; border: 1.5px solid #DCD2C2; border-radius: 10px;
+    background: #FFFFFF; color: #2E2925; font-family: inherit; box-sizing: border-box;
+  }
+  .ts-day-input-fields span { font-size: 12px; color: #B0A491; flex-shrink: 0; }
+
+  .ts-previous-row {
+    border: 1.5px solid #DCD2C2; border-radius: 16px; margin-bottom: 12px; background: #FFFFFF; overflow: hidden;
+  }
+  .ts-previous-header {
+    padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer;
+  }
+  .ts-previous-range { font-size: 15px; font-weight: 600; color: #2E2925; }
+  .ts-previous-meta { font-size: 12px; color: #8A7F6F; margin-top: 2px; }
+  .ts-previous-body { padding: 0 14px 14px; }
+
   .contact-row {
     display: flex; align-items: center; justify-content: space-between;
     padding: 12px 14px; border: 1.5px solid #DCD2C2; border-radius: 14px; margin-bottom: 10px; background: #FFFFFF;
@@ -654,13 +707,112 @@
         </div>
         <h1>Staff Timesheet</h1>
       </div>
-      <div class="form-scroll">
-        <div class="placeholder-screen">
-          <div class="placeholder-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
-          </div>
-          <p class="field-hint" style="text-align:center;">Staff Timesheet is coming soon.</p>
+      <div class="menu-body">
+        <button class="menu-card" id="ts-open-current-btn">
+          <span class="menu-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </span>
+          <span class="menu-card-text">
+            <span class="menu-card-title">Check Current Timesheet</span>
+            <span class="menu-card-sub">This week's hours</span>
+          </span>
+          <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+
+        <button class="menu-card" id="ts-open-add-btn">
+          <span class="menu-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+          <span class="menu-card-text">
+            <span class="menu-card-title">Add New Timesheet</span>
+            <span class="menu-card-sub">Log hours for this week</span>
+          </span>
+          <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+
+        <button class="menu-card" id="ts-open-previous-btn">
+          <span class="menu-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+          </span>
+          <span class="menu-card-text">
+            <span class="menu-card-title">Check Previous Timesheet</span>
+            <span class="menu-card-sub">Completed weeks</span>
+          </span>
+          <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+
+        <div class="divider"></div>
+        <button class="add-row-btn" id="ts-manage-staff-btn" type="button">Manage staff list</button>
+      </div>
+    </div>
+
+    <!-- ===== CURRENT TIMESHEET SCREEN ===== -->
+    <div class="screen" id="screen-ts-current">
+      <div class="form-topbar">
+        <div class="back-btn" id="ts-current-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
+        <h1>Current Timesheet</h1>
+      </div>
+      <div class="form-scroll">
+        <p class="field-hint" id="ts-current-range" style="margin-bottom: 14px;"></p>
+        <div id="ts-current-list"></div>
+      </div>
+      <div class="form-bottom-bar" id="ts-current-complete-bar" style="display:none;">
+        <button class="btn-save" id="ts-complete-week-btn">Complete this week</button>
+        <p class="required-hint">This will move the week to Previous Timesheet. This cannot be undone.</p>
+      </div>
+    </div>
+
+    <!-- ===== PREVIOUS TIMESHEET SCREEN ===== -->
+    <div class="screen" id="screen-ts-previous">
+      <div class="form-topbar">
+        <div class="back-btn" id="ts-previous-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        <h1>Previous Timesheets</h1>
+      </div>
+      <div class="form-scroll">
+        <div id="ts-previous-list"></div>
+      </div>
+    </div>
+
+    <!-- ===== ADD NEW TIMESHEET SCREEN ===== -->
+    <div class="screen" id="screen-ts-add">
+      <div class="form-topbar">
+        <div class="back-btn" id="ts-add-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        <h1>Add New Timesheet</h1>
+      </div>
+      <div class="form-scroll">
+        <p class="field-hint" id="ts-add-range" style="margin-bottom: 14px;"></p>
+        <div id="ts-add-rows"></div>
+        <button class="add-row-btn" id="ts-add-row-btn" type="button">+ Add staff member</button>
+      </div>
+      <div class="form-bottom-bar">
+        <button class="btn-save" id="ts-save-week-btn" disabled>Save timesheet</button>
+        <p class="required-hint">Hours will be added to this week's timesheet.</p>
+      </div>
+    </div>
+
+    <!-- ===== MANAGE STAFF SCREEN ===== -->
+    <div class="screen" id="screen-staff">
+      <div class="form-topbar">
+        <div class="back-btn" id="staff-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        <h1>Staff list</h1>
+      </div>
+      <div class="form-scroll">
+        <div id="staff-list"></div>
+        <div class="divider"></div>
+        <div class="section-label" style="margin-bottom: 10px;">Add staff member</div>
+        <div class="field-group">
+          <label class="field-label">Name</label>
+          <input type="text" class="field-input" id="staff-name-input" placeholder="e.g. Jordan Pak">
+        </div>
+        <button class="add-row-btn" id="staff-add-btn" type="button">+ Add staff member</button>
       </div>
     </div>
 
@@ -1226,10 +1378,30 @@
     return true;
   }
 
+  async function loadStaffFromServer(){
+    var data = await apiRequest('staff', 'GET');
+    return data && Array.isArray(data.items) ? data.items : [];
+  }
+  async function saveStaffToServer(staff){
+    await apiRequest('staff', 'POST', { items: staff });
+    return true;
+  }
+
+  async function loadTimesheetsFromServer(){
+    var data = await apiRequest('timesheets', 'GET');
+    return data && Array.isArray(data.items) ? data.items : [];
+  }
+  async function saveTimesheetsToServer(timesheets){
+    await apiRequest('timesheets', 'POST', { items: timesheets });
+    return true;
+  }
+
   var beans = [];
   var contacts = [];
   var transferHistory = [];
   var invoiceLog = [];
+  var staffList = [];
+  var timesheets = [];
 
   var state = {
     search: '',
@@ -2513,6 +2685,416 @@
     showScreen('screen-menu');
   });
 
+  // ---------- Staff Timesheet ----------
+  var DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+  var DAY_LABELS = { mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday', thu: 'Thursday', fri: 'Friday', sat: 'Saturday', sun: 'Sunday' };
+
+  function getMonday(d){
+    var date = new Date(d);
+    var day = date.getDay();
+    var diff = day === 0 ? -6 : 1 - day;
+    date.setDate(date.getDate() + diff);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }
+  function isoDate(d){
+    var date = new Date(d);
+    var y = date.getFullYear();
+    var m = String(date.getMonth() + 1).padStart(2, '0');
+    var dd = String(date.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + dd;
+  }
+  function fmtShortDate(isoStr){
+    var d = new Date(isoStr + 'T00:00:00');
+    return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
+  }
+  function weekDates(mondayIso){
+    var monday = new Date(mondayIso + 'T00:00:00');
+    var result = {};
+    DAY_KEYS.forEach(function(key, i){
+      var d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      result[key] = isoDate(d);
+    });
+    return result;
+  }
+  function hoursBetween(start, end){
+    if (!start || !end) return null;
+    var s = start.split(':'); var e = end.split(':');
+    var startMin = parseInt(s[0], 10) * 60 + parseInt(s[1], 10);
+    var endMin = parseInt(e[0], 10) * 60 + parseInt(e[1], 10);
+    var diff = endMin - startMin;
+    if (diff < 0) diff += 24 * 60;
+    return diff / 60;
+  }
+  function fmtHours(h){
+    if (h == null) return null;
+    return (Math.round(h * 100) / 100) + ' hrs';
+  }
+
+  function getCurrentWeekIso(){
+    return isoDate(getMonday(new Date()));
+  }
+  function getOrCreateCurrentWeek(){
+    var weekStart = getCurrentWeekIso();
+    var week = timesheets.find(function(w){ return w.weekStart === weekStart && w.status === 'current'; });
+    if (!week) {
+      week = { id: uid(), weekStart: weekStart, status: 'current', entries: [] };
+      timesheets.push(week);
+    }
+    return week;
+  }
+
+  async function persistTimesheets(){
+    try { await saveTimesheetsToServer(timesheets); } catch(e) { console.error('Save timesheets failed', e); }
+  }
+  async function persistStaff(){
+    try { await saveStaffToServer(staffList); } catch(e) { console.error('Save staff failed', e); }
+  }
+
+  // ----- Manage staff -----
+  function renderStaffList(){
+    var listEl = document.getElementById('staff-list');
+    if (staffList.length === 0) {
+      listEl.innerHTML = '<p class="field-hint">No staff added yet.</p>';
+      return;
+    }
+    var html = '';
+    staffList.forEach(function(s){
+      html += '<div class="contact-row" data-id="' + s.id + '">';
+      html += '  <div class="contact-row-name">' + esc(s.name) + '</div>';
+      html += '  <button class="contact-delete-btn" data-action="delete-staff" aria-label="Delete staff member"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+      html += '</div>';
+    });
+    listEl.innerHTML = html;
+    listEl.querySelectorAll('[data-action="delete-staff"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var row = btn.closest('.contact-row');
+        var id = row.getAttribute('data-id');
+        staffList = staffList.filter(function(s){ return s.id !== id; });
+        persistStaff();
+        renderStaffList();
+      });
+    });
+  }
+
+  document.getElementById('staff-add-btn').addEventListener('click', function(){
+    var input = document.getElementById('staff-name-input');
+    var name = input.value.trim();
+    if (!name) return;
+    staffList.push({ id: uid(), name: name });
+    persistStaff();
+    input.value = '';
+    renderStaffList();
+  });
+
+  document.getElementById('ts-manage-staff-btn').addEventListener('click', function(){
+    renderStaffList();
+    showScreen('screen-staff');
+  });
+  document.getElementById('staff-back-btn').addEventListener('click', function(){
+    showScreen('screen-timesheet');
+  });
+
+  // ----- Current timesheet -----
+  var expandedStaffRows = {};
+
+  function renderCurrentTimesheet(){
+    var weekStart = getCurrentWeekIso();
+    var week = timesheets.find(function(w){ return w.weekStart === weekStart && w.status === 'current'; });
+    var dates = weekDates(weekStart);
+    var sundayIso = dates.sun;
+
+    document.getElementById('ts-current-range').textContent =
+      fmtShortDate(weekStart) + ' \u2013 ' + fmtShortDate(sundayIso) + ' (Mon\u2013Sun)';
+
+    var listEl = document.getElementById('ts-current-list');
+    var completeBar = document.getElementById('ts-current-complete-bar');
+
+    if (!week || week.entries.length === 0) {
+      listEl.innerHTML = '<p class="field-hint">No timesheet entries for this week yet. Use Add New Timesheet to log hours.</p>';
+      completeBar.style.display = 'none';
+      return;
+    }
+
+    completeBar.style.display = 'block';
+
+    var html = '';
+    week.entries.forEach(function(entry, idx){
+      var rowKey = week.id + '-' + idx;
+      var expanded = !!expandedStaffRows[rowKey];
+      var totalHours = 0;
+      DAY_KEYS.forEach(function(dk){
+        var d = entry.days[dk];
+        if (d && d.start && d.end) {
+          var h = hoursBetween(d.start, d.end);
+          if (h != null) totalHours += h;
+        }
+      });
+
+      html += '<div class="ts-staff-card" data-row-key="' + rowKey + '">';
+      html += '  <div class="ts-staff-header" data-action="toggle-staff-row">';
+      html += '    <div>';
+      html += '      <div class="ts-staff-name">' + esc(entry.staffName) + '</div>';
+      html += '      <div class="ts-staff-total">' + fmtHours(totalHours) + ' this week</div>';
+      html += '    </div>';
+      html += '    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(' + (expanded ? '180deg' : '0deg') + ');"><polyline points="6 9 12 15 18 9"/></svg>';
+      html += '  </div>';
+      if (expanded) {
+        html += '  <div class="ts-staff-body">';
+        DAY_KEYS.forEach(function(dk){
+          var d = entry.days[dk] || {};
+          var hoursLabel = (d.start && d.end) ? fmtHours(hoursBetween(d.start, d.end)) : 'Not set';
+          html += '    <div class="ts-day-row">';
+          html += '      <div class="ts-day-label-group"><span class="ts-day-name">' + DAY_LABELS[dk] + '</span><span class="ts-day-date">' + fmtShortDate(dates[dk]) + '</span></div>';
+          html += '      <span class="ts-day-hours' + ((d.start && d.end) ? '' : ' empty') + '">' + (d.start && d.end ? (d.start + ' \u2013 ' + d.end) : hoursLabel) + '</span>';
+          html += '    </div>';
+        });
+        html += '  </div>';
+      }
+      html += '</div>';
+    });
+    listEl.innerHTML = html;
+
+    listEl.querySelectorAll('[data-action="toggle-staff-row"]').forEach(function(header){
+      header.addEventListener('click', function(){
+        var card = header.closest('.ts-staff-card');
+        var key = card.getAttribute('data-row-key');
+        expandedStaffRows[key] = !expandedStaffRows[key];
+        renderCurrentTimesheet();
+      });
+    });
+  }
+
+  document.getElementById('ts-open-current-btn').addEventListener('click', function(){
+    renderCurrentTimesheet();
+    showScreen('screen-ts-current');
+  });
+  document.getElementById('ts-current-back-btn').addEventListener('click', function(){
+    showScreen('screen-timesheet');
+  });
+
+  document.getElementById('ts-complete-week-btn').addEventListener('click', function(){
+    var weekStart = getCurrentWeekIso();
+    var week = timesheets.find(function(w){ return w.weekStart === weekStart && w.status === 'current'; });
+    if (!week) return;
+    if (!confirm('Complete this week and move it to Previous Timesheet?')) return;
+    week.status = 'completed';
+    persistTimesheets();
+    showScreen('screen-timesheet');
+  });
+
+  // ----- Add new timesheet -----
+  var tsAddRows = [];
+  var tsAddRowCounter = 0;
+
+  function staffOptionsHtml(selectedId){
+    return staffList.map(function(s){
+      return '<option value="' + s.id + '"' + (s.id === selectedId ? ' selected' : '') + '>' + esc(s.name) + '</option>';
+    }).join('');
+  }
+
+  function renderAddRows(){
+    var container = document.getElementById('ts-add-rows');
+    if (staffList.length === 0) {
+      container.innerHTML = '<p class="field-hint">No staff in your list yet. Add staff members first from the Staff Timesheet menu.</p>';
+      document.getElementById('ts-save-week-btn').disabled = true;
+      return;
+    }
+
+    var weekStart = getCurrentWeekIso();
+    var dates = weekDates(weekStart);
+
+    var html = '';
+    tsAddRows.forEach(function(row){
+      html += '<div class="ts-add-staff-row" data-row-id="' + row.id + '">';
+      html += '  <div class="ts-add-staff-top">';
+      html += '    <select class="ts-staff-select">' + staffOptionsHtml(row.staffId) + '</select>';
+      if (tsAddRows.length > 1) {
+        html += '    <button class="remove-row-btn" data-action="remove-ts-row" aria-label="Remove"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+      }
+      html += '  </div>';
+      DAY_KEYS.forEach(function(dk){
+        var val = row.days[dk] || {};
+        html += '  <div class="ts-day-input-row">';
+        html += '    <div class="ts-day-input-label"><span class="ts-day-name" style="font-size:14px;">' + DAY_LABELS[dk].slice(0,3) + '</span><span class="ts-day-date">' + fmtShortDate(dates[dk]) + '</span></div>';
+        html += '    <div class="ts-day-input-fields">';
+        html += '      <input type="time" class="ts-start-input" data-day="' + dk + '" value="' + esc(val.start || '') + '">';
+        html += '      <span>to</span>';
+        html += '      <input type="time" class="ts-end-input" data-day="' + dk + '" value="' + esc(val.end || '') + '">';
+        html += '    </div>';
+        html += '  </div>';
+      });
+      html += '</div>';
+    });
+    container.innerHTML = html;
+
+    container.querySelectorAll('.ts-add-staff-row').forEach(function(rowEl){
+      var rowId = rowEl.getAttribute('data-row-id');
+      var rowData = tsAddRows.find(function(r){ return r.id == rowId; });
+
+      rowEl.querySelector('.ts-staff-select').addEventListener('change', function(e){
+        rowData.staffId = e.target.value;
+        updateAddSaveState();
+      });
+      rowEl.querySelectorAll('.ts-start-input, .ts-end-input').forEach(function(input){
+        input.addEventListener('input', function(){
+          var dk = input.getAttribute('data-day');
+          if (!rowData.days[dk]) rowData.days[dk] = {};
+          if (input.classList.contains('ts-start-input')) {
+            rowData.days[dk].start = input.value;
+          } else {
+            rowData.days[dk].end = input.value;
+          }
+          updateAddSaveState();
+        });
+      });
+      var removeBtn = rowEl.querySelector('[data-action="remove-ts-row"]');
+      if (removeBtn) {
+        removeBtn.addEventListener('click', function(){
+          tsAddRows = tsAddRows.filter(function(r){ return r.id != rowId; });
+          renderAddRows();
+        });
+      }
+    });
+
+    updateAddSaveState();
+  }
+
+  function updateAddSaveState(){
+    var canSave = tsAddRows.some(function(r){
+      return r.staffId && DAY_KEYS.some(function(dk){ return r.days[dk] && r.days[dk].start && r.days[dk].end; });
+    });
+    document.getElementById('ts-save-week-btn').disabled = !canSave;
+  }
+
+  document.getElementById('ts-add-row-btn').addEventListener('click', function(){
+    if (staffList.length === 0) return;
+    tsAddRowCounter++;
+    tsAddRows.push({ id: tsAddRowCounter, staffId: staffList[0].id, days: {} });
+    renderAddRows();
+  });
+
+  function openAddTimesheetScreen(){
+    var weekStart = getCurrentWeekIso();
+    var dates = weekDates(weekStart);
+    document.getElementById('ts-add-range').textContent =
+      fmtShortDate(weekStart) + ' \u2013 ' + fmtShortDate(dates.sun) + ' (Mon\u2013Sun)';
+
+    tsAddRowCounter = 1;
+    tsAddRows = staffList.length > 0 ? [{ id: 1, staffId: staffList[0].id, days: {} }] : [];
+    renderAddRows();
+    showScreen('screen-ts-add');
+  }
+
+  document.getElementById('ts-open-add-btn').addEventListener('click', openAddTimesheetScreen);
+  document.getElementById('ts-add-back-btn').addEventListener('click', function(){
+    showScreen('screen-timesheet');
+  });
+
+  document.getElementById('ts-save-week-btn').addEventListener('click', function(){
+    var week = getOrCreateCurrentWeek();
+    tsAddRows.forEach(function(row){
+      if (!row.staffId) return;
+      var hasAnyHours = DAY_KEYS.some(function(dk){ return row.days[dk] && row.days[dk].start && row.days[dk].end; });
+      if (!hasAnyHours) return;
+      var staffMember = staffList.find(function(s){ return s.id === row.staffId; });
+      var existingEntry = week.entries.find(function(e){ return e.staffId === row.staffId; });
+      if (existingEntry) {
+        DAY_KEYS.forEach(function(dk){
+          if (row.days[dk] && row.days[dk].start && row.days[dk].end) {
+            existingEntry.days[dk] = { start: row.days[dk].start, end: row.days[dk].end };
+          }
+        });
+      } else {
+        week.entries.push({
+          staffId: row.staffId,
+          staffName: staffMember ? staffMember.name : 'Unknown',
+          days: row.days
+        });
+      }
+    });
+    persistTimesheets();
+    showScreen('screen-timesheet');
+  });
+
+  // ----- Previous timesheets -----
+  var expandedPreviousWeeks = {};
+
+  function renderPreviousTimesheets(){
+    var listEl = document.getElementById('ts-previous-list');
+    var completed = timesheets.filter(function(w){ return w.status === 'completed'; })
+      .sort(function(a, b){ return new Date(b.weekStart) - new Date(a.weekStart); });
+
+    if (completed.length === 0) {
+      listEl.innerHTML = '<p class="field-hint">No completed timesheets yet.</p>';
+      return;
+    }
+
+    var html = '';
+    completed.forEach(function(week){
+      var dates = weekDates(week.weekStart);
+      var expanded = !!expandedPreviousWeeks[week.id];
+      var totalStaff = week.entries.length;
+
+      html += '<div class="ts-previous-row" data-week-id="' + week.id + '">';
+      html += '  <div class="ts-previous-header" data-action="toggle-previous-week">';
+      html += '    <div>';
+      html += '      <div class="ts-previous-range">' + fmtShortDate(week.weekStart) + ' \u2013 ' + fmtShortDate(dates.sun) + '</div>';
+      html += '      <div class="ts-previous-meta">' + totalStaff + ' staff member' + (totalStaff === 1 ? '' : 's') + '</div>';
+      html += '    </div>';
+      html += '    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(' + (expanded ? '180deg' : '0deg') + ');"><polyline points="6 9 12 15 18 9"/></svg>';
+      html += '  </div>';
+      if (expanded) {
+        html += '  <div class="ts-previous-body">';
+        week.entries.forEach(function(entry){
+          var totalHours = 0;
+          DAY_KEYS.forEach(function(dk){
+            var d = entry.days[dk];
+            if (d && d.start && d.end) {
+              var h = hoursBetween(d.start, d.end);
+              if (h != null) totalHours += h;
+            }
+          });
+          html += '    <div class="ts-staff-card">';
+          html += '      <div class="ts-staff-header" style="cursor:default;">';
+          html += '        <div><div class="ts-staff-name">' + esc(entry.staffName) + '</div><div class="ts-staff-total">' + fmtHours(totalHours) + ' total</div></div>';
+          html += '      </div>';
+          html += '      <div class="ts-staff-body">';
+          DAY_KEYS.forEach(function(dk){
+            var d = entry.days[dk] || {};
+            html += '        <div class="ts-day-row">';
+            html += '          <div class="ts-day-label-group"><span class="ts-day-name">' + DAY_LABELS[dk] + '</span><span class="ts-day-date">' + fmtShortDate(dates[dk]) + '</span></div>';
+            html += '          <span class="ts-day-hours' + ((d.start && d.end) ? '' : ' empty') + '">' + (d.start && d.end ? (d.start + ' \u2013 ' + d.end) : 'Not set') + '</span>';
+            html += '        </div>';
+          });
+          html += '      </div>';
+          html += '    </div>';
+        });
+        html += '  </div>';
+      }
+      html += '</div>';
+    });
+    listEl.innerHTML = html;
+
+    listEl.querySelectorAll('[data-action="toggle-previous-week"]').forEach(function(header){
+      header.addEventListener('click', function(){
+        var row = header.closest('.ts-previous-row');
+        var weekId = row.getAttribute('data-week-id');
+        expandedPreviousWeeks[weekId] = !expandedPreviousWeeks[weekId];
+        renderPreviousTimesheets();
+      });
+    });
+  }
+
+  document.getElementById('ts-open-previous-btn').addEventListener('click', function(){
+    renderPreviousTimesheets();
+    showScreen('screen-ts-previous');
+  });
+  document.getElementById('ts-previous-back-btn').addEventListener('click', function(){
+    showScreen('screen-timesheet');
+  });
+
   // ---------- Password gate ----------
   var gateInput = document.getElementById('gate-password-input');
   var gateError = document.getElementById('gate-error');
@@ -2535,6 +3117,8 @@
       contacts = await loadContactsFromServer();
       transferHistory = await loadTransfersFromServer();
       invoiceLog = await loadInvoiceLogFromServer();
+      staffList = await loadStaffFromServer();
+      timesheets = await loadTimesheetsFromServer();
       showScreen('screen-menu');
       render();
     } catch(e) {
