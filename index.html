@@ -2021,131 +2021,148 @@
     var contactName = sorted[0].contactName;
     var contactEmail = sorted[0].contactEmail;
     var invoiceNumber = generateNextInvoiceNumber();
+    var invoiceDate = new Date();
 
     var doc = new window.jspdf.jsPDF();
     var brown = [70, 62, 58];
+    var grey = [110, 110, 110];
+    var dark = [40, 40, 40];
 
+    // ----- Logo (top right) -----
     try {
-      doc.addImage(RATIO_LOGO_BASE64, 'PNG', 20, 14, 16, 16);
+      doc.addImage(RATIO_LOGO_BASE64, 'PNG', 170, 14, 18, 18);
     } catch(e) { console.error('Could not add logo to PDF', e); }
 
-    doc.setFontSize(20);
-    doc.setTextColor.apply(doc, brown);
-    doc.text('Ratio Coffee', 42, 25);
-    doc.setFontSize(11);
-    doc.setTextColor(120, 120, 120);
-    doc.text('Green bean stock transfer invoice', 42, 32);
-    doc.setFontSize(8);
-    doc.text('ABN ' + RATIO_PAYMENT_DETAILS.abn, 42, 37);
-
-    doc.setFontSize(11);
-    doc.setTextColor.apply(doc, brown);
-    doc.text(invoiceNumber, 190, 20, { align: 'right' });
-
-    doc.setDrawColor(220, 210, 194);
-    doc.line(20, 42, 190, 42);
+    // ----- Title -----
+    doc.setFontSize(22);
+    doc.setTextColor.apply(doc, dark);
+    doc.text('TAX INVOICE', 20, 28);
 
     doc.setFontSize(10);
-    doc.setTextColor(40, 40, 40);
-    var y = 54;
-    doc.text('Invoice number: ' + invoiceNumber, 20, y); y += 8;
-    doc.text('Date: ' + new Date().toLocaleDateString(), 20, y); y += 8;
-    doc.text('Sale to: ' + contactName, 20, y); y += 6;
-    doc.text('Email: ' + contactEmail, 20, y); y += 14;
+    doc.setTextColor.apply(doc, grey);
+    doc.text('Ratio Coffee', 20, 40);
+    doc.text('Crows Nest NSW', 20, 46);
 
-    doc.setFontSize(11);
+    // ----- Three-column meta block -----
+    var metaY = 60;
+    doc.setFontSize(9);
     doc.setTextColor.apply(doc, brown);
-    doc.text('Item', 20, y);
-    doc.text('Qty (kg)', 105, y);
-    doc.text('Price/kg', 140, y);
-    doc.text('Total', 175, y);
+    doc.text('Invoice Date', 20, metaY);
+    doc.text('Invoice Number', 20, metaY + 14);
+    doc.text('Reference', 20, metaY + 28);
+    doc.text('ABN', 20, metaY + 42);
+
+    doc.setTextColor.apply(doc, dark);
+    doc.text(invoiceDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }), 20, metaY + 6);
+    doc.text(invoiceNumber, 20, metaY + 20);
+    doc.text(invoiceNumber, 20, metaY + 34);
+    doc.text(RATIO_PAYMENT_DETAILS.abn, 20, metaY + 48);
+
+    doc.setTextColor.apply(doc, brown);
+    doc.text('Bill to', 110, metaY);
+    doc.setTextColor.apply(doc, dark);
+    doc.text(contactName, 110, metaY + 6);
+    doc.text(contactEmail, 110, metaY + 12);
+
+    // ----- Table header -----
+    var y = metaY + 64;
+    doc.setDrawColor(40, 40, 40);
+    doc.setLineWidth(0.4);
+    doc.line(20, y, 190, y);
+    y += 7;
+
+    doc.setFontSize(9);
+    doc.setTextColor.apply(doc, dark);
+    doc.text('Description', 20, y);
+    doc.text('Quantity', 100, y);
+    doc.text('Unit Price', 125, y);
+    doc.text('GST', 152, y);
+    doc.text('Amount AUD', 190, y, { align: 'right' });
     y += 4;
-    doc.setDrawColor(220, 210, 194);
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.2);
     doc.line(20, y, 190, y);
     y += 8;
 
     var grandTotal = 0;
-    var beanSubtotalSum = 0;
-    var feesSum = 0;
+    var subtotal = 0;
+    var totalGst = 0;
+
+    function addLine(description, qty, unitPrice, gstLabel, amount){
+      if (y > 265) { doc.addPage(); y = 25; }
+      doc.setFontSize(9);
+      doc.setTextColor.apply(doc, dark);
+      doc.text(description, 20, y);
+      doc.text(qty, 100, y);
+      doc.text(unitPrice, 125, y);
+      doc.text(gstLabel, 152, y);
+      doc.text(amount, 190, y, { align: 'right' });
+      y += 9;
+    }
 
     sorted.forEach(function(r){
       var beanSubtotal = r.quantity * r.pricePerKg;
+      subtotal += beanSubtotal;
+      grandTotal += beanSubtotal;
+      addLine(r.beanName, r.quantity.toFixed(2), '$' + r.pricePerKg.toFixed(2), 'GST Free', beanSubtotal.toFixed(2));
+
       var shipping = r.shippingCost || 0;
       var gst = r.gstAmount || 0;
-      grandTotal += r.totalAmount;
-      beanSubtotalSum += beanSubtotal;
-      feesSum += shipping;
-
-      if (y > 265) { doc.addPage(); y = 25; }
-
-      doc.setFontSize(10);
-      doc.setTextColor(40, 40, 40);
-      doc.text(r.beanName, 20, y);
-      doc.text(r.quantity.toFixed(1), 105, y);
-      doc.text('$' + r.pricePerKg.toFixed(2), 140, y);
-      doc.text('$' + beanSubtotal.toFixed(2), 175, y);
-      y += 6;
-      doc.setFontSize(8);
-      doc.setTextColor(140, 140, 140);
-      doc.text(new Date(r.date).toLocaleDateString(), 20, y);
-      y += 8;
-
       if (shipping > 0) {
-        doc.setFontSize(10);
-        doc.setTextColor(40, 40, 40);
-        doc.text('  + Shipping', 20, y);
-        doc.text('$' + shipping.toFixed(2), 175, y);
-        y += 6;
-        doc.setFontSize(8);
-        doc.setTextColor(140, 140, 140);
-        doc.text('(includes $' + gst.toFixed(2) + ' GST)', 20, y);
-        y += 9;
-      } else {
-        y += 3;
+        var shippingExGst = shipping - gst;
+        subtotal += shippingExGst;
+        totalGst += gst;
+        grandTotal += shipping;
+        addLine('Coffee freight on sales invoices', '1.00', '$' + shippingExGst.toFixed(2), '10%', shippingExGst.toFixed(2));
       }
     });
 
+    // ----- Totals -----
     if (y > 250) { doc.addPage(); y = 25; }
-
-    doc.setDrawColor(220, 210, 194);
-    doc.line(20, y, 190, y);
-    y += 10;
-
-    doc.setFontSize(10);
-    doc.setTextColor(80, 80, 80);
-    doc.text('Bean subtotal', 130, y);
-    doc.text('$' + beanSubtotalSum.toFixed(2), 175, y);
-    y += 7;
-    if (feesSum > 0) {
-      doc.text('Shipping / fees', 130, y);
-      doc.text('$' + feesSum.toFixed(2), 175, y);
-      y += 7;
-    }
-    y += 3;
-
-    doc.setFontSize(12);
-    doc.setTextColor.apply(doc, brown);
-    doc.text('Total: $' + grandTotal.toFixed(2), 145, y);
-    y += 18;
-
-    if (y > 255) { doc.addPage(); y = 25; }
-
-    doc.setDrawColor(220, 210, 194);
-    doc.line(20, y, 190, y);
-    y += 10;
-    doc.setFontSize(10);
-    doc.setTextColor.apply(doc, brown);
-    doc.text('Payment details', 20, y);
+    doc.setDrawColor(40, 40, 40);
+    doc.setLineWidth(0.3);
+    doc.line(130, y, 190, y);
     y += 8;
+
     doc.setFontSize(9);
-    doc.setTextColor(60, 60, 60);
-    doc.text('Account name: ' + RATIO_PAYMENT_DETAILS.accountName, 20, y); y += 6;
+    doc.setTextColor.apply(doc, dark);
+    doc.text('Subtotal', 130, y);
+    doc.text(subtotal.toFixed(2), 190, y, { align: 'right' });
+    y += 8;
+
+    doc.text('TOTAL GST 10%', 130, y);
+    doc.text(totalGst.toFixed(2), 190, y, { align: 'right' });
+    y += 6;
+    doc.setDrawColor(40, 40, 40);
+    doc.line(130, y, 190, y);
+    y += 8;
+
+    doc.setFontSize(11);
+    doc.setTextColor.apply(doc, brown);
+    doc.text('TOTAL AUD', 130, y);
+    doc.text(grandTotal.toFixed(2), 190, y, { align: 'right' });
+    y += 20;
+
+    // ----- Payment details -----
+    if (y > 250) { doc.addPage(); y = 25; }
+    doc.setDrawColor(220, 210, 194);
+    doc.setLineWidth(0.2);
+    doc.line(20, y, 190, y);
+    y += 10;
+
+    doc.setFontSize(9);
+    doc.setTextColor.apply(doc, dark);
+    doc.text('Preferred payment method: EFT', 20, y); y += 7;
+    doc.text('Account Name: ' + RATIO_PAYMENT_DETAILS.accountName, 20, y); y += 6;
     doc.text('BSB: ' + RATIO_PAYMENT_DETAILS.bsb, 20, y); y += 6;
-    doc.text('Account number: ' + RATIO_PAYMENT_DETAILS.accountNumber, 20, y); y += 6;
-    doc.text('ABN: ' + RATIO_PAYMENT_DETAILS.abn, 20, y); y += 9;
-    doc.setFontSize(9);
+    doc.text('Account Number: ' + RATIO_PAYMENT_DETAILS.accountNumber, 20, y); y += 10;
+
     doc.setTextColor(180, 95, 30);
-    doc.text('Please use ' + invoiceNumber + ' as the payment reference.', 20, y);
+    doc.text('Please use ' + invoiceNumber + ' as the payment reference.', 20, y); y += 12;
+
+    doc.setFontSize(8);
+    doc.setTextColor.apply(doc, grey);
+    doc.text('Ratio Coffee \u00b7 Crows Nest NSW \u00b7 ABN ' + RATIO_PAYMENT_DETAILS.abn, 20, y);
 
     invoiceLog.push(invoiceNumber);
     try { saveInvoiceLogToServer(invoiceLog); } catch(e) { console.error('Save invoice log failed', e); }
