@@ -295,7 +295,7 @@
   .btn-secondary { background: #FFFFFF; color: #463E3A; border: 1.5px solid #DCD2C2; flex: 0.85; }
 
   /* ===== Form screen ===== */
-  .screen { display: none; flex-direction: column; height: 100%; }
+  .screen { display: none; flex-direction: column; height: 100%; flex: 1; min-height: 0; }
   .screen.active { display: flex; }
   .form-topbar { padding: 18px 20px 12px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
   .back-btn {
@@ -404,7 +404,7 @@
   /* ===== Password gate ===== */
   .gate-screen {
     display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-    height: 100%; padding: 50px 24px 40px; text-align: center;
+    flex: 1; padding: 50px 24px 30px; text-align: center; box-sizing: border-box;
   }
   .gate-top { display: flex; flex-direction: column; align-items: center; padding-top: 10vh; }
   .gate-top img { display: block; margin-bottom: 14px; }
