@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Ratio Admin — Green stock</title>
+<title>Green Bean Inventory</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Ratio Admin">
+<meta name="apple-mobile-web-app-title" content="Green Bean Inventory">
 <meta name="theme-color" content="#EFE8DE">
 <link rel="apple-touch-icon" href="/logo.png">
 <link rel="icon" href="/logo.png">
@@ -439,7 +439,7 @@
       <div class="gate-screen">
         <div class="brand">
           <img src="/logo.png" width="40" height="40" alt="Ratio Coffee logo" style="display:block;margin:0 auto 10px;">
-          <span class="brand-name">Ratio Admin</span>
+          <span class="brand-name">Green Bean Inventory</span>
         </div>
         <div class="gate-title">Enter app password</div>
         <div class="gate-subtitle">Ask your manager for the shared password to access the green bean inventory.</div>
@@ -459,7 +459,7 @@
       <div class="app-header">
         <div class="brand">
           <img src="/logo.png" width="28" height="28" alt="Ratio Coffee logo" style="display:block;">
-          <span class="brand-name">Ratio Admin</span>
+          <span class="brand-name">Green Bean Inventory</span>
         </div>
         <div class="header-icon-btns">
           <button class="export-text-btn" id="export-btn" aria-label="Export backup">Export</button>
@@ -480,8 +480,7 @@
 
       <div class="section-bar">
         <div>
-          <div class="section-title">Green stock</div>
-          <div class="section-count" id="bean-count">0 green beans</div>
+          <div class="section-title">總咖啡豆選項：<span id="bean-count">0</span></div>
         </div>
         <button class="header-incomplete-badge hidden" id="header-incomplete-badge">
           <span class="incomplete-dot"></span>
@@ -780,7 +779,7 @@
       return matchesFilter && matchesIncomplete && matchesSearch;
     });
 
-    countEl.textContent = beans.length + ' green bean' + (beans.length === 1 ? '' : 's');
+    countEl.textContent = beans.length;
 
     var totalKg = beans.reduce(function(sum, b){ return sum + (parseFloat(b.quantity) || 0); }, 0);
     var totalValue = beans.reduce(function(sum, b){ return sum + (parseFloat(b.quantity) || 0) * (parseFloat(b.costPerKg) || 0); }, 0);
