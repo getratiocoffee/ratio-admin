@@ -390,6 +390,7 @@
     font-size: 15px; font-weight: 600; color: #2E2925; margin-top: 4px;
     padding-top: 8px; border-top: 1px solid #DCD2C2;
   }
+  .summary-gst-note { font-size: 11px; color: #B0A491; }
 
   /* ===== Stock Transfer ===== */
   .toggle-row { display: flex; gap: 8px; }
@@ -840,6 +841,21 @@
               <span class="cost-suffix">/kg</span>
             </div>
           </div>
+          <div class="field-group">
+            <label class="field-label">Handling fee</label>
+            <div class="cost-input-wrap">
+              <span class="cost-prefix">$</span>
+              <input type="number" class="field-input" id="t-handling-in" min="0" step="1" placeholder="0.00" inputmode="decimal">
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Delivery fee</label>
+            <div class="cost-input-wrap">
+              <span class="cost-prefix">$</span>
+              <input type="number" class="field-input" id="t-delivery-in" min="0" step="1" placeholder="0.00" inputmode="decimal">
+            </div>
+          </div>
+          <p class="field-hint">Handling and delivery fees are entered as GST-inclusive totals \u2014 GST is calculated as fee \u00f7 11.</p>
         </div>
 
         <div id="transfer-out-price-group" style="display:none;">
@@ -875,8 +891,9 @@
 
         <div class="delivery-summary">
           <div class="summary-line"><span>Bean subtotal</span><span id="transfer-bean-subtotal">$0.00</span></div>
-          <div class="summary-line" id="transfer-shipping-row" style="display:none;"><span>Shipping</span><span id="transfer-shipping-amount">$0.00</span></div>
-          <div class="summary-line" id="transfer-gst-row" style="display:none;"><span>incl. GST</span><span id="transfer-gst-amount">$0.00</span></div>
+          <div class="summary-line" id="transfer-handling-row" style="display:none;"><span>Handling fee <span class="summary-gst-note" id="transfer-handling-gst-note"></span></span><span id="transfer-handling-amount">$0.00</span></div>
+          <div class="summary-line" id="transfer-delivery-row" style="display:none;"><span>Delivery fee <span class="summary-gst-note" id="transfer-delivery-gst-note"></span></span><span id="transfer-delivery-amount">$0.00</span></div>
+          <div class="summary-line" id="transfer-shipping-row" style="display:none;"><span>Shipping <span class="summary-gst-note" id="transfer-shipping-gst-note"></span></span><span id="transfer-shipping-amount">$0.00</span></div>
           <div class="summary-line total"><span>Total amount</span><span id="transfer-total-amount">$0.00</span></div>
         </div>
 
@@ -1716,15 +1733,37 @@
       ? (parseFloat(document.getElementById('t-price-in').value) || 0)
       : (parseFloat(document.getElementById('t-price-out').value) || 0);
     var beanSubtotal = qty * price;
-    var shipping = transferDirection === 'out' ? (parseFloat(document.getElementById('t-shipping').value) || 0) : 0;
-    var gst = shipping / 11;
+
+    var handling = 0;
+    var delivery = 0;
+    var shipping = 0;
+
+    if (transferDirection === 'in') {
+      handling = parseFloat(document.getElementById('t-handling-in').value) || 0;
+      delivery = parseFloat(document.getElementById('t-delivery-in').value) || 0;
+    } else {
+      shipping = parseFloat(document.getElementById('t-shipping').value) || 0;
+    }
+
+    var handlingGst = handling / 11;
+    var deliveryGst = delivery / 11;
+    var shippingGst = shipping / 11;
 
     document.getElementById('transfer-bean-subtotal').textContent = fmtMoney(beanSubtotal);
-    document.getElementById('transfer-shipping-row').style.display = transferDirection === 'out' ? 'flex' : 'none';
+
+    document.getElementById('transfer-handling-row').style.display = (transferDirection === 'in' && handling > 0) ? 'flex' : 'none';
+    document.getElementById('transfer-handling-amount').textContent = fmtMoney(handling);
+    document.getElementById('transfer-handling-gst-note').textContent = handling > 0 ? '(incl. $' + handlingGst.toFixed(2) + ' GST)' : '';
+
+    document.getElementById('transfer-delivery-row').style.display = (transferDirection === 'in' && delivery > 0) ? 'flex' : 'none';
+    document.getElementById('transfer-delivery-amount').textContent = fmtMoney(delivery);
+    document.getElementById('transfer-delivery-gst-note').textContent = delivery > 0 ? '(incl. $' + deliveryGst.toFixed(2) + ' GST)' : '';
+
+    document.getElementById('transfer-shipping-row').style.display = (transferDirection === 'out' && shipping > 0) ? 'flex' : 'none';
     document.getElementById('transfer-shipping-amount').textContent = fmtMoney(shipping);
-    document.getElementById('transfer-gst-row').style.display = (transferDirection === 'out' && shipping > 0) ? 'flex' : 'none';
-    document.getElementById('transfer-gst-amount').textContent = fmtMoney(gst);
-    document.getElementById('transfer-total-amount').textContent = fmtMoney(beanSubtotal + shipping);
+    document.getElementById('transfer-shipping-gst-note').textContent = shipping > 0 ? '(incl. $' + shippingGst.toFixed(2) + ' GST)' : '';
+
+    document.getElementById('transfer-total-amount').textContent = fmtMoney(beanSubtotal + handling + delivery + shipping);
     updateTransferConfirmState();
   }
 
@@ -1783,6 +1822,8 @@
   document.getElementById('t-margin-pct').addEventListener('input', recalcTransferOutPriceFromMargin);
   document.getElementById('t-price-out').addEventListener('input', recalcTransferMarginFromPrice);
   document.getElementById('t-shipping').addEventListener('input', updateTransferTotal);
+  document.getElementById('t-handling-in').addEventListener('input', updateTransferTotal);
+  document.getElementById('t-delivery-in').addEventListener('input', updateTransferTotal);
   document.getElementById('transfer-contact-select').addEventListener('change', updateTransferConfirmState);
 
   function openTransferScreen(){
@@ -1791,6 +1832,8 @@
     fillTransferFieldsFromBean(null);
     document.getElementById('t-quantity').value = '';
     document.getElementById('t-price-in').value = '';
+    document.getElementById('t-handling-in').value = '';
+    document.getElementById('t-delivery-in').value = '';
     document.getElementById('t-margin-pct').value = '';
     document.getElementById('t-price-out').value = '';
     document.getElementById('t-shipping').value = '';
@@ -1840,13 +1883,23 @@
       pricePerKg: 0,
       shippingCost: 0,
       gstAmount: 0,
+      handlingFee: 0,
+      handlingGst: 0,
+      deliveryFee: 0,
+      deliveryGst: 0,
       totalAmount: 0
     };
 
     if (transferDirection === 'in') {
       var priceIn = parseFloat(document.getElementById('t-price-in').value) || 0;
+      var handlingIn = parseFloat(document.getElementById('t-handling-in').value) || 0;
+      var deliveryIn = parseFloat(document.getElementById('t-delivery-in').value) || 0;
       record.pricePerKg = priceIn;
-      record.totalAmount = qty * priceIn;
+      record.handlingFee = handlingIn;
+      record.handlingGst = handlingIn / 11;
+      record.deliveryFee = deliveryIn;
+      record.deliveryGst = deliveryIn / 11;
+      record.totalAmount = (qty * priceIn) + handlingIn + deliveryIn;
 
       if (existingBean && supplierMatches(existingBean.supplier, contact.name)) {
         var existingQty = parseFloat(existingBean.quantity) || 0;
