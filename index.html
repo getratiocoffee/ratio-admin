@@ -1145,7 +1145,7 @@
         <div class="back-btn" id="handover-back-btn" aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
-        <h1>Handover</h1>
+        <h1>Hand Over</h1>
         <button class="icon-btn" id="handover-manage-btn" aria-label="Manage tasks" style="margin-left:auto;" title="Manage task list">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
@@ -1163,35 +1163,16 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
         <h1>Manage Tasks</h1>
-        <button class="icon-btn" id="ho-add-template-icon-btn" aria-label="Add template" style="margin-left:auto; display:none;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-        </button>
       </div>
 
-      <!-- Tabs -->
+      <!-- Tabs: Hand Over first, Task second -->
       <div style="display:flex;gap:0;padding:0 20px;flex-shrink:0;border-bottom:1.5px solid #DCD2C2;">
-        <button class="ho-tab active" id="ho-tab-templates" type="button">Templates</button>
-        <button class="ho-tab" id="ho-tab-schedule" type="button">Hand Over</button>
+        <button class="ho-tab active" id="ho-tab-schedule" type="button">Hand Over</button>
+        <button class="ho-tab" id="ho-tab-templates" type="button">Task</button>
       </div>
 
-      <!-- Templates tab -->
-      <div class="form-scroll" id="ho-panel-templates">
-        <p class="field-hint" style="margin-bottom:14px;">Reusable tasks. Tap + to add, or select tasks to apply to a date in the Hand Over tab.</p>
-        <div id="handover-template-list"></div>
-        <!-- Inline add form (hidden by default) -->
-        <div id="ho-add-template-form" style="display:none; margin-top:8px;">
-          <div class="field-group">
-            <input type="text" class="field-input" id="handover-new-template-input" placeholder="e.g. Defrost Milk">
-          </div>
-          <div style="display:flex;gap:8px;margin-bottom:14px;">
-            <button class="btn-save" id="handover-add-template-btn" type="button" style="flex:1;padding:13px 0;border-radius:14px;font-size:15px;">Save</button>
-            <button class="import-confirm-btn cancel" id="ho-cancel-template-btn" type="button" style="flex:0.5;">Cancel</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Hand Over tab -->
-      <div class="form-scroll" id="ho-panel-schedule" style="display:none;">
+      <!-- Hand Over tab (now first) -->
+      <div class="form-scroll" id="ho-panel-schedule">
         <div class="field-group">
           <label class="field-label">Date</label>
           <select class="field-input" id="handover-manage-date-select"></select>
@@ -1206,6 +1187,23 @@
           <input type="text" class="field-input" id="handover-new-task-input" placeholder="e.g. Defrost Milk">
         </div>
         <button class="add-row-btn" id="handover-add-task-btn" type="button">+ Add task</button>
+      </div>
+
+      <!-- Task tab (renamed from Templates, + button inside) -->
+      <div class="form-scroll" id="ho-panel-templates" style="display:none;">
+        <p class="field-hint" style="margin-bottom:10px;">Reusable tasks. Select from the Hand Over tab to apply to a date.</p>
+        <!-- Inline add form at top -->
+        <div id="ho-add-template-form" style="display:none; margin-bottom:12px; padding:14px; background:#FAF6F0; border:1.5px solid #DCD2C2; border-radius:14px;">
+          <div class="field-group" style="margin-bottom:8px;">
+            <input type="text" class="field-input" id="handover-new-template-input" placeholder="e.g. Defrost Milk">
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-save" id="handover-add-template-btn" type="button" style="flex:1;padding:13px 0;border-radius:14px;font-size:15px;">Save</button>
+            <button class="import-confirm-btn cancel" id="ho-cancel-template-btn" type="button" style="flex:0.5;">Cancel</button>
+          </div>
+        </div>
+        <button class="add-row-btn" id="ho-add-template-icon-btn" type="button">+ Add task</button>
+        <div id="handover-template-list" style="margin-top:10px;"></div>
       </div>
     </div>
 
@@ -4101,7 +4099,7 @@
     document.getElementById('handover-date-header').innerHTML =
       '<div style="display:flex;align-items:baseline;gap:10px;">' +
       '<div class="handover-date-title">' + dayName + '</div>' +
-      '<div style="font-size:14px;font-weight:600;color:#8A7F6F;">Check List</div>' +
+      '<div class="handover-date-title" style="color:#8A7F6F;">Check List</div>' +
       '</div>' +
       '<div class="handover-date-sub">' + dateLabel + '</div>';
 
@@ -4161,7 +4159,6 @@
     document.getElementById('ho-tab-schedule').classList.toggle('active', tab === 'schedule');
     document.getElementById('ho-panel-templates').style.display = tab === 'templates' ? '' : 'none';
     document.getElementById('ho-panel-schedule').style.display = tab === 'schedule' ? '' : 'none';
-    document.getElementById('ho-add-template-icon-btn').style.display = tab === 'templates' ? '' : 'none';
   }
 
   document.getElementById('ho-tab-templates').addEventListener('click', function(){ switchHoTab('templates'); });
@@ -4345,7 +4342,7 @@
     document.getElementById('ho-add-template-form').style.display = 'none';
     expandedTemplate = null;
     selectedTemplates = {};
-    switchHoTab('templates');
+    switchHoTab('schedule');
     renderHoTemplates();
     renderHandoverManage();
     renderHoTemplateSelector();
