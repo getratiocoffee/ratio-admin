@@ -1151,9 +1151,11 @@
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
       </div>
-      <div class="form-scroll">
-        <div id="handover-date-header" style="padding:0 0 14px;"></div>
-        <div id="handover-task-list"></div>
+      <div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; overflow:hidden; min-height:0;">
+        <div style="overflow-y:auto; overscroll-behavior:contain; padding:20px 20px max(24px, env(safe-area-inset-bottom)); flex-shrink:0; max-height:100%;">
+          <div id="handover-date-header" style="padding:0 0 14px;"></div>
+          <div id="handover-task-list"></div>
+        </div>
       </div>
     </div>
 
@@ -1449,7 +1451,7 @@
         <div class="back-btn" id="delivery-back-btn" aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
-        <h1>New green bean purchase</h1>
+        <h1>Purchase</h1>
       </div>
 
       <div class="form-scroll">
