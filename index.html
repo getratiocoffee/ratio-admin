@@ -497,6 +497,13 @@
     font-family: inherit;
   }
 
+  .na-date-chip {
+    padding: 8px 12px; border-radius: 10px; border: 1.5px solid #DCD2C2;
+    background: #FFFFFF; color: #463E3A; font-size: 13px; font-weight: 500;
+    cursor: pointer; font-family: inherit; white-space: nowrap;
+  }
+  .na-date-chip.active { background: #463E3A; color: #fff; border-color: #463E3A; }
+
   .ts-week-picker {
     display: flex; gap: 8px; margin-bottom: 14px;
   }
@@ -803,7 +810,7 @@
       </div>
     </div>
 
-    <!-- ===== STAFF TIMESHEET SCREEN (placeholder) ===== -->
+    <!-- ===== STAFF TIMESHEET SCREEN ===== -->
     <div class="screen" id="screen-timesheet">
       <div class="form-topbar">
         <div class="back-btn" id="timesheet-back-btn" aria-label="Back">
@@ -811,6 +818,16 @@
         </div>
         <h1>Staff Timesheet</h1>
       </div>
+
+      <!-- N/A status banner -->
+      <div class="na-banner" id="na-banner" style="display:none; margin:0 20px 12px; padding:12px 14px; background:#FFF3CD; border-radius:14px; border:1.5px solid #FFD966; flex-shrink:0;">
+        <div style="font-size:12px;font-weight:700;color:#7A5C00;margin-bottom:6px;">⚠ Staff N/A Today</div>
+        <div id="na-banner-content" style="font-size:13px;color:#7A5C00;line-height:1.6;"></div>
+      </div>
+      <div class="na-banner" id="na-all-ok-banner" style="display:none; margin:0 20px 12px; padding:10px 14px; background:#EAF3DE; border-radius:14px; border:1.5px solid #A8D5A2; flex-shrink:0;">
+        <div style="font-size:13px;font-weight:600;color:#27500A;">✓ All staff available today</div>
+      </div>
+
       <div class="menu-body">
         <button class="menu-card" id="ts-open-current-btn">
           <span class="menu-card-icon">
@@ -845,6 +862,17 @@
           <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
 
+        <button class="menu-card" id="ts-open-na-btn">
+          <span class="menu-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>
+          </span>
+          <span class="menu-card-text">
+            <span class="menu-card-title">Request N/A</span>
+            <span class="menu-card-sub">Mark staff as unavailable</span>
+          </span>
+          <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+
         <button class="menu-card" id="ts-open-contacts-btn">
           <span class="menu-card-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -855,6 +883,30 @@
           </span>
           <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
+      </div>
+    </div>
+
+    <!-- ===== REQUEST N/A SCREEN ===== -->
+    <div class="screen" id="screen-ts-na">
+      <div class="form-topbar">
+        <div class="back-btn" id="ts-na-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        <h1>Request N/A</h1>
+      </div>
+      <div class="form-scroll">
+        <div class="field-group">
+          <label class="field-label">Staff member</label>
+          <select class="field-input" id="na-staff-select"></select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Unavailable dates <span style="color:#8A7F6F;font-weight:400;">(tap to select, tap again to remove)</span></label>
+          <div id="na-date-picker" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;"></div>
+        </div>
+        <div id="na-existing-list" style="margin-top:6px;"></div>
+      </div>
+      <div class="form-bottom-bar">
+        <button class="btn-save" id="na-save-btn" disabled>Save N/A request</button>
       </div>
     </div>
 
@@ -1593,12 +1645,22 @@
     return true;
   }
 
+  async function loadNaFromServer(){
+    var data = await apiRequest('na', 'GET');
+    return data && Array.isArray(data.items) ? data.items : [];
+  }
+  async function saveNaToServer(items){
+    await apiRequest('na', 'POST', { items: items });
+    return true;
+  }
+
   var beans = [];
   var contacts = [];
   var transferHistory = [];
   var invoiceLog = [];
   var staffList = [];
   var timesheets = [];
+  var naRequests = [];
 
   var state = {
     search: '',
@@ -2871,6 +2933,7 @@
     openTransferScreen();
   });
   document.getElementById('menu-open-timesheet-btn').addEventListener('click', function(){
+    renderNaBanner();
     showScreen('screen-timesheet');
   });
   document.getElementById('timesheet-back-btn').addEventListener('click', function(){
@@ -3626,6 +3689,124 @@
     showScreen('screen-timesheet');
   });
 
+  // ---------- Request N/A ----------
+  var naSelectedDates = [];
+
+  function renderNaBanner(){
+    var today = isoDate(new Date());
+    var naToday = naRequests.filter(function(r){
+      return r.dates && r.dates.indexOf(today) !== -1;
+    });
+    var banner = document.getElementById('na-banner');
+    var allOk = document.getElementById('na-all-ok-banner');
+    if (staffList.length === 0) {
+      banner.style.display = 'none';
+      allOk.style.display = 'none';
+      return;
+    }
+    if (naToday.length > 0) {
+      var names = naToday.map(function(r){ return r.staffName; }).join(', ');
+      document.getElementById('na-banner-content').textContent = names;
+      banner.style.display = 'block';
+      allOk.style.display = 'none';
+    } else {
+      banner.style.display = 'none';
+      allOk.style.display = 'block';
+    }
+  }
+
+  function renderNaDatePicker(){
+    var container = document.getElementById('na-date-picker');
+    var today = new Date();
+    var html = '';
+    for (var i = 0; i < 14; i++) {
+      var d = new Date(today);
+      d.setDate(today.getDate() + i);
+      var iso = isoDate(d);
+      var label = d.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+      var selected = naSelectedDates.indexOf(iso) !== -1;
+      html += '<button type="button" class="na-date-chip' + (selected ? ' active' : '') + '" data-date="' + iso + '">' + label + '</button>';
+    }
+    container.innerHTML = html;
+    container.querySelectorAll('.na-date-chip').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var date = btn.getAttribute('data-date');
+        var idx = naSelectedDates.indexOf(date);
+        if (idx === -1) naSelectedDates.push(date);
+        else naSelectedDates.splice(idx, 1);
+        renderNaDatePicker();
+        document.getElementById('na-save-btn').disabled = naSelectedDates.length === 0;
+      });
+    });
+  }
+
+  function renderNaExistingList(){
+    var container = document.getElementById('na-existing-list');
+    var today = isoDate(new Date());
+    var active = naRequests.filter(function(r){
+      return r.dates && r.dates.some(function(d){ return d >= today; });
+    });
+    if (active.length === 0) { container.innerHTML = ''; return; }
+    var html = '<div class="section-label" style="margin:14px 0 8px;">Current N/A requests</div>';
+    active.forEach(function(r){
+      var futureDates = r.dates.filter(function(d){ return d >= today; })
+        .map(function(d){ return new Date(d + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' }); });
+      html += '<div class="delivery-bean-row" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;">';
+      html += '  <div><div style="font-size:14px;font-weight:600;color:#2E2925;">' + esc(r.staffName) + '</div>';
+      html += '  <div style="font-size:12px;color:#8A7F6F;margin-top:2px;">' + futureDates.join(' · ') + '</div></div>';
+      html += '  <button class="btn-delete" data-action="delete-na" data-id="' + r.id + '" aria-label="Remove" style="width:36px;height:36px;border-radius:11px;border:1.5px solid #DCD2C2;background:#fff;color:#A32D2D;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+      html += '</div>';
+    });
+    container.innerHTML = html;
+    container.querySelectorAll('[data-action="delete-na"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-id');
+        naRequests = naRequests.filter(function(r){ return r.id !== id; });
+        saveNaToServer(naRequests).catch(function(e){ console.error(e); });
+        renderNaExistingList();
+        renderNaBanner();
+      });
+    });
+  }
+
+  function openNaScreen(){
+    naSelectedDates = [];
+    var sel = document.getElementById('na-staff-select');
+    sel.innerHTML = staffList.map(function(s){
+      return '<option value="' + s.id + '">' + esc(s.name) + '</option>';
+    }).join('');
+    document.getElementById('na-save-btn').disabled = true;
+    renderNaDatePicker();
+    renderNaExistingList();
+    showScreen('screen-ts-na');
+  }
+
+  document.getElementById('ts-open-na-btn').addEventListener('click', openNaScreen);
+  document.getElementById('ts-na-back-btn').addEventListener('click', function(){
+    showScreen('screen-timesheet');
+  });
+
+  document.getElementById('na-save-btn').addEventListener('click', function(){
+    if (naSelectedDates.length === 0) return;
+    var staffId = document.getElementById('na-staff-select').value;
+    var staffMember = staffList.find(function(s){ return s.id === staffId; });
+    if (!staffMember) return;
+    var existing = naRequests.find(function(r){ return r.staffId === staffId; });
+    if (existing) {
+      naSelectedDates.forEach(function(d){
+        if (existing.dates.indexOf(d) === -1) existing.dates.push(d);
+      });
+    } else {
+      naRequests.push({ id: uid(), staffId: staffId, staffName: staffMember.name, dates: naSelectedDates.slice() });
+    }
+    saveNaToServer(naRequests).catch(function(e){ console.error(e); });
+    naSelectedDates = [];
+    renderNaDatePicker();
+    renderNaExistingList();
+    renderNaBanner();
+    document.getElementById('na-save-btn').disabled = true;
+  });
+
   // ---------- Password gate ----------
   var gateInput = document.getElementById('gate-password-input');
   var gateError = document.getElementById('gate-error');
@@ -3650,6 +3831,14 @@
       invoiceLog = await loadInvoiceLogFromServer();
       staffList = await loadStaffFromServer();
       timesheets = await loadTimesheetsFromServer();
+      var loadedNa = await loadNaFromServer();
+      var today = isoDate(new Date());
+      naRequests = loadedNa.filter(function(r){
+        return r.dates && r.dates.some(function(d){ return d >= today; });
+      });
+      if (naRequests.length !== loadedNa.length) {
+        try { saveNaToServer(naRequests); } catch(e) {}
+      }
       showScreen('screen-menu');
       render();
     } catch(e) {

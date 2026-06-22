@@ -19,6 +19,7 @@ const ALLOWED_KEYS = {
   invoices: 'invoice-log',
   staff: 'staff-contacts',
   timesheets: 'staff-timesheets',
+  na: 'staff-na-requests',
 };
 
 export default async function handler(req, res) {
