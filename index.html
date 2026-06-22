@@ -1149,8 +1149,8 @@
       </div>
       <div class="form-scroll">
         <div class="ts-week-picker" id="ts-week-picker">
-          <button class="ts-week-picker-btn active" data-offset="0" type="button">This week</button>
-          <button class="ts-week-picker-btn" data-offset="1" type="button">Next week</button>
+          <button class="ts-week-picker-btn active" data-offset="1" type="button">Next week</button>
+          <button class="ts-week-picker-btn" data-offset="2" type="button">Week after next</button>
         </div>
         <p class="field-hint" id="ts-add-range" style="margin-bottom: 14px;"></p>
         <div id="ts-add-days"></div>
@@ -2094,6 +2094,9 @@
         </button>
       </div>
 
+      <!-- Country breakdown -->
+      <div id="country-breakdown" style="display:flex; gap:8px; padding:0 20px 14px; overflow-x:auto; flex-shrink:0; scrollbar-width:none;"></div>
+
       <div class="search-bar">
         <div class="search-input-wrap">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -2728,6 +2731,9 @@
       renderDashboardBeansBanner();
       renderDashboardRoastedBanner();
     }
+    if (id === 'screen-list') {
+      render();
+    }
   }
 
   document.getElementById('dashboard-roasted-banner').addEventListener('click', function(){
@@ -2797,6 +2803,7 @@
     document.getElementById('incomplete-filter-banner').style.display = state.showOnlyIncomplete ? 'flex' : 'none';
 
     renderCountryChips();
+    renderCountryBreakdown();
 
     var q = state.search.trim().toLowerCase();
     var filtered = beans.filter(function(b){
@@ -2839,6 +2846,50 @@
     listEl.innerHTML = html;
 
     attachCardListeners();
+  }
+
+  function renderCountryBreakdown(){
+    var container = document.getElementById('country-breakdown');
+    if (!container) return;
+    var totalKg = beans.reduce(function(s, b){ return s + (parseFloat(b.quantity) || 0); }, 0);
+    if (totalKg === 0 || beans.length === 0) { container.innerHTML = ''; return; }
+
+    // Group by country
+    var byCountry = {};
+    beans.forEach(function(b){
+      var c = (b.country || 'Unspecified').trim() || 'Unspecified';
+      byCountry[c] = (byCountry[c] || 0) + (parseFloat(b.quantity) || 0);
+    });
+
+    // Sort by kg descending
+    var sorted = Object.keys(byCountry).sort(function(a, b){
+      return byCountry[b] - byCountry[a];
+    });
+
+    // Colour palette (warm tones matching brand)
+    var colours = ['#C4A882','#9AAF88','#88A8B5','#B59088','#A08AA8','#88A89A','#B5A488','#8898B5'];
+
+    var html = sorted.map(function(country, i){
+      var pct = Math.round(byCountry[country] / totalKg * 100);
+      var col = colours[i % colours.length];
+      return '<div style="flex-shrink:0; width:80px; padding:10px 8px 9px; background:#fff; border:1.5px solid #DCD2C2; border-radius:14px; text-align:center; cursor:pointer;" data-country="' + esc(country) + '">'
+        + '<div style="font-size:18px; font-weight:700; color:' + col + '; line-height:1;">' + pct + '%</div>'
+        + '<div style="font-size:10px; color:#8A7F6F; margin-top:4px; line-height:1.3; word-break:break-word;">' + esc(country) + '</div>'
+        + '</div>';
+    }).join('');
+
+    container.innerHTML = html;
+
+    // Clicking a country box filters the list
+    container.querySelectorAll('[data-country]').forEach(function(box){
+      box.addEventListener('click', function(){
+        var country = box.getAttribute('data-country');
+        state.filter = country;
+        state.search = '';
+        document.getElementById('search-input').value = '';
+        render();
+      });
+    });
   }
 
   function renderCountryChips(){
@@ -4697,7 +4748,7 @@
     });
   }
 
-  var tsAddWeekOffset = 0; // 0 = this week, 1 = next week
+  var tsAddWeekOffset = 1; // 1 = next week, 2 = week after next
 
   function getWeekIsoByOffset(offset){
     var monday = getMonday(new Date());
@@ -4711,7 +4762,7 @@
     document.getElementById('ts-add-range').textContent =
       fmtShortDate(weekStart) + ' \u2013 ' + fmtShortDate(dates.sun) + ' (Mon\u2013Sun)';
     document.getElementById('ts-save-hint').textContent =
-      tsAddWeekOffset === 0 ? "Hours will be added to this week's timesheet." : "Hours will be added to next week's timesheet.";
+      tsAddWeekOffset === 1 ? "Hours will be added to next week's timesheet." : "Hours will be added to the week after next's timesheet.";
 
     tsAddDraft = {};
     DAY_KEYS.forEach(function(dk){
@@ -4726,9 +4777,9 @@
   }
 
   function openAddTimesheetScreen(){
-    tsAddWeekOffset = 0;
+    tsAddWeekOffset = 1;
     document.querySelectorAll('.ts-week-picker-btn').forEach(function(btn){
-      btn.classList.toggle('active', parseInt(btn.getAttribute('data-offset'), 10) === 0);
+      btn.classList.toggle('active', parseInt(btn.getAttribute('data-offset'), 10) === 1);
     });
     refreshAddTimesheetWeek();
     showScreen('screen-ts-add');
