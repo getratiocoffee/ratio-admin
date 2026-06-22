@@ -403,11 +403,13 @@
 
   /* ===== Password gate ===== */
   .gate-screen {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    height: 100%; padding: 40px 24px; text-align: center;
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+    height: 100%; padding: 50px 24px 40px; text-align: center;
   }
-  .gate-screen .brand { margin-bottom: 28px; }
-  .gate-screen .brand-name { font-size: 20px; }
+  .gate-top { display: flex; flex-direction: column; align-items: center; padding-top: 10vh; }
+  .gate-top img { display: block; margin-bottom: 14px; }
+  .gate-screen .brand-name { font-size: 20px; line-height: 1.3; }
+  .gate-bottom { width: 100%; display: flex; flex-direction: column; align-items: center; }
   .gate-title { font-size: 18px; font-weight: 600; color: #2E2925; margin-bottom: 6px; }
   .gate-subtitle { font-size: 13px; color: #8A7F6F; margin-bottom: 24px; line-height: 1.5; }
   .gate-input {
@@ -438,15 +440,17 @@
     <!-- ===== PASSWORD GATE SCREEN ===== -->
     <div class="screen active" id="screen-gate">
       <div class="gate-screen">
-        <div class="brand">
-          <img src="/logo.png" width="40" height="40" alt="Ratio Coffee logo" style="display:block;margin:0 auto 10px;">
+        <div class="gate-top">
+          <img src="/logo.png" width="56" height="56" alt="Ratio Coffee logo">
           <span class="brand-name">Green Bean Inventory</span>
         </div>
-        <div class="gate-title">Enter app password</div>
-        <div class="gate-subtitle">Ask your manager for the shared password to access the green bean inventory.</div>
-        <input type="password" class="gate-input" id="gate-password-input" placeholder="Password" autocomplete="off">
-        <div class="gate-error" id="gate-error"></div>
-        <button class="gate-btn" id="gate-submit-btn">Unlock</button>
+        <div class="gate-bottom">
+          <div class="gate-title">Enter app password</div>
+          <div class="gate-subtitle">Ask your manager for the shared password to access the green bean inventory.</div>
+          <input type="password" class="gate-input" id="gate-password-input" placeholder="Password" autocomplete="off">
+          <div class="gate-error" id="gate-error"></div>
+          <button class="gate-btn" id="gate-submit-btn">Unlock</button>
+        </div>
       </div>
     </div>
 
