@@ -1833,6 +1833,18 @@
       </div>
     </div>
 
+    <!-- Transfer PIN overlay -->
+    <div class="radar-overlay" id="transfer-pin-overlay" style="z-index:1100;">
+      <div class="radar-card" style="max-width:300px; text-align:center;">
+        <div style="font-size:17px;font-weight:700;color:#2E2925;margin-bottom:6px;">Stock Transfer</div>
+        <div style="font-size:13px;color:#8A7F6F;margin-bottom:20px;">Enter PIN to continue</div>
+        <input type="password" id="transfer-pin-input" class="gate-input" placeholder="PIN" autocomplete="off" inputmode="numeric" pattern="[0-9]*" style="max-width:100%;margin-bottom:12px;">
+        <div id="transfer-pin-error" style="font-size:13px;color:#A32D2D;min-height:18px;margin-bottom:12px;"></div>
+        <button class="gate-btn" id="transfer-pin-submit" style="max-width:100%;">Confirm</button>
+        <button class="import-confirm-btn cancel" id="transfer-pin-cancel" style="width:100%;margin-top:10px;">Cancel</button>
+      </div>
+    </div>
+
     <!-- Radar chart overlay -->
     <div class="radar-overlay" id="radar-overlay">
       <div class="radar-card">
@@ -4008,8 +4020,70 @@
   document.getElementById('menu-open-purchase-btn').addEventListener('click', function(){
     openDeliveryScreen();
   });
+  // ---------- Transfer PIN ----------
+  var transferUnlocked = false;
+
+  function showTransferPinOverlay(onSuccess){
+    var overlay = document.getElementById('transfer-pin-overlay');
+    var input = document.getElementById('transfer-pin-input');
+    var errorEl = document.getElementById('transfer-pin-error');
+    input.value = '';
+    errorEl.textContent = '';
+    overlay.classList.add('visible');
+    setTimeout(function(){ input.focus(); }, 100);
+
+    function cleanup(){
+      overlay.classList.remove('visible');
+      document.getElementById('transfer-pin-submit').removeEventListener('click', onSubmit);
+      document.getElementById('transfer-pin-cancel').removeEventListener('click', onCancel);
+      input.removeEventListener('keydown', onKey);
+    }
+
+    async function onSubmit(){
+      var pin = input.value.trim();
+      if (!pin) return;
+      var submitBtn = document.getElementById('transfer-pin-submit');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Checking…';
+      errorEl.textContent = '';
+      try {
+        var res = await fetch('/api/transfer-auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pin: pin })
+        });
+        if (res.ok) {
+          transferUnlocked = true;
+          cleanup();
+          onSuccess();
+        } else {
+          errorEl.textContent = 'Incorrect PIN. Please try again.';
+          input.value = '';
+          input.focus();
+        }
+      } catch(e) {
+        errorEl.textContent = 'Connection error. Try again.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Confirm';
+      }
+    }
+
+    function onCancel(){
+      cleanup();
+    }
+
+    function onKey(e){
+      if (e.key === 'Enter') onSubmit();
+    }
+
+    document.getElementById('transfer-pin-submit').addEventListener('click', onSubmit);
+    document.getElementById('transfer-pin-cancel').addEventListener('click', onCancel);
+    input.addEventListener('keydown', onKey);
+  }
+
   document.getElementById('menu-open-transfer-btn').addEventListener('click', function(){
-    openTransferScreen();
+    showTransferPinOverlay(function(){ openTransferScreen(); });
   });
   document.getElementById('menu-open-timesheet-btn').addEventListener('click', function(){
     renderNaBanner();
