@@ -866,6 +866,7 @@
         <div class="delivery-summary">
           <div class="summary-line"><span>Bean subtotal</span><span id="transfer-bean-subtotal">$0.00</span></div>
           <div class="summary-line" id="transfer-shipping-row" style="display:none;"><span>Shipping</span><span id="transfer-shipping-amount">$0.00</span></div>
+          <div class="summary-line" id="transfer-gst-row" style="display:none;"><span>GST (on shipping)</span><span id="transfer-gst-amount">$0.00</span></div>
           <div class="summary-line total"><span>Total amount</span><span id="transfer-total-amount">$0.00</span></div>
         </div>
 
@@ -1704,11 +1705,14 @@
       : (parseFloat(document.getElementById('t-price-out').value) || 0);
     var beanSubtotal = qty * price;
     var shipping = transferDirection === 'out' ? (parseFloat(document.getElementById('t-shipping').value) || 0) : 0;
+    var gst = shipping * 0.10;
 
     document.getElementById('transfer-bean-subtotal').textContent = fmtMoney(beanSubtotal);
     document.getElementById('transfer-shipping-row').style.display = transferDirection === 'out' ? 'flex' : 'none';
     document.getElementById('transfer-shipping-amount').textContent = fmtMoney(shipping);
-    document.getElementById('transfer-total-amount').textContent = fmtMoney(beanSubtotal + shipping);
+    document.getElementById('transfer-gst-row').style.display = (transferDirection === 'out' && shipping > 0) ? 'flex' : 'none';
+    document.getElementById('transfer-gst-amount').textContent = fmtMoney(gst);
+    document.getElementById('transfer-total-amount').textContent = fmtMoney(beanSubtotal + shipping + gst);
     updateTransferConfirmState();
   }
 
@@ -1823,6 +1827,7 @@
       quantity: qty,
       pricePerKg: 0,
       shippingCost: 0,
+      gstAmount: 0,
       totalAmount: 0
     };
 
@@ -1861,9 +1866,11 @@
     } else {
       var priceOut = parseFloat(document.getElementById('t-price-out').value) || 0;
       var shippingOut = parseFloat(document.getElementById('t-shipping').value) || 0;
+      var gstOut = shippingOut * 0.10;
       record.pricePerKg = priceOut;
       record.shippingCost = shippingOut;
-      record.totalAmount = (qty * priceOut) + shippingOut;
+      record.gstAmount = gstOut;
+      record.totalAmount = (qty * priceOut) + shippingOut + gstOut;
 
       if (existingBean) {
         var remainingQty = Math.max(0, (parseFloat(existingBean.quantity) || 0) - qty);
@@ -1898,6 +1905,7 @@
     var r = lastTransferRecord;
     var beanSubtotal = r.quantity * r.pricePerKg;
     var shipping = r.shippingCost || 0;
+    var gst = r.gstAmount || 0;
     var doc = new window.jspdf.jsPDF();
     var brown = [70, 62, 58];
 
@@ -1945,6 +1953,12 @@
     if (shipping > 0) {
       doc.text('Shipping', 20, y);
       doc.text('$' + shipping.toFixed(2), 175, y);
+      y += 12;
+    }
+
+    if (gst > 0) {
+      doc.text('GST (on shipping)', 20, y);
+      doc.text('$' + gst.toFixed(2), 175, y);
       y += 12;
     }
 
