@@ -378,6 +378,16 @@
     padding-top: 8px; border-top: 1px solid #DCD2C2;
   }
 
+  .inventory-summary {
+    display: flex; gap: 10px; padding: 0 16px 4px; flex-shrink: 0;
+  }
+  .inventory-summary-item {
+    flex: 1; padding: 12px 14px; background: #FFFFFF;
+    border: 1px solid #DCD2C2; border-radius: 14px;
+  }
+  .inventory-summary-label { display: block; font-size: 11px; color: #8A7F6F; margin-bottom: 4px; }
+  .inventory-summary-value { display: block; font-size: 17px; font-weight: 700; color: #2E2925; }
+
   .save-status {
     text-align: center; font-size: 12px; color: #8A7F6F; padding: 6px 20px;
     flex-shrink: 0; transition: opacity 0.3s ease;
@@ -489,6 +499,17 @@
       </div>
 
       <div class="bean-list" id="bean-list"></div>
+
+      <div class="inventory-summary" id="inventory-summary">
+        <div class="inventory-summary-item">
+          <span class="inventory-summary-label">Total green stock</span>
+          <span class="inventory-summary-value" id="summary-total-kg">0.0 kg</span>
+        </div>
+        <div class="inventory-summary-item">
+          <span class="inventory-summary-label">Total stock value</span>
+          <span class="inventory-summary-value" id="summary-total-value">$0.00</span>
+        </div>
+      </div>
 
       <div class="save-status" id="save-status" style="opacity:0;">Saved</div>
 
@@ -753,6 +774,11 @@
     });
 
     countEl.textContent = beans.length + ' green bean' + (beans.length === 1 ? '' : 's');
+
+    var totalKg = beans.reduce(function(sum, b){ return sum + (parseFloat(b.quantity) || 0); }, 0);
+    var totalValue = beans.reduce(function(sum, b){ return sum + (parseFloat(b.quantity) || 0) * (parseFloat(b.costPerKg) || 0); }, 0);
+    document.getElementById('summary-total-kg').textContent = fmtKg(totalKg);
+    document.getElementById('summary-total-value').textContent = fmtMoney(totalValue);
 
     if (filtered.length === 0) {
       listEl.innerHTML = '<div class="empty-state">No beans match this search.</div>';
