@@ -50,23 +50,23 @@
 
   /* iOS-style app grid (Dashboard only) */
   .app-grid-body {
-    flex: 1; padding: 16px 20px max(24px, env(safe-area-inset-bottom));
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px 12px; align-content: end;
+    flex: 1; padding: 16px 16px max(24px, env(safe-area-inset-bottom));
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 8px; align-content: end;
   }
   .app-grid-item {
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
     background: none; border: none; cursor: pointer; font-family: inherit; padding: 0;
     -webkit-tap-highlight-color: transparent;
   }
   .app-grid-item:active .app-grid-icon { opacity: 0.7; transform: scale(0.93); }
   .app-grid-icon {
-    width: 72px; height: 72px; border-radius: 18px;
+    width: 60px; height: 60px; border-radius: 15px;
     display: flex; align-items: center; justify-content: center;
     transition: opacity 0.1s, transform 0.1s;
     box-shadow: 0 2px 8px rgba(70,62,58,0.10);
   }
   .app-grid-label {
-    font-size: 12px; font-weight: 600; color: #2E2925; text-align: center; line-height: 1.3;
+    font-size: 11px; font-weight: 600; color: #2E2925; text-align: center; line-height: 1.3;
   }
   .menu-card {
     display: flex; align-items: center; gap: 14px;
@@ -895,7 +895,7 @@
       <div class="app-grid-body">
         <button class="app-grid-item" id="menu-open-greenbean-btn">
           <span class="app-grid-icon" style="background:#D6EBDB;">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <!-- Sack / burlap bag shape -->
               <path d="M8 3h8l1 3H7L8 3z"/>
               <path d="M6.5 6C4.5 7 3 9.5 3 12.5 3 17.5 6 21 12 21s9-3.5 9-8.5C21 9.5 19.5 7 17.5 6"/>
@@ -908,7 +908,7 @@
 
         <button class="app-grid-item" id="menu-open-timesheet-btn">
           <span class="app-grid-icon" style="background:#E8E0F5;">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5B3FA6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5B3FA6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <rect x="3" y="4" width="18" height="18" rx="2"/>
               <line x1="16" y1="2" x2="16" y2="6"/>
               <line x1="8" y1="2" x2="8" y2="6"/>
@@ -925,7 +925,7 @@
 
         <button class="app-grid-item" id="menu-open-sensory-btn">
           <span class="app-grid-icon" style="background:#FDE8D8;">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#B04A10" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#B04A10" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M6 2c0 2.5 3 2.5 3 5"/>
               <path d="M11 2c0 2.5 3 2.5 3 5"/>
               <path d="M3 10h18v2a7 7 0 0 1-7 7h-4a7 7 0 0 1-7-7v-2z"/>
@@ -939,7 +939,7 @@
 
         <button class="app-grid-item" id="menu-open-roasting-btn">
           <span class="app-grid-icon" style="background:#FEF0C7;">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#92560C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#92560C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <!-- Coffee bean shape: two halves with a centre line -->
               <path d="M12 3C7.5 3 4 7 4 12s3.5 9 8 9 8-4 8-9-3.5-9-8-9z"/>
               <path d="M12 3c2.5 2.5 2.5 6.5 0 9s-2.5 6.5 0 9"/>
@@ -950,7 +950,7 @@
 
         <button class="app-grid-item" id="menu-open-handover-btn">
           <span class="app-grid-icon" style="background:#E0EEF8;">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1A5C8A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A5C8A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M9 12h6M9 16h4"/>
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
               <polyline points="14 2 14 8 20 8"/>
@@ -961,13 +961,24 @@
 
         <button class="app-grid-item" id="menu-open-order-btn">
           <span class="app-grid-icon" style="background:#FCE4EC;">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9C1B3E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#9C1B3E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
               <line x1="3" y1="6" x2="21" y2="6"/>
               <path d="M16 10a4 4 0 0 1-8 0"/>
             </svg>
           </span>
           <span class="app-grid-label">Order</span>
+        </button>
+
+        <button class="app-grid-item" id="menu-open-roastedbean-btn">
+          <span class="app-grid-icon" style="background:#E8F4EC;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1E6B3A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <!-- Roasted bean: dark oval with centre crease -->
+              <ellipse cx="12" cy="12" rx="8" ry="6"/>
+              <path d="M12 6c2 2 2 8 0 12"/>
+            </svg>
+          </span>
+          <span class="app-grid-label">Roasted Bean</span>
         </button>
       </div>
     </div>
@@ -1719,6 +1730,24 @@
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
           </div>
           <p class="field-hint" style="text-align:center;">Roasting is coming soon.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ROASTED BEAN SCREEN (placeholder) ===== -->
+    <div class="screen" id="screen-roastedbean">
+      <div class="form-topbar">
+        <div class="back-btn" id="roastedbean-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        <h1>Roasted Bean</h1>
+      </div>
+      <div class="form-scroll">
+        <div class="placeholder-screen">
+          <div class="placeholder-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="8" ry="6"/><path d="M12 6c2 2 2 8 0 12"/></svg>
+          </div>
+          <p class="field-hint" style="text-align:center;">Roasted Bean is coming soon.</p>
         </div>
       </div>
     </div>
@@ -3871,6 +3900,12 @@
     showScreen('screen-roasting');
   });
   document.getElementById('roasting-back-btn').addEventListener('click', function(){
+    showScreen('screen-menu');
+  });
+  document.getElementById('menu-open-roastedbean-btn').addEventListener('click', function(){
+    showScreen('screen-roastedbean');
+  });
+  document.getElementById('roastedbean-back-btn').addEventListener('click', function(){
     showScreen('screen-menu');
   });
   document.getElementById('list-back-to-menu-btn').addEventListener('click', function(){
