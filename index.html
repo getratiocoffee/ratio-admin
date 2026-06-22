@@ -39,8 +39,9 @@
     justify-content: space-between;
     flex-shrink: 0;
   }
-  .brand { display: flex; align-items: center; gap: 10px; }
-  .brand-name { font-size: 18px; font-weight: 600; color: #463E3A; }
+  .brand { display: flex; align-items: center; gap: 10px; line-height: 1; }
+  .brand img { display: block; flex-shrink: 0; }
+  .brand-name { font-size: 18px; font-weight: 600; color: #463E3A; line-height: 1; }
 
   .header-icon-btns { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .icon-btn {
@@ -480,7 +481,7 @@
 
       <div class="section-bar">
         <div>
-          <div class="section-title">總咖啡豆選項：<span id="bean-count">0</span></div>
+          <div class="section-title"><span id="bean-count">0</span> Green Beans in Stock</div>
         </div>
         <button class="header-incomplete-badge hidden" id="header-incomplete-badge">
           <span class="incomplete-dot"></span>
