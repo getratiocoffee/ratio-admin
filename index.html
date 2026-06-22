@@ -1774,8 +1774,12 @@
       <div id="roasted-add-form" style="display:none; flex-shrink:0; padding:12px 20px 4px; border-bottom:1px solid #DCD2C2;">
         <div class="field-group">
           <label class="field-label">Bean name <span style="color:#A32D2D;">*</span></label>
-          <select class="field-input" id="roasted-bean-select">
-            <option value="">Select from inventory…</option>
+          <input type="text" class="field-input" id="roasted-bean-name" placeholder="e.g. Ethiopia Yirgacheffe">
+        </div>
+        <div class="field-group" style="margin-top:-4px;">
+          <label class="field-label" style="font-size:11px;color:#8A7F6F;">Or pick from Inventory</label>
+          <select class="field-input" id="roasted-bean-select" style="font-size:13px;">
+            <option value="">Select…</option>
           </select>
         </div>
         <div style="display:flex; gap:8px; margin-bottom:12px;">
@@ -5213,6 +5217,7 @@
   function snInitChips(){
     SN_DIMS.forEach(function(dim){
       SN_TEMPS.forEach(function(temp){
+        if (dim === 'acidity') return; // handled separately by mutual exclusion logic
         var groups = snChipGroups(dim, temp);
         Object.keys(groups).forEach(function(key){
           var g = groups[key];
@@ -5234,24 +5239,34 @@
         if (slider && val) slider.addEventListener('input', function(){ val.textContent = slider.value; });
       });
     });
-    // Acidity mutual exclusion: selecting Dry clears Sweet and vice versa
+    // Wire acidity sliders separately
+    SN_TEMPS.forEach(function(temp){
+      var slider = document.getElementById('sn-acidity-intensity-' + temp);
+      var val = document.getElementById('sn-acidity-intensity-' + temp + '-val');
+      if (slider && val) slider.addEventListener('input', function(){ val.textContent = slider.value; });
+    });
+    // Acidity mutual exclusion: only 1 chip across both Dry and Sweet groups
     SN_TEMPS.forEach(function(temp){
       var dryEl = document.getElementById('sn-acidity-dry-' + temp);
       var sweetEl = document.getElementById('sn-acidity-sweet-' + temp);
       if (!dryEl || !sweetEl) return;
       dryEl.querySelectorAll('.sn-chip').forEach(function(chip){
         chip.addEventListener('click', function(){
-          sweetEl.querySelectorAll('.sn-chip').forEach(function(c){ c.classList.remove('selected'); });
           var wasSelected = chip.classList.contains('selected');
+          // Clear everything
           dryEl.querySelectorAll('.sn-chip').forEach(function(c){ c.classList.remove('selected'); });
+          sweetEl.querySelectorAll('.sn-chip').forEach(function(c){ c.classList.remove('selected'); });
+          // Toggle
           if (!wasSelected) chip.classList.add('selected');
         });
       });
       sweetEl.querySelectorAll('.sn-chip').forEach(function(chip){
         chip.addEventListener('click', function(){
-          dryEl.querySelectorAll('.sn-chip').forEach(function(c){ c.classList.remove('selected'); });
           var wasSelected = chip.classList.contains('selected');
+          // Clear everything
+          dryEl.querySelectorAll('.sn-chip').forEach(function(c){ c.classList.remove('selected'); });
           sweetEl.querySelectorAll('.sn-chip').forEach(function(c){ c.classList.remove('selected'); });
+          // Toggle
           if (!wasSelected) chip.classList.add('selected');
         });
       });
@@ -5457,13 +5472,13 @@
   }
 
   function openRoastedScreen(){
-    // Populate dropdown from green bean inventory, exclude already listed
     var listed = roastedBeans.map(function(r){ return r.name; });
     var sel = document.getElementById('roasted-bean-select');
-    sel.innerHTML = '<option value="">Select from inventory…</option>';
+    sel.innerHTML = '<option value="">Select…</option>';
     beans.filter(function(b){ return listed.indexOf(b.name) === -1; }).forEach(function(b){
-      sel.innerHTML += '<option value="' + esc(b.id) + '">' + esc(b.name) + '</option>';
+      sel.innerHTML += '<option value="' + esc(b.name) + '">' + esc(b.name) + '</option>';
     });
+    document.getElementById('roasted-bean-name').value = '';
     document.getElementById('roasted-add-form').style.display = 'none';
     renderRoastedBeans();
     showScreen('screen-roastedbean');
@@ -5472,43 +5487,43 @@
   document.getElementById('menu-open-roastedbean-btn').addEventListener('click', openRoastedScreen);
   document.getElementById('roastedbean-back-btn').addEventListener('click', function(){ showScreen('screen-menu'); });
 
+  document.getElementById('roasted-bean-select').addEventListener('change', function(){
+    var val = this.value;
+    if (val) document.getElementById('roasted-bean-name').value = val;
+  });
+
   document.getElementById('roasted-add-open-btn').addEventListener('click', function(){
     var form = document.getElementById('roasted-add-form');
     var isOpen = form.style.display !== 'none';
     if (!isOpen) {
-      // Refresh dropdown
       var listed = roastedBeans.map(function(r){ return r.name; });
       var sel = document.getElementById('roasted-bean-select');
-      sel.innerHTML = '<option value="">Select from inventory…</option>';
+      sel.innerHTML = '<option value="">Select…</option>';
       beans.filter(function(b){ return listed.indexOf(b.name) === -1; }).forEach(function(b){
-        sel.innerHTML += '<option value="' + esc(b.id) + '">' + esc(b.name) + '</option>';
+        sel.innerHTML += '<option value="' + esc(b.name) + '">' + esc(b.name) + '</option>';
       });
+      document.getElementById('roasted-bean-name').value = '';
+      sel.value = '';
     }
     form.style.display = isOpen ? 'none' : 'block';
+    if (!isOpen) document.getElementById('roasted-bean-name').focus();
   });
 
   document.getElementById('roasted-add-cancel-btn').addEventListener('click', function(){
     document.getElementById('roasted-add-form').style.display = 'none';
+    document.getElementById('roasted-bean-name').value = '';
     document.getElementById('roasted-bean-select').value = '';
   });
 
   document.getElementById('roasted-add-btn').addEventListener('click', function(){
-    var sel = document.getElementById('roasted-bean-select');
-    var beanId = sel.value;
-    if (!beanId) return;
-    var bean = beans.find(function(b){ return b.id === beanId; });
-    if (!bean) return;
-    roastedBeans.push({ id: uid(), beanId: beanId, name: bean.name });
+    var name = document.getElementById('roasted-bean-name').value.trim();
+    if (!name) return;
+    roastedBeans.push({ id: uid(), name: name });
     saveRoastedToServer(roastedBeans).catch(function(e){ console.error(e); });
-    sel.value = '';
+    document.getElementById('roasted-bean-name').value = '';
+    document.getElementById('roasted-bean-select').value = '';
     document.getElementById('roasted-add-form').style.display = 'none';
     renderRoastedBeans();
-    // Refresh dropdown to remove newly added bean
-    var listed = roastedBeans.map(function(r){ return r.name; });
-    sel.innerHTML = '<option value="">Select from inventory…</option>';
-    beans.filter(function(b){ return listed.indexOf(b.name) === -1; }).forEach(function(b){
-      sel.innerHTML += '<option value="' + esc(b.id) + '">' + esc(b.name) + '</option>';
-    });
   });
 
   // ---------- Customers ----------
