@@ -30,6 +30,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
+    overscroll-behavior: contain;
   }
 
   .app-header {
@@ -339,7 +340,7 @@
   .btn-secondary { background: #FFFFFF; color: #463E3A; border: 1.5px solid #DCD2C2; flex: 0.85; }
 
   /* ===== Form screen ===== */
-  .screen { display: none; flex-direction: column; height: 100%; flex: 1; min-height: 0; }
+  .screen { display: none; flex-direction: column; height: 100%; flex: 1; min-height: 0; overflow: hidden; }
   .screen.active { display: flex; }
   .form-topbar { padding: 18px 20px 12px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
   .back-btn {
@@ -672,6 +673,7 @@
   .time-picker-overlay {
     display: none; position: fixed; inset: 0; background: rgba(46, 41, 37, 0.4);
     z-index: 1000; align-items: flex-end; justify-content: center;
+    touch-action: none; overscroll-behavior: contain;
   }
   .time-picker-overlay.visible { display: flex; }
   .time-picker-sheet {
@@ -733,12 +735,13 @@
       <div class="gate-screen">
         <div class="gate-top">
           <img src="/logo.png" width="56" height="56" alt="Ratio Coffee logo">
-          <span class="brand-name">Ratio Coffee Dashboard</span>
+          <div style="text-align:center; line-height:1.25;">
+            <div class="brand-name">Ratio Coffee</div>
+            <div class="brand-name">Dashboard</div>
+          </div>
         </div>
         <div class="gate-bottom">
-          <div class="gate-title">Enter app password</div>
-          <div class="gate-subtitle">Ask your manager for the shared password to access the green bean inventory.</div>
-          <input type="password" class="gate-input" id="gate-password-input" placeholder="Password" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
+          <input type="password" class="gate-input" id="gate-password-input" placeholder="Enter Password" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
           <div class="gate-error" id="gate-error"></div>
           <button class="gate-btn" id="gate-submit-btn">Unlock</button>
         </div>
