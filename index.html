@@ -421,9 +421,19 @@
     cursor: pointer; flex-shrink: 0;
   }
 
-  .transfer-history-row {
-    border: 1.5px solid #DCD2C2; border-radius: 14px; padding: 14px; margin-bottom: 10px; background: #FFFFFF;
+  .contact-history-group {
+    border: 1.5px solid #DCD2C2; border-radius: 16px; margin-bottom: 12px; background: #FFFFFF; overflow: hidden;
   }
+  .contact-history-header {
+    padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer;
+  }
+  .contact-history-name { font-size: 16px; font-weight: 600; color: #2E2925; }
+  .contact-history-body { padding: 0 12px 12px; }
+
+  .transfer-history-row {
+    border: 1.5px solid #DCD2C2; border-radius: 14px; padding: 14px; margin-bottom: 10px; background: #FAF6F0;
+  }
+  .transfer-history-row:last-child { margin-bottom: 0; }
   .transfer-history-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
   .transfer-history-direction {
     font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 8px; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.03em;
@@ -866,7 +876,7 @@
         <div class="delivery-summary">
           <div class="summary-line"><span>Bean subtotal</span><span id="transfer-bean-subtotal">$0.00</span></div>
           <div class="summary-line" id="transfer-shipping-row" style="display:none;"><span>Shipping</span><span id="transfer-shipping-amount">$0.00</span></div>
-          <div class="summary-line" id="transfer-gst-row" style="display:none;"><span>GST (on shipping)</span><span id="transfer-gst-amount">$0.00</span></div>
+          <div class="summary-line" id="transfer-gst-row" style="display:none;"><span>incl. GST</span><span id="transfer-gst-amount">$0.00</span></div>
           <div class="summary-line total"><span>Total amount</span><span id="transfer-total-amount">$0.00</span></div>
         </div>
 
@@ -891,8 +901,10 @@
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <p class="field-hint" style="text-align:center; margin-bottom: 18px;" id="transfer-record-summary"></p>
-        <button class="btn-save" id="download-invoice-btn" style="margin-bottom: 10px;">Download invoice (PDF)</button>
-        <p class="required-hint">Attach this PDF to an email and send it to your contact.</p>
+        <div id="transfer-invoice-section">
+          <button class="btn-save" id="download-invoice-btn" style="margin-bottom: 10px;">Download invoice (PDF)</button>
+          <p class="required-hint">Attach this PDF to an email and send it to your contact.</p>
+        </div>
       </div>
       <div class="form-bottom-bar">
         <button class="btn-save" id="transfer-record-done-btn">Done</button>
@@ -1705,14 +1717,14 @@
       : (parseFloat(document.getElementById('t-price-out').value) || 0);
     var beanSubtotal = qty * price;
     var shipping = transferDirection === 'out' ? (parseFloat(document.getElementById('t-shipping').value) || 0) : 0;
-    var gst = shipping * 0.10;
+    var gst = shipping / 11;
 
     document.getElementById('transfer-bean-subtotal').textContent = fmtMoney(beanSubtotal);
     document.getElementById('transfer-shipping-row').style.display = transferDirection === 'out' ? 'flex' : 'none';
     document.getElementById('transfer-shipping-amount').textContent = fmtMoney(shipping);
     document.getElementById('transfer-gst-row').style.display = (transferDirection === 'out' && shipping > 0) ? 'flex' : 'none';
     document.getElementById('transfer-gst-amount').textContent = fmtMoney(gst);
-    document.getElementById('transfer-total-amount').textContent = fmtMoney(beanSubtotal + shipping + gst);
+    document.getElementById('transfer-total-amount').textContent = fmtMoney(beanSubtotal + shipping);
     updateTransferConfirmState();
   }
 
@@ -1866,11 +1878,11 @@
     } else {
       var priceOut = parseFloat(document.getElementById('t-price-out').value) || 0;
       var shippingOut = parseFloat(document.getElementById('t-shipping').value) || 0;
-      var gstOut = shippingOut * 0.10;
+      var gstOut = shippingOut / 11;
       record.pricePerKg = priceOut;
       record.shippingCost = shippingOut;
       record.gstAmount = gstOut;
-      record.totalAmount = (qty * priceOut) + shippingOut + gstOut;
+      record.totalAmount = (qty * priceOut) + shippingOut;
 
       if (existingBean) {
         var remainingQty = Math.max(0, (parseFloat(existingBean.quantity) || 0) - qty);
@@ -1892,6 +1904,7 @@
     var dirLabel = transferDirection === 'in' ? 'Received' : 'Sent';
     document.getElementById('transfer-record-summary').textContent =
       dirLabel + ' ' + fmtKg(qty) + ' of ' + beanName + ' ' + (transferDirection === 'in' ? 'from' : 'to') + ' ' + contact.name + ' \u2014 ' + fmtMoney(record.totalAmount) + ' total.';
+    document.getElementById('transfer-invoice-section').style.display = transferDirection === 'out' ? 'block' : 'none';
     showScreen('screen-transfer-record');
   });
 
@@ -1953,13 +1966,13 @@
     if (shipping > 0) {
       doc.text('Shipping', 20, y);
       doc.text('$' + shipping.toFixed(2), 175, y);
-      y += 12;
-    }
-
-    if (gst > 0) {
-      doc.text('GST (on shipping)', 20, y);
-      doc.text('$' + gst.toFixed(2), 175, y);
-      y += 12;
+      y += 7;
+      doc.setFontSize(8);
+      doc.setTextColor(140, 140, 140);
+      doc.text('(includes $' + gst.toFixed(2) + ' GST)', 20, y);
+      doc.setFontSize(10);
+      doc.setTextColor(40, 40, 40);
+      y += 9;
     }
 
     doc.line(20, y, 190, y);
@@ -1973,36 +1986,83 @@
   });
 
   // ---------- Transfer history ----------
+  var expandedContactGroups = {};
+
   function renderTransferHistory(){
     var listEl = document.getElementById('transfer-history-list');
     if (transferHistory.length === 0) {
       listEl.innerHTML = '<p class="field-hint">No transfers recorded yet.</p>';
       return;
     }
-    var sorted = transferHistory.slice().sort(function(a, b){ return new Date(b.date) - new Date(a.date); });
+
+    var groups = {};
+    transferHistory.forEach(function(r){
+      var key = r.contactName + '||' + r.contactEmail;
+      if (!groups[key]) {
+        groups[key] = { contactName: r.contactName, contactEmail: r.contactEmail, records: [] };
+      }
+      groups[key].records.push(r);
+    });
+
+    var groupKeys = Object.keys(groups).sort(function(a, b){
+      return groups[a].contactName.localeCompare(groups[b].contactName);
+    });
+
     var html = '';
-    sorted.forEach(function(r){
-      var dirLabel = r.direction === 'in' ? 'In' : 'Out';
-      var withLabel = r.direction === 'in' ? 'from' : 'to';
-      var dateStr = new Date(r.date).toLocaleDateString();
-      html += '<div class="transfer-history-row" data-id="' + r.id + '">';
-      html += '  <div class="transfer-history-top">';
+    groupKeys.forEach(function(key){
+      var group = groups[key];
+      var sortedRecords = group.records.slice().sort(function(a, b){ return new Date(b.date) - new Date(a.date); });
+      var totalIn = group.records.filter(function(r){ return r.direction === 'in'; }).reduce(function(s, r){ return s + r.totalAmount; }, 0);
+      var totalOut = group.records.filter(function(r){ return r.direction === 'out'; }).reduce(function(s, r){ return s + r.totalAmount; }, 0);
+      var expanded = !!expandedContactGroups[key];
+
+      html += '<div class="contact-history-group" data-group-key="' + esc(key) + '">';
+      html += '  <div class="contact-history-header" data-action="toggle-group">';
       html += '    <div>';
-      html += '      <span class="transfer-history-direction ' + r.direction + '">' + dirLabel + '</span>';
-      html += '      <div class="transfer-history-bean">' + esc(r.beanName) + '</div>';
-      html += '      <div class="transfer-history-meta">' + fmtKg(r.quantity) + ' ' + withLabel + ' ' + esc(r.contactName) + ' \u00b7 ' + dateStr + '</div>';
+      html += '      <div class="contact-history-name">' + esc(group.contactName) + '</div>';
+      html += '      <div class="transfer-history-meta">' + group.records.length + ' transfer' + (group.records.length === 1 ? '' : 's') + ' \u00b7 in ' + fmtMoney(totalIn) + ' / out ' + fmtMoney(totalOut) + '</div>';
       html += '    </div>';
+      html += '    <svg class="chevron contact-history-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(' + (expanded ? '180deg' : '0deg') + ');"><polyline points="6 9 12 15 18 9"/></svg>';
       html += '  </div>';
-      html += '  <div class="transfer-history-bottom">';
-      html += '    <span class="transfer-history-amount">' + fmtMoney(r.totalAmount) + '</span>';
-      html += '    <button class="transfer-history-delete-btn" data-action="delete-transfer" aria-label="Delete record"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+      html += '  <div class="contact-history-body" style="display:' + (expanded ? 'block' : 'none') + ';">';
+
+      sortedRecords.forEach(function(r){
+        var dirLabel = r.direction === 'in' ? 'In' : 'Out';
+        var withLabel = r.direction === 'in' ? 'from' : 'to';
+        var dateStr = new Date(r.date).toLocaleDateString();
+        html += '<div class="transfer-history-row" data-id="' + r.id + '">';
+        html += '  <div class="transfer-history-top">';
+        html += '    <div>';
+        html += '      <span class="transfer-history-direction ' + r.direction + '">' + dirLabel + '</span>';
+        html += '      <div class="transfer-history-bean">' + esc(r.beanName) + '</div>';
+        html += '      <div class="transfer-history-meta">' + fmtKg(r.quantity) + ' ' + withLabel + ' ' + esc(r.contactName) + ' \u00b7 ' + dateStr + '</div>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '  <div class="transfer-history-bottom">';
+        html += '    <span class="transfer-history-amount">' + fmtMoney(r.totalAmount) + '</span>';
+        html += '    <button class="transfer-history-delete-btn" data-action="delete-transfer" aria-label="Delete record"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+        html += '  </div>';
+        html += '</div>';
+      });
+
       html += '  </div>';
       html += '</div>';
     });
+
     listEl.innerHTML = html;
 
+    listEl.querySelectorAll('[data-action="toggle-group"]').forEach(function(header){
+      header.addEventListener('click', function(){
+        var group = header.closest('.contact-history-group');
+        var key = group.getAttribute('data-group-key');
+        expandedContactGroups[key] = !expandedContactGroups[key];
+        renderTransferHistory();
+      });
+    });
+
     listEl.querySelectorAll('[data-action="delete-transfer"]').forEach(function(btn){
-      btn.addEventListener('click', function(){
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
         var row = btn.closest('.transfer-history-row');
         var id = row.getAttribute('data-id');
         transferHistory = transferHistory.filter(function(r){ return r.id !== id; });
