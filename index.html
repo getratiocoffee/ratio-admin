@@ -2891,12 +2891,13 @@
       var pct = Math.round(byCountry[country] / totalKg * 100);
       return '<div style="display:flex;align-items:center;gap:8px;">'
         + '<span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:' + colours[i % colours.length] + ';flex-shrink:0;"></span>'
-        + '<span style="font-size:15px;color:#2E2925;font-weight:600;">' + pct + '%</span>'
+        + '<span style="font-size:15px;color:#2E2925;font-weight:600;min-width:40px;">' + pct + '%</span>'
         + '<span style="font-size:14px;color:#8A7F6F;">' + esc(country) + '</span>'
         + '</div>';
     }).join('')
-    + '<div style="border-top:1px solid #DCD2C2;margin-top:8px;padding-top:8px;font-size:14px;color:#8A7F6F;">'
-    + totalBeans + ' beans in stock'
+    + '<div style="border-top:1px solid #DCD2C2;margin-top:8px;padding-top:8px;">'
+    + '<div style="font-size:14px;color:#8A7F6F;">' + totalBeans + ' beans in stock</div>'
+    + '<div style="font-size:14px;color:#8A7F6F;margin-top:3px;">' + fmtKg(totalKg) + ' in stock</div>'
     + '</div>';
 
     wrapper.style.display = 'block';
