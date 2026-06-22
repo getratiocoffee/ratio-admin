@@ -2071,7 +2071,7 @@
 
       <div class="section-bar">
         <div>
-          <div class="section-title">We have <span id="bean-count">0</span> Green Beans in Stock</div>
+          <div class="section-title"><span id="bean-count">0</span> Green Beans in Stock</div>
         </div>
         <button class="header-incomplete-badge hidden" id="header-incomplete-badge">
           <span class="incomplete-dot"></span>
@@ -2096,17 +2096,6 @@
       </div>
 
       <div class="bean-list" id="bean-list"></div>
-
-      <div class="inventory-summary" id="inventory-summary">
-        <div class="inventory-summary-item">
-          <span class="inventory-summary-label">Total green stock</span>
-          <span class="inventory-summary-value" id="summary-total-kg">0.0 kg</span>
-        </div>
-        <div class="inventory-summary-item">
-          <span class="inventory-summary-label">Total stock value</span>
-          <span class="inventory-summary-value" id="summary-total-value">$0.00</span>
-        </div>
-      </div>
 
       <div class="save-status" id="save-status" style="opacity:0;">Saved</div>
 
@@ -2383,16 +2372,18 @@
           </div>
           <p class="field-hint" style="margin-bottom: 16px;">Sale price = cost per kg &times; (1 + margin %). Adjust either field &mdash; they stay in sync.</p>
           <div class="field-group">
-            <label class="field-label">Shipping cost</label>
+            <label class="field-label">Shipping Cost</label>
             <div class="cost-input-wrap">
               <span class="cost-prefix">$</span>
-              <input type="number" class="field-input" id="t-shipping" min="0" step="1" placeholder="0.00" inputmode="decimal">
+              <input type="number" class="field-input" id="t-shipping" min="0" step="1" placeholder="Enter courier quote" inputmode="decimal">
             </div>
           </div>
-          <p class="field-hint">Shipping is added on top as a flat amount &mdash; it doesn't change the per kg price.</p>
         </div>
 
         <div class="delivery-summary">
+          <div class="summary-line"><span>Total green stock</span><span id="summary-total-kg">0.0 kg</span></div>
+          <div class="summary-line"><span>Total stock value</span><span id="summary-total-value">$0.00</span></div>
+          <div class="divider" style="margin:10px 0;"></div>
           <div class="summary-line"><span>Bean subtotal</span><span id="transfer-bean-subtotal">$0.00</span></div>
           <div class="summary-line" id="transfer-handling-row" style="display:none;"><span>Handling fee <span class="summary-gst-note" id="transfer-handling-gst-note"></span></span><span id="transfer-handling-amount">$0.00</span></div>
           <div class="summary-line" id="transfer-delivery-row" style="display:none;"><span>Delivery fee <span class="summary-gst-note" id="transfer-delivery-gst-note"></span></span><span id="transfer-delivery-amount">$0.00</span></div>
