@@ -900,7 +900,7 @@
               <polyline points="14 2 14 8 20 8"/>
             </svg>
           </span>
-          <span class="app-grid-label">Handover</span>
+          <span class="app-grid-label">Hand Over</span>
         </button>
 
         <button class="app-grid-item" id="menu-open-order-btn">
@@ -4464,11 +4464,18 @@
         handoverData.tasksByDate[todayMigrate] = handoverData.tasks;
         delete handoverData.tasks;
       }
+      // Auto-delete past days' tasks (keep today and future only)
+      var todayIsoClean = isoDate(new Date());
+      var tasksDirty = false;
+      Object.keys(handoverData.tasksByDate).forEach(function(d){
+        if (d < todayIsoClean) { delete handoverData.tasksByDate[d]; tasksDirty = true; }
+      });
       // Clean up check records older than 30 days
       var cutoff = isoDate(new Date(Date.now() - 30 * 86400000));
       Object.keys(handoverData.checks).forEach(function(d){
         if (d < cutoff) delete handoverData.checks[d];
       });
+      if (tasksDirty) { try { saveHandoverToServer(handoverData); } catch(e2) {} }
       showScreen('screen-menu');
       render();
     } catch(e) {
