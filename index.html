@@ -133,6 +133,23 @@
   }
   .filter-chip.active { background: #463E3A; color: #fff; border-color: #463E3A; }
 
+  .incomplete-filter-banner {
+    margin: 0 20px 12px;
+    padding: 10px 14px;
+    background: #FAEEDA;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .incomplete-filter-banner span { font-size: 13px; color: #633806; font-weight: 600; }
+  .incomplete-filter-banner button {
+    font-size: 12px; font-weight: 600; color: #633806;
+    background: #FFFFFF; border: 1px solid #DCD2C2; border-radius: 8px;
+    padding: 5px 10px; cursor: pointer; font-family: inherit;
+  }
+
   .bean-list {
     flex: 1;
     width: 100%;
@@ -463,10 +480,11 @@
 
       <div class="filter-row" id="filter-row">
         <button class="filter-chip active" data-filter="all">All</button>
-        <button class="filter-chip" data-filter="incomplete">Needs info</button>
-        <button class="filter-chip" data-filter="healthy">In stock</button>
-        <button class="filter-chip" data-filter="low">Low stock</button>
-        <button class="filter-chip" data-filter="out">Out of stock</button>
+      </div>
+
+      <div class="incomplete-filter-banner" id="incomplete-filter-banner" style="display:none;">
+        <span>Showing only beans that need info</span>
+        <button id="incomplete-filter-clear-btn">Clear</button>
       </div>
 
       <div class="bean-list" id="bean-list"></div>
@@ -582,6 +600,7 @@
         </p>
 
         <div id="delivery-rows"></div>
+        <datalist id="known-suppliers-list"></datalist>
 
         <button class="add-row-btn" id="add-delivery-row-btn">+ Add bean to this delivery</button>
 
@@ -678,6 +697,7 @@
   var state = {
     search: '',
     filter: 'all',
+    showOnlyIncomplete: false,
     expandedId: null,
     editingId: null
   };
@@ -718,13 +738,17 @@
     incompleteCountEl.textContent = incompleteTotal;
     incompleteBadge.classList.toggle('hidden', incompleteTotal === 0);
 
+    document.getElementById('incomplete-filter-banner').style.display = state.showOnlyIncomplete ? 'flex' : 'none';
+
+    renderCountryChips();
+
     var q = state.search.trim().toLowerCase();
     var filtered = beans.filter(function(b){
-      var matchesFilter = state.filter === 'all' ? true :
-        state.filter === 'incomplete' ? isIncomplete(b) :
-        stockStatus(b.quantity) === state.filter;
+      var beanCountry = (b.country || 'Unspecified').trim() || 'Unspecified';
+      var matchesFilter = state.filter === 'all' ? true : beanCountry === state.filter;
+      var matchesIncomplete = !state.showOnlyIncomplete || isIncomplete(b);
       var matchesSearch = !q || b.name.toLowerCase().indexOf(q) !== -1 || (b.country||'').toLowerCase().indexOf(q) !== -1 || (b.region||'').toLowerCase().indexOf(q) !== -1;
-      return matchesFilter && matchesSearch;
+      return matchesFilter && matchesIncomplete && matchesSearch;
     });
 
     countEl.textContent = beans.length + ' green bean' + (beans.length === 1 ? '' : 's');
@@ -754,6 +778,38 @@
     listEl.innerHTML = html;
 
     attachCardListeners();
+  }
+
+  function renderCountryChips(){
+    var filterRow = document.getElementById('filter-row');
+    var seen = {};
+    var countries = [];
+    beans.forEach(function(b){
+      var c = (b.country || 'Unspecified').trim() || 'Unspecified';
+      if (!seen[c]) {
+        seen[c] = true;
+        countries.push(c);
+      }
+    });
+    countries.sort(function(a, b){ return a.localeCompare(b); });
+
+    if (state.filter !== 'all' && countries.indexOf(state.filter) === -1) {
+      state.filter = 'all';
+    }
+
+    var html = '<button class="filter-chip' + (state.filter === 'all' ? ' active' : '') + '" data-filter="all">All</button>';
+    countries.forEach(function(c){
+      html += '<button class="filter-chip' + (state.filter === c ? ' active' : '') + '" data-filter="' + esc(c) + '">' + esc(c) + '</button>';
+    });
+    filterRow.innerHTML = html;
+
+    filterRow.querySelectorAll('.filter-chip').forEach(function(chip){
+      chip.addEventListener('click', function(){
+        state.filter = chip.getAttribute('data-filter');
+        state.showOnlyIncomplete = false;
+        render();
+      });
+    });
   }
 
   function renderBeanCard(bean){
@@ -862,19 +918,16 @@
     render();
   });
 
-  document.querySelectorAll('.filter-chip').forEach(function(chip){
-    chip.addEventListener('click', function(){
-      document.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.remove('active'); });
-      chip.classList.add('active');
-      state.filter = chip.getAttribute('data-filter');
-      render();
-    });
+  document.getElementById('header-incomplete-badge').addEventListener('click', function(){
+    state.search = '';
+    document.getElementById('search-input').value = '';
+    state.filter = 'all';
+    state.showOnlyIncomplete = true;
+    render();
   });
 
-  document.getElementById('header-incomplete-badge').addEventListener('click', function(){
-    document.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.remove('active'); });
-    document.querySelector('.filter-chip[data-filter="incomplete"]').classList.add('active');
-    state.filter = 'incomplete';
+  document.getElementById('incomplete-filter-clear-btn').addEventListener('click', function(){
+    state.showOnlyIncomplete = false;
     render();
   });
 
@@ -963,21 +1016,37 @@
     }).join('');
   }
 
+  function refreshKnownSuppliersList(){
+    var datalist = document.getElementById('known-suppliers-list');
+    if (!datalist) return;
+    var seen = {};
+    var names = [];
+    beans.forEach(function(b){
+      var s = (b.supplier || '').trim();
+      if (s && !seen[s.toLowerCase()]) {
+        seen[s.toLowerCase()] = true;
+        names.push(s);
+      }
+    });
+    names.sort(function(a, b){ return a.localeCompare(b); });
+    datalist.innerHTML = names.map(function(n){ return '<option value="' + esc(n) + '">'; }).join('');
+  }
+
   function renderDeliveryRows(){
     var container = document.getElementById('delivery-rows');
 
     var html = '';
     deliveryRows.forEach(function(row){
       html += '<div class="delivery-bean-row" data-row-id="' + row.id + '">';
+      html += '  <div class="field-group" style="margin-bottom:10px;">';
+      html += '    <label style="font-size:11px; color:#B0A491; display:block; margin-bottom:4px;">Supplier</label>';
+      html += '    <input type="text" class="delivery-supplier-input" list="known-suppliers-list" placeholder="e.g. Trabocca" value="' + esc(row.supplier) + '">';
+      html += '  </div>';
       html += '  <div class="delivery-row-top">';
       html += '    <select class="delivery-bean-select">' + beanOptionsHtml(row.beanId) + '</select>';
       if (deliveryRows.length > 1) {
         html += '    <button class="remove-row-btn" data-action="remove-row" aria-label="Remove"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
       }
-      html += '  </div>';
-      html += '  <div class="field-group" style="margin-bottom:8px;">';
-      html += '    <label style="font-size:11px; color:#B0A491; display:block; margin-bottom:4px;">Supplier</label>';
-      html += '    <input type="text" class="delivery-supplier-input" placeholder="e.g. Trabocca" value="' + esc(row.supplier) + '">';
       html += '  </div>';
       html += '  <div class="delivery-supplier-note" style="display:none;"></div>';
       html += '  <div class="delivery-row-fields">';
@@ -988,6 +1057,7 @@
       html += '</div>';
     });
     container.innerHTML = html;
+    refreshKnownSuppliersList();
 
     container.querySelectorAll('.delivery-bean-row').forEach(function(rowEl){
       var rowId = rowEl.getAttribute('data-row-id');
