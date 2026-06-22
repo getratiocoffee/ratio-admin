@@ -990,7 +990,12 @@
         </div>
         <h1>Request N/A</h1>
       </div>
-      <div class="form-scroll">
+      <!-- Current N/A list at the top -->
+      <div class="form-scroll" style="flex:0 1 auto; min-height:0;">
+        <div id="na-existing-list"></div>
+      </div>
+      <!-- New request form pushed to bottom -->
+      <div style="flex-shrink:0; padding:12px 20px 0; border-top:1px solid #DCD2C2;">
         <div class="field-group">
           <label class="field-label">Staff member</label>
           <select class="field-input" id="na-staff-select"></select>
@@ -1005,8 +1010,7 @@
             <select class="field-input" id="na-end-select"></select>
           </div>
         </div>
-        <div id="na-period-preview" class="field-hint" style="margin-bottom:14px;display:none;"></div>
-        <div id="na-existing-list" style="margin-top:6px;"></div>
+        <div id="na-period-preview" class="field-hint" style="margin-bottom:10px;display:none;"></div>
       </div>
       <div class="form-bottom-bar">
         <button class="btn-save" id="na-save-btn" disabled>Save N/A request</button>
