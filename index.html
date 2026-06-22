@@ -2011,9 +2011,9 @@
 
       <!-- Pizza chart -->
       <div id="country-breakdown" style="flex-shrink:0; padding:14px 20px 10px; display:none;">
-        <div style="display:flex; align-items:center; gap:20px; justify-content:center;">
-          <canvas id="country-pie-canvas" width="100" height="100" style="flex-shrink:0;"></canvas>
-          <div id="country-pie-legend" style="display:flex; flex-direction:column; gap:6px;"></div>
+        <div style="display:flex; align-items:center; gap:24px; justify-content:center;">
+          <canvas id="country-pie-canvas" width="150" height="150" style="flex-shrink:0;"></canvas>
+          <div id="country-pie-legend" style="display:flex; flex-direction:column; gap:8px;"></div>
         </div>
       </div>
 
@@ -2886,14 +2886,18 @@
 
     // Legend
     var legend = document.getElementById('country-pie-legend');
+    var totalBeans = beans.length;
     legend.innerHTML = sorted.map(function(country, i){
       var pct = Math.round(byCountry[country] / totalKg * 100);
-      return '<div style="display:flex;align-items:center;gap:7px;">'
-        + '<span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:' + colours[i % colours.length] + ';flex-shrink:0;"></span>'
-        + '<span style="font-size:13px;color:#2E2925;font-weight:600;">' + pct + '%</span>'
-        + '<span style="font-size:13px;color:#8A7F6F;">' + esc(country) + '</span>'
+      return '<div style="display:flex;align-items:center;gap:8px;">'
+        + '<span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:' + colours[i % colours.length] + ';flex-shrink:0;"></span>'
+        + '<span style="font-size:15px;color:#2E2925;font-weight:600;">' + pct + '%</span>'
+        + '<span style="font-size:14px;color:#8A7F6F;">' + esc(country) + '</span>'
         + '</div>';
-    }).join('');
+    }).join('')
+    + '<div style="border-top:1px solid #DCD2C2;margin-top:8px;padding-top:8px;font-size:14px;color:#8A7F6F;">'
+    + totalBeans + ' beans in stock'
+    + '</div>';
 
     wrapper.style.display = 'block';
   }
