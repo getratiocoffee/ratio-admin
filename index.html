@@ -611,6 +611,26 @@
   .sn-chip-wide { white-space: normal; text-align: left; }
 
   /* Sensory session list */
+  /* Radar chart overlay */
+  .radar-overlay {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(46,41,37,0.5); align-items: center; justify-content: center;
+    touch-action: none;
+  }
+  .radar-overlay.visible { display: flex; }
+  .radar-card {
+    background: #FAF6F0; border-radius: 24px; padding: 24px 20px 20px;
+    width: min(340px, 90vw); max-height: 85vh; overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .radar-title { font-size: 17px; font-weight: 700; color: #2E2925; margin-bottom: 4px; text-align: center; }
+  .radar-date { font-size: 12px; color: #8A7F6F; text-align: center; margin-bottom: 16px; }
+  .radar-close {
+    display: block; width: 100%; padding: 13px 0; border-radius: 14px;
+    background: #463E3A; color: #fff; border: none; font-size: 15px;
+    font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 16px;
+  }
+
   .sn-session-card {
     border: 1.5px solid #DCD2C2; border-radius: 16px; padding: 14px;
     margin-bottom: 10px; background: #FFFFFF; cursor: pointer;
@@ -1802,6 +1822,23 @@
           <button class="btn-save" id="roasted-add-btn" type="button" style="flex:1; padding:13px 0; border-radius:14px; font-size:15px;">Add to list</button>
           <button class="import-confirm-btn cancel" id="roasted-add-cancel-btn" type="button" style="flex:0.5;">Cancel</button>
         </div>
+      </div>
+    </div>
+
+    <!-- Radar chart overlay -->
+    <div class="radar-overlay" id="radar-overlay">
+      <div class="radar-card">
+        <div class="radar-title" id="radar-bean-name"></div>
+        <div class="radar-date" id="radar-session-date"></div>
+        <div style="display:flex; justify-content:center; margin-bottom:12px;">
+          <div class="sn-temp-toggle">
+            <button type="button" class="sn-temp-btn hot active" id="radar-hot-btn">☕ Hot</button>
+            <button type="button" class="sn-temp-btn cold" id="radar-cold-btn">🧊 Cold</button>
+          </div>
+        </div>
+        <canvas id="radar-canvas" width="280" height="280" style="display:block;margin:0 auto;"></canvas>
+        <div id="radar-labels" style="margin-top:12px; display:flex; flex-wrap:wrap; gap:6px; justify-content:center;"></div>
+        <button class="radar-close" id="radar-close-btn">Close</button>
       </div>
     </div>
 
@@ -5524,10 +5561,10 @@
     var html = '';
     roastedBeans.forEach(function(r){
       var done = !!r.sensoryDone;
-      html += '<div class="contact-row" data-id="' + r.id + '" style="align-items:center;gap:10px;">';
+      html += '<div class="contact-row" data-id="' + r.id + '" style="align-items:center;gap:10px;' + (done ? 'cursor:pointer;' : '') + '">';
       html += '  <div style="flex:1;">';
       html += '    <div style="font-size:16px;font-weight:700;color:' + (done ? '#27500A' : '#2E2925') + ';">' + esc(r.name) + '</div>';
-      if (done) html += '    <div style="font-size:11px;color:#27500A;font-weight:600;margin-top:2px;">✓ Sensory done</div>';
+      if (done) html += '    <div style="font-size:11px;color:#27500A;font-weight:600;margin-top:2px;">✓ Sensory done — tap to view</div>';
       else html += '    <div style="font-size:11px;color:#B04A10;margin-top:2px;">Sensory not done</div>';
       html += '  </div>';
       html += '  <button class="sn-chip' + (done ? ' selected' : '') + '" data-action="toggle-sensory" style="font-size:12px;white-space:nowrap;" aria-label="Toggle sensory done">' + (done ? '✓ Done' : 'Mark done') + '</button>';
@@ -5535,6 +5572,22 @@
       html += '</div>';
     });
     listEl.innerHTML = html;
+
+    // Click on done bean → show radar
+    listEl.querySelectorAll('.contact-row').forEach(function(row){
+      row.addEventListener('click', function(e){
+        if (e.target.closest('[data-action]')) return; // let buttons handle themselves
+        var id = row.getAttribute('data-id');
+        var r = roastedBeans.find(function(x){ return x.id === id; });
+        if (!r || !r.sensoryDone) return;
+        // Find latest sensory session for this bean
+        var sessions = sensorySessions.filter(function(s){ return s.bean === r.name; });
+        if (sessions.length === 0) return;
+        var session = sessions.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); })[0];
+        showRadarChart(r.name, session);
+      });
+    });
+
     listEl.querySelectorAll('[data-action="toggle-sensory"]').forEach(function(btn){
       btn.addEventListener('click', function(){
         var id = btn.closest('.contact-row').getAttribute('data-id');
@@ -5556,6 +5609,149 @@
       });
     });
   }
+
+  // ---------- Radar chart ----------
+  var radarCurrentSession = null;
+  var radarCurrentTemp = 'hot';
+
+  function drawRadar(session, temp){
+    var DIMS = [
+      { key: 'fragrance', label: 'Fragrance' },
+      { key: 'aroma',     label: 'Aroma' },
+      { key: 'flavor',    label: 'Flavor' },
+      { key: 'aftertaste',label: 'Aftertaste' },
+      { key: 'acidity',   label: 'Acidity' },
+      { key: 'mouthfeel', label: 'Mouthfeel' }
+    ];
+    var vals = DIMS.map(function(d){
+      return session[d.key] && session[d.key][temp] ? (session[d.key][temp].intensity || 0) : 0;
+    });
+
+    var canvas = document.getElementById('radar-canvas');
+    var ctx = canvas.getContext('2d');
+    var W = canvas.width, H = canvas.height;
+    var cx = W / 2, cy = H / 2;
+    var R = Math.min(W, H) / 2 - 36;
+    var n = DIMS.length;
+    var MAX = 15;
+
+    ctx.clearRect(0, 0, W, H);
+
+    function angle(i){ return (Math.PI * 2 * i / n) - Math.PI / 2; }
+    function pt(i, r){ return { x: cx + r * Math.cos(angle(i)), y: cy + r * Math.sin(angle(i)) }; }
+
+    // Grid rings
+    [0.25, 0.5, 0.75, 1].forEach(function(f){
+      ctx.beginPath();
+      for (var i = 0; i < n; i++) {
+        var p = pt(i, R * f);
+        i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = 'rgba(70,62,58,0.12)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
+
+    // Spokes
+    for (var i = 0; i < n; i++) {
+      var p = pt(i, R);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(p.x, p.y);
+      ctx.strokeStyle = 'rgba(70,62,58,0.15)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // Color by temp
+    var fillColor = temp === 'hot' ? 'rgba(176,74,16,0.18)' : 'rgba(26,92,138,0.18)';
+    var strokeColor = temp === 'hot' ? '#B04A10' : '#1A5C8A';
+    var dotColor = temp === 'hot' ? '#B04A10' : '#1A5C8A';
+
+    // Data polygon
+    ctx.beginPath();
+    vals.forEach(function(v, i){
+      var p = pt(i, R * (v / MAX));
+      i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Dots
+    vals.forEach(function(v, i){
+      var p = pt(i, R * (v / MAX));
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = dotColor;
+      ctx.fill();
+    });
+
+    // Labels
+    DIMS.forEach(function(d, i){
+      var p = pt(i, R + 22);
+      ctx.font = 'bold 11px -apple-system, sans-serif';
+      ctx.fillStyle = '#463E3A';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(d.label, p.x, p.y);
+      if (vals[i] > 0) {
+        var vp = pt(i, R * (vals[i] / MAX));
+        ctx.font = '10px -apple-system, sans-serif';
+        ctx.fillStyle = dotColor;
+        ctx.fillText(vals[i], vp.x, vp.y - 10);
+      }
+    });
+
+    // CATA chips
+    var chips = [];
+    if (session.aroma && session.aroma[temp] && session.aroma[temp].cata) chips = chips.concat(session.aroma[temp].cata);
+    if (session.flavor && session.flavor[temp] && session.flavor[temp].cata) chips = chips.concat(session.flavor[temp].cata);
+    chips = chips.filter(function(v, i, a){ return a.indexOf(v) === i; }).slice(0,8);
+    document.getElementById('radar-labels').innerHTML = chips.map(function(c){
+      return '<span class="sn-session-chip">' + esc(c.replace(/_/g,' ').toLowerCase().replace(/\b\w/g,function(l){return l.toUpperCase();})) + '</span>';
+    }).join('');
+  }
+
+  function showRadarChart(beanName, session){
+    radarCurrentSession = session;
+    radarCurrentTemp = 'hot';
+
+    document.getElementById('radar-bean-name').textContent = beanName;
+    var dateStr = session.date ? new Date(session.date + 'T00:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+    document.getElementById('radar-session-date').textContent = dateStr;
+
+    document.getElementById('radar-hot-btn').classList.add('active');
+    document.getElementById('radar-cold-btn').classList.remove('active');
+
+    drawRadar(session, 'hot');
+    document.getElementById('radar-overlay').classList.add('visible');
+  }
+
+  document.getElementById('radar-hot-btn').addEventListener('click', function(){
+    if (radarCurrentTemp === 'hot') return;
+    radarCurrentTemp = 'hot';
+    this.classList.add('active');
+    document.getElementById('radar-cold-btn').classList.remove('active');
+    drawRadar(radarCurrentSession, 'hot');
+  });
+  document.getElementById('radar-cold-btn').addEventListener('click', function(){
+    if (radarCurrentTemp === 'cold') return;
+    radarCurrentTemp = 'cold';
+    this.classList.add('active');
+    document.getElementById('radar-hot-btn').classList.remove('active');
+    drawRadar(radarCurrentSession, 'cold');
+  });
+  document.getElementById('radar-close-btn').addEventListener('click', function(){
+    document.getElementById('radar-overlay').classList.remove('visible');
+  });
+  document.getElementById('radar-overlay').addEventListener('click', function(e){
+    if (e.target === this) this.classList.remove('visible');
+  });
 
   function renderDashboardRoastedBanner(){
     var banner = document.getElementById('dashboard-roasted-banner');
