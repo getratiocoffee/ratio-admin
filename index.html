@@ -1215,6 +1215,7 @@
     </div>
 
     <!-- ===== ORDER SCREEN (placeholder) ===== -->
+    <!-- ===== ORDER SUBMENU ===== -->
     <div class="screen" id="screen-order">
       <div class="form-topbar">
         <div class="back-btn" id="order-back-btn" aria-label="Back">
@@ -1222,13 +1223,59 @@
         </div>
         <h1>Order</h1>
       </div>
-      <div class="form-scroll">
-        <div class="placeholder-screen">
-          <div class="placeholder-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-          </div>
-          <p class="field-hint" style="text-align:center;">Order is coming soon.</p>
+      <div class="menu-body">
+        <button class="menu-card" id="order-open-customers-btn">
+          <span class="menu-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </span>
+          <span class="menu-card-text">
+            <span class="menu-card-title">Customer Detail</span>
+            <span class="menu-card-sub">Manage customer contacts</span>
+          </span>
+          <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== CUSTOMER DETAIL SCREEN ===== -->
+    <div class="screen" id="screen-customers">
+      <div class="form-topbar">
+        <div class="back-btn" id="customers-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
+        <h1>Customer Detail</h1>
+        <button class="icon-btn" id="customer-add-open-btn" aria-label="Add customer" style="margin-left:auto;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+
+      <!-- Add customer inline form -->
+      <div id="customer-add-form" style="display:none; padding:0 20px 4px; flex-shrink:0;">
+        <div class="field-group">
+          <label class="field-label">Name <span style="color:#A32D2D;">*</span></label>
+          <input type="text" class="field-input" id="customer-name-input" placeholder="e.g. Jane Smith">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Phone</label>
+          <input type="tel" class="field-input" id="customer-phone-input" placeholder="e.g. 0412 345 678" inputmode="tel">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Email</label>
+          <input type="email" class="field-input" id="customer-email-input" placeholder="e.g. jane@example.com" inputmode="email">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Address</label>
+          <input type="text" class="field-input" id="customer-address-input" placeholder="e.g. 12 Smith St, Sydney NSW 2000">
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:14px;">
+          <button class="btn-save" id="customer-add-btn" type="button" style="flex:1; padding:13px 0; border-radius:14px; font-size:15px;">Save</button>
+          <button class="import-confirm-btn cancel" id="customer-add-cancel-btn" type="button" style="flex:0.5;">Cancel</button>
+        </div>
+        <div class="divider" style="margin-bottom:4px;"></div>
+      </div>
+
+      <div class="form-scroll">
+        <div id="customer-list"></div>
       </div>
     </div>
 
@@ -1866,6 +1913,15 @@
     return true;
   }
 
+  async function loadCustomersFromServer(){
+    var data = await apiRequest('customers', 'GET');
+    return data && Array.isArray(data.items) ? data.items : [];
+  }
+  async function saveCustomersToServer(items){
+    await apiRequest('customers', 'POST', { items: items });
+    return true;
+  }
+
   async function loadHandoverFromServer(){
     var data = await apiRequest('handover', 'GET');
     // stored as items: [handoverData]
@@ -1886,6 +1942,7 @@
   var staffList = [];
   var timesheets = [];
   var naRequests = [];
+  var customers = [];
   var handoverData = { tasks: [], checks: {} }; // checks: { 'YYYY-MM-DD': { taskId: true } }
 
   var state = {
@@ -3231,12 +3288,6 @@
   document.getElementById('roasting-back-btn').addEventListener('click', function(){
     showScreen('screen-menu');
   });
-  document.getElementById('menu-open-order-btn').addEventListener('click', function(){
-    showScreen('screen-order');
-  });
-  document.getElementById('order-back-btn').addEventListener('click', function(){
-    showScreen('screen-menu');
-  });
   document.getElementById('list-back-to-menu-btn').addEventListener('click', function(){
     showScreen('screen-greenbean');
   });
@@ -4475,6 +4526,136 @@
     renderDashboardHandoverBanner();
   });
 
+  // ---------- Customers ----------
+  var expandedCustomer = null;
+
+  function persistCustomers(){
+    saveCustomersToServer(customers).catch(function(e){ console.error('Save customers failed', e); });
+  }
+
+  function renderCustomers(){
+    var listEl = document.getElementById('customer-list');
+    if (customers.length === 0) {
+      listEl.innerHTML = '<p class="field-hint">No customers yet. Tap + to add one.</p>';
+      return;
+    }
+    var html = '';
+    customers.forEach(function(c){
+      var isExpanded = expandedCustomer === c.id;
+      html += '<div class="bean-card" data-id="' + c.id + '">';
+      html += '  <div class="bean-card-header" data-action="toggle-customer" style="cursor:pointer;">';
+      html += '    <div class="bean-info">';
+      html += '      <div class="bean-name">' + esc(c.name) + '</div>';
+      if (c.phone) html += '      <div class="bean-process">' + esc(c.phone) + '</div>';
+      if (c.email) html += '      <div class="bean-process">' + esc(c.email) + '</div>';
+      if (!c.phone && !c.email) html += '      <div class="bean-process" style="color:#B0A491;font-style:italic;">No contact details</div>';
+      html += '    </div>';
+      html += '    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:rotate(' + (isExpanded ? '180deg' : '0deg') + ');flex-shrink:0;color:#B0A491;"><polyline points="6 9 12 15 18 9"/></svg>';
+      html += '  </div>';
+      if (isExpanded) {
+        html += '  <div class="bean-card-detail-inner">';
+        html += '    <div class="field-group"><label class="field-label">Name</label>';
+        html += '      <input type="text" class="field-input cc-name" value="' + esc(c.name) + '" placeholder="Name"></div>';
+        html += '    <div class="field-group"><label class="field-label">Phone</label>';
+        html += '      <input type="tel" class="field-input cc-phone" value="' + esc(c.phone || '') + '" placeholder="e.g. 0412 345 678" inputmode="tel"></div>';
+        html += '    <div class="field-group"><label class="field-label">Email</label>';
+        html += '      <input type="email" class="field-input cc-email" value="' + esc(c.email || '') + '" placeholder="e.g. jane@example.com" inputmode="email"></div>';
+        html += '    <div class="field-group"><label class="field-label">Address</label>';
+        html += '      <input type="text" class="field-input cc-address" value="' + esc(c.address || '') + '" placeholder="e.g. 12 Smith St, Sydney NSW 2000"></div>';
+        html += '    <div class="card-actions">';
+        html += '      <button class="btn-edit" data-action="save-customer" style="flex:1;">Save</button>';
+        html += '      <button class="btn-delete" data-action="delete-customer" aria-label="Delete"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+        html += '    </div>';
+        html += '  </div>';
+      }
+      html += '</div>';
+    });
+    listEl.innerHTML = html;
+
+    listEl.querySelectorAll('[data-action="toggle-customer"]').forEach(function(header){
+      header.addEventListener('click', function(){
+        var id = header.closest('.bean-card').getAttribute('data-id');
+        expandedCustomer = expandedCustomer === id ? null : id;
+        renderCustomers();
+      });
+    });
+    listEl.querySelectorAll('[data-action="save-customer"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var card = btn.closest('.bean-card');
+        var id = card.getAttribute('data-id');
+        var name = card.querySelector('.cc-name').value.trim();
+        if (!name) return;
+        customers = customers.map(function(c){
+          return c.id === id ? Object.assign({}, c, {
+            name: name,
+            phone: card.querySelector('.cc-phone').value.trim(),
+            email: card.querySelector('.cc-email').value.trim(),
+            address: card.querySelector('.cc-address').value.trim()
+          }) : c;
+        });
+        persistCustomers();
+        expandedCustomer = null;
+        renderCustomers();
+      });
+    });
+    listEl.querySelectorAll('[data-action="delete-customer"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.closest('.bean-card').getAttribute('data-id');
+        customers = customers.filter(function(c){ return c.id !== id; });
+        persistCustomers();
+        expandedCustomer = null;
+        renderCustomers();
+      });
+    });
+  }
+
+  document.getElementById('menu-open-order-btn').addEventListener('click', function(){
+    showScreen('screen-order');
+  });
+  document.getElementById('order-back-btn').addEventListener('click', function(){
+    showScreen('screen-menu');
+  });
+  document.getElementById('order-open-customers-btn').addEventListener('click', function(){
+    expandedCustomer = null;
+    document.getElementById('customer-add-form').style.display = 'none';
+    renderCustomers();
+    showScreen('screen-customers');
+  });
+  document.getElementById('customers-back-btn').addEventListener('click', function(){
+    showScreen('screen-order');
+  });
+  document.getElementById('customer-add-open-btn').addEventListener('click', function(){
+    var form = document.getElementById('customer-add-form');
+    var isOpen = form.style.display !== 'none';
+    form.style.display = isOpen ? 'none' : 'block';
+    if (!isOpen) document.getElementById('customer-name-input').focus();
+  });
+  document.getElementById('customer-add-cancel-btn').addEventListener('click', function(){
+    document.getElementById('customer-add-form').style.display = 'none';
+    document.getElementById('customer-name-input').value = '';
+    document.getElementById('customer-phone-input').value = '';
+    document.getElementById('customer-email-input').value = '';
+    document.getElementById('customer-address-input').value = '';
+  });
+  document.getElementById('customer-add-btn').addEventListener('click', function(){
+    var name = document.getElementById('customer-name-input').value.trim();
+    if (!name) return;
+    customers.push({
+      id: uid(),
+      name: name,
+      phone: document.getElementById('customer-phone-input').value.trim(),
+      email: document.getElementById('customer-email-input').value.trim(),
+      address: document.getElementById('customer-address-input').value.trim()
+    });
+    persistCustomers();
+    document.getElementById('customer-name-input').value = '';
+    document.getElementById('customer-phone-input').value = '';
+    document.getElementById('customer-email-input').value = '';
+    document.getElementById('customer-address-input').value = '';
+    document.getElementById('customer-add-form').style.display = 'none';
+    renderCustomers();
+  });
+
   // ---------- Password gate ----------
   var gateInput = document.getElementById('gate-password-input');
   var gateError = document.getElementById('gate-error');
@@ -4507,6 +4688,7 @@
       if (naRequests.length !== loadedNa.length) {
         try { saveNaToServer(naRequests); } catch(e) {}
       }
+      customers = await loadCustomersFromServer();
       handoverData = await loadHandoverFromServer();
       if (!handoverData.tasksByDate) handoverData.tasksByDate = {};
       if (!handoverData.checks) handoverData.checks = {};
