@@ -776,11 +776,18 @@
         <button class="app-grid-item" id="menu-open-timesheet-btn">
           <span class="app-grid-icon" style="background:#E8E0F5;">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5B3FA6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="8" r="3.5"/>
-              <path d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6"/>
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+              <line x1="8" y1="14" x2="8" y2="14" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="12" y1="14" x2="12" y2="14" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="16" y1="14" x2="16" y2="14" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="8" y1="18" x2="8" y2="18" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="12" y1="18" x2="12" y2="18" stroke-width="2.5" stroke-linecap="round"/>
             </svg>
           </span>
-          <span class="app-grid-label">Staff</span>
+          <span class="app-grid-label">Timesheet</span>
         </button>
 
         <button class="app-grid-item" id="menu-open-sensory-btn">
@@ -834,19 +841,8 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           </span>
           <span class="menu-card-text">
-            <span class="menu-card-title">Check Current Timesheet</span>
+            <span class="menu-card-title">Current Timesheet</span>
             <span class="menu-card-sub">This week's hours</span>
-          </span>
-          <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-
-        <button class="menu-card" id="ts-open-add-btn">
-          <span class="menu-card-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-          </span>
-          <span class="menu-card-text">
-            <span class="menu-card-title">Add New Timesheet</span>
-            <span class="menu-card-sub">Log hours for this week</span>
           </span>
           <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
@@ -856,7 +852,7 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
           </span>
           <span class="menu-card-text">
-            <span class="menu-card-title">Check Previous Timesheet</span>
+            <span class="menu-card-title">Previous Timesheet</span>
             <span class="menu-card-sub">Completed weeks</span>
           </span>
           <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
@@ -899,10 +895,17 @@
           <label class="field-label">Staff member</label>
           <select class="field-input" id="na-staff-select"></select>
         </div>
-        <div class="field-group">
-          <label class="field-label">Unavailable dates <span style="color:#8A7F6F;font-weight:400;">(tap to select, tap again to remove)</span></label>
-          <div id="na-date-picker" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;"></div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Start date</label>
+            <select class="field-input" id="na-start-select"></select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">End date</label>
+            <select class="field-input" id="na-end-select"></select>
+          </div>
         </div>
+        <div id="na-period-preview" class="field-hint" style="margin-bottom:14px;display:none;"></div>
         <div id="na-existing-list" style="margin-top:6px;"></div>
       </div>
       <div class="form-bottom-bar">
@@ -917,6 +920,9 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
         <h1>Current Timesheet</h1>
+        <button class="icon-btn" id="ts-open-add-btn" aria-label="Add new timesheet" style="margin-left:auto;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
       </div>
       <div class="form-scroll">
         <p class="field-hint" id="ts-current-range" style="margin-bottom: 14px;"></p>
@@ -3601,7 +3607,8 @@
 
   document.getElementById('ts-open-add-btn').addEventListener('click', openAddTimesheetScreen);
   document.getElementById('ts-add-back-btn').addEventListener('click', function(){
-    showScreen('screen-timesheet');
+    renderCurrentTimesheet();
+    showScreen('screen-ts-current');
   });
 
   document.getElementById('ts-save-week-btn').addEventListener('click', function(){
@@ -3623,7 +3630,8 @@
     });
 
     persistTimesheets();
-    showScreen('screen-timesheet');
+    renderCurrentTimesheet();
+    showScreen('screen-ts-current');
   });
 
   // ----- Previous timesheets -----
@@ -3690,12 +3698,55 @@
   });
 
   // ---------- Request N/A ----------
-  var naSelectedDates = [];
+
+  function buildNaDateOptions(){
+    var today = new Date();
+    var options = '';
+    for (var i = 0; i < 60; i++) {
+      var d = new Date(today);
+      d.setDate(today.getDate() + i);
+      var iso = isoDate(d);
+      var label = d.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+      options += '<option value="' + iso + '">' + label + '</option>';
+    }
+    return options;
+  }
+
+  function getDatesBetween(startIso, endIso){
+    var dates = [];
+    var cur = new Date(startIso + 'T00:00:00');
+    var end = new Date(endIso + 'T00:00:00');
+    while (cur <= end) {
+      dates.push(isoDate(cur));
+      cur.setDate(cur.getDate() + 1);
+    }
+    return dates;
+  }
+
+  function updateNaPreview(){
+    var start = document.getElementById('na-start-select').value;
+    var end = document.getElementById('na-end-select').value;
+    var preview = document.getElementById('na-period-preview');
+    var saveBtn = document.getElementById('na-save-btn');
+    if (!start || !end || end < start) {
+      preview.style.display = 'none';
+      saveBtn.disabled = true;
+      return;
+    }
+    var dates = getDatesBetween(start, end);
+    var count = dates.length;
+    preview.style.display = 'block';
+    preview.textContent = count === 1
+      ? '1 day selected.'
+      : count + ' days selected (' + new Date(start + 'T00:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })
+        + ' \u2013 ' + new Date(end + 'T00:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'short' }) + ').';
+    saveBtn.disabled = false;
+  }
 
   function renderNaBanner(){
     var today = isoDate(new Date());
-    var naToday = naRequests.filter(function(r){
-      return r.dates && r.dates.indexOf(today) !== -1;
+    var active = naRequests.filter(function(r){
+      return r.dates && r.dates.some(function(d){ return d >= today; });
     });
     var banner = document.getElementById('na-banner');
     var allOk = document.getElementById('na-all-ok-banner');
@@ -3704,40 +3755,20 @@
       allOk.style.display = 'none';
       return;
     }
-    if (naToday.length > 0) {
-      var names = naToday.map(function(r){ return r.staffName; }).join(', ');
-      document.getElementById('na-banner-content').textContent = names;
+    if (active.length > 0) {
+      var lines = active.map(function(r){
+        var futureDates = r.dates.filter(function(d){ return d >= today; })
+          .sort()
+          .map(function(d){ return new Date(d + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' }); });
+        return r.staffName + ': ' + futureDates.join(', ');
+      });
+      document.getElementById('na-banner-content').innerHTML = lines.map(function(l){ return esc(l); }).join('<br>');
       banner.style.display = 'block';
       allOk.style.display = 'none';
     } else {
       banner.style.display = 'none';
       allOk.style.display = 'block';
     }
-  }
-
-  function renderNaDatePicker(){
-    var container = document.getElementById('na-date-picker');
-    var today = new Date();
-    var html = '';
-    for (var i = 0; i < 14; i++) {
-      var d = new Date(today);
-      d.setDate(today.getDate() + i);
-      var iso = isoDate(d);
-      var label = d.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
-      var selected = naSelectedDates.indexOf(iso) !== -1;
-      html += '<button type="button" class="na-date-chip' + (selected ? ' active' : '') + '" data-date="' + iso + '">' + label + '</button>';
-    }
-    container.innerHTML = html;
-    container.querySelectorAll('.na-date-chip').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        var date = btn.getAttribute('data-date');
-        var idx = naSelectedDates.indexOf(date);
-        if (idx === -1) naSelectedDates.push(date);
-        else naSelectedDates.splice(idx, 1);
-        renderNaDatePicker();
-        document.getElementById('na-save-btn').disabled = naSelectedDates.length === 0;
-      });
-    });
   }
 
   function renderNaExistingList(){
@@ -3750,10 +3781,11 @@
     var html = '<div class="section-label" style="margin:14px 0 8px;">Current N/A requests</div>';
     active.forEach(function(r){
       var futureDates = r.dates.filter(function(d){ return d >= today; })
+        .sort()
         .map(function(d){ return new Date(d + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' }); });
       html += '<div class="delivery-bean-row" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;">';
       html += '  <div><div style="font-size:14px;font-weight:600;color:#2E2925;">' + esc(r.staffName) + '</div>';
-      html += '  <div style="font-size:12px;color:#8A7F6F;margin-top:2px;">' + futureDates.join(' · ') + '</div></div>';
+      html += '  <div style="font-size:12px;color:#8A7F6F;margin-top:2px;">' + futureDates.join(' \u00b7 ') + '</div></div>';
       html += '  <button class="btn-delete" data-action="delete-na" data-id="' + r.id + '" aria-label="Remove" style="width:36px;height:36px;border-radius:11px;border:1.5px solid #DCD2C2;background:#fff;color:#A32D2D;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
       html += '</div>';
     });
@@ -3770,41 +3802,47 @@
   }
 
   function openNaScreen(){
-    naSelectedDates = [];
+    var opts = buildNaDateOptions();
+    document.getElementById('na-start-select').innerHTML = opts;
+    document.getElementById('na-end-select').innerHTML = opts;
     var sel = document.getElementById('na-staff-select');
     sel.innerHTML = staffList.map(function(s){
       return '<option value="' + s.id + '">' + esc(s.name) + '</option>';
     }).join('');
+    document.getElementById('na-period-preview').style.display = 'none';
     document.getElementById('na-save-btn').disabled = true;
-    renderNaDatePicker();
     renderNaExistingList();
     showScreen('screen-ts-na');
   }
 
+  document.getElementById('na-start-select').addEventListener('change', updateNaPreview);
+  document.getElementById('na-end-select').addEventListener('change', updateNaPreview);
   document.getElementById('ts-open-na-btn').addEventListener('click', openNaScreen);
   document.getElementById('ts-na-back-btn').addEventListener('click', function(){
     showScreen('screen-timesheet');
   });
 
   document.getElementById('na-save-btn').addEventListener('click', function(){
-    if (naSelectedDates.length === 0) return;
+    var start = document.getElementById('na-start-select').value;
+    var end = document.getElementById('na-end-select').value;
+    if (!start || !end || end < start) return;
     var staffId = document.getElementById('na-staff-select').value;
     var staffMember = staffList.find(function(s){ return s.id === staffId; });
     if (!staffMember) return;
+    var newDates = getDatesBetween(start, end);
     var existing = naRequests.find(function(r){ return r.staffId === staffId; });
     if (existing) {
-      naSelectedDates.forEach(function(d){
+      newDates.forEach(function(d){
         if (existing.dates.indexOf(d) === -1) existing.dates.push(d);
       });
     } else {
-      naRequests.push({ id: uid(), staffId: staffId, staffName: staffMember.name, dates: naSelectedDates.slice() });
+      naRequests.push({ id: uid(), staffId: staffId, staffName: staffMember.name, dates: newDates });
     }
     saveNaToServer(naRequests).catch(function(e){ console.error(e); });
-    naSelectedDates = [];
-    renderNaDatePicker();
+    document.getElementById('na-period-preview').style.display = 'none';
+    document.getElementById('na-save-btn').disabled = true;
     renderNaExistingList();
     renderNaBanner();
-    document.getElementById('na-save-btn').disabled = true;
   });
 
   // ---------- Password gate ----------
