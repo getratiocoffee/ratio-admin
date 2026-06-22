@@ -3170,18 +3170,15 @@
         var dk = dayCard.getAttribute('data-day');
         var idx = parseInt(shiftRow.getAttribute('data-shift-idx'), 10);
         var staffId = shiftRow.querySelector('.ts-edit-staff-select').value;
-        var startBtn = shiftRow.querySelector('[data-field="start"]');
-        var endBtn = shiftRow.querySelector('[data-field="end"]');
-        var start = startBtn ? startBtn.getAttribute('data-value') : '';
-        var end = endBtn ? endBtn.getAttribute('data-value') : '';
-
-        // attach time button handlers so picker works while edit row is open
-        if (startBtn) attachTimeButtonHandler(startBtn, function(val){ startBtn.setAttribute('data-value', val); });
-        if (endBtn) attachTimeButtonHandler(endBtn, function(val){ endBtn.setAttribute('data-value', val); });
-
         var staffMember = staffList.find(function(s){ return s.id === staffId; });
-        if (staffId && start && end) {
-          week.days[dk][idx] = { staffId: staffId, staffName: staffMember ? staffMember.name : 'Unknown', start: start, end: end };
+        var shift = week.days[dk] && week.days[dk][idx];
+        if (staffId && shift && shift.start && shift.end) {
+          week.days[dk][idx] = {
+            staffId: staffId,
+            staffName: staffMember ? staffMember.name : 'Unknown',
+            start: shift.start,
+            end: shift.end
+          };
           persistTimesheets();
         }
         tsEditingShift = null;
@@ -3199,9 +3196,27 @@
         var dayCard = btn.closest('.ts-day-card');
         var dk = dayCard.getAttribute('data-day');
         if (staffList.length === 0) { alert('Add staff members first from the Staff Timesheet menu.'); return; }
-        week.days[dk].push({ staffId: staffList[0].id, staffName: staffList[0].name, start: '', end: '' });
+        var defaults = DEFAULT_SHIFT_TIMES[dk] || { start: '', end: '' };
+        week.days[dk].push({ staffId: staffList[0].id, staffName: staffList[0].name, start: defaults.start, end: defaults.end });
         tsEditingShift = { weekId: week.id, dayKey: dk, shiftIndex: week.days[dk].length - 1 };
         onChange();
+      });
+    });
+
+    // Bind time picker buttons in any currently-open edit rows
+    containerEl.querySelectorAll('[data-field="start"], [data-field="end"]').forEach(function(btn){
+      var field = btn.getAttribute('data-field');
+      attachTimeButtonHandler(btn, function(val){
+        btn.setAttribute('data-value', val);
+        // also update the shift data immediately so Save picks up the value
+        var shiftRow = btn.closest('.ts-add-shift-row');
+        var dayCard = btn.closest('.ts-day-card');
+        if (!shiftRow || !dayCard) return;
+        var dk = dayCard.getAttribute('data-day');
+        var idx = parseInt(shiftRow.getAttribute('data-shift-idx'), 10);
+        if (!isNaN(idx) && week.days[dk] && week.days[dk][idx]) {
+          week.days[dk][idx][field] = val;
+        }
       });
     });
   }
