@@ -2008,6 +2008,15 @@
         <h1>Green Bean</h1>
         <span style="margin-left:auto; font-size:13px; font-weight:600; color:#8A7F6F;"><span id="bean-count">0</span> beans</span>
       </div>
+
+      <!-- Pizza chart -->
+      <div id="country-breakdown" style="flex-shrink:0; padding:14px 20px 10px; display:none;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <canvas id="country-pie-canvas" width="90" height="90" style="flex-shrink:0;"></canvas>
+          <div id="country-pie-legend" style="flex:1; display:flex; flex-direction:column; gap:5px;"></div>
+        </div>
+      </div>
+
       <div class="menu-body">
         <button class="menu-card" id="menu-open-inventory-btn">
           <span class="menu-card-icon">
@@ -2057,9 +2066,6 @@
           <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
       </div>
-
-      <!-- Country breakdown by kg % -->
-      <div id="country-breakdown" style="display:flex; gap:8px; padding:12px 20px 4px; overflow-x:auto; flex-shrink:0; scrollbar-width:none; -webkit-overflow-scrolling:touch;"></div>
 
     </div>
 
@@ -2841,46 +2847,55 @@
   }
 
   function renderCountryBreakdown(){
-    var container = document.getElementById('country-breakdown');
-    if (!container) return;
+    var wrapper = document.getElementById('country-breakdown');
+    if (!wrapper) return;
     var totalKg = beans.reduce(function(s, b){ return s + (parseFloat(b.quantity) || 0); }, 0);
-    if (totalKg === 0 || beans.length === 0) { container.innerHTML = ''; return; }
+    if (totalKg === 0 || beans.length === 0) { wrapper.style.display = 'none'; return; }
 
-    // Group by country
+    // Group by country, sort by kg descending
     var byCountry = {};
     beans.forEach(function(b){
       var c = (b.country || 'Unspecified').trim() || 'Unspecified';
       byCountry[c] = (byCountry[c] || 0) + (parseFloat(b.quantity) || 0);
     });
+    var sorted = Object.keys(byCountry).sort(function(a, b){ return byCountry[b] - byCountry[a]; });
 
-    // Sort by kg descending
-    var sorted = Object.keys(byCountry).sort(function(a, b){
-      return byCountry[b] - byCountry[a];
+    var colours = ['#C4956A','#7EA87A','#6A96A8','#A87A6A','#887AB8','#6AA89A','#A89A6A','#6A7AA8'];
+
+    // Draw pie chart on canvas
+    var canvas = document.getElementById('country-pie-canvas');
+    var ctx = canvas.getContext('2d');
+    var W = canvas.width, H = canvas.height;
+    var cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 2;
+    ctx.clearRect(0, 0, W, H);
+
+    var startAngle = -Math.PI / 2;
+    sorted.forEach(function(country, i){
+      var slice = byCountry[country] / totalKg * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, R, startAngle, startAngle + slice);
+      ctx.closePath();
+      ctx.fillStyle = colours[i % colours.length];
+      ctx.fill();
+      ctx.strokeStyle = '#FAF6F0';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      startAngle += slice;
     });
 
-    // Colour palette (warm tones matching brand)
-    var colours = ['#C4A882','#9AAF88','#88A8B5','#B59088','#A08AA8','#88A89A','#B5A488','#8898B5'];
-
-    var html = sorted.map(function(country, i){
+    // Legend
+    var legend = document.getElementById('country-pie-legend');
+    legend.innerHTML = sorted.map(function(country, i){
       var pct = Math.round(byCountry[country] / totalKg * 100);
-      var col = colours[i % colours.length];
-      return '<div style="flex-shrink:0; width:80px; padding:10px 8px 9px; background:#fff; border:1.5px solid #DCD2C2; border-radius:14px; text-align:center; cursor:pointer;" data-country="' + esc(country) + '">'
-        + '<div style="font-size:18px; font-weight:700; color:' + col + '; line-height:1;">' + pct + '%</div>'
-        + '<div style="font-size:10px; color:#8A7F6F; margin-top:4px; line-height:1.3; word-break:break-word;">' + esc(country) + '</div>'
+      return '<div style="display:flex;align-items:center;gap:7px;">'
+        + '<span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:' + colours[i % colours.length] + ';flex-shrink:0;"></span>'
+        + '<span style="font-size:13px;color:#2E2925;font-weight:600;">' + pct + '%</span>'
+        + '<span style="font-size:13px;color:#8A7F6F;">' + esc(country) + '</span>'
         + '</div>';
     }).join('');
 
-    container.innerHTML = html;
-
-    // Clicking a country box → go to Inventory filtered by that country
-    container.querySelectorAll('[data-country]').forEach(function(box){
-      box.addEventListener('click', function(){
-        var country = box.getAttribute('data-country');
-        state.filter = country;
-        state.search = '';
-        showScreen('screen-list');
-      });
-    });
+    wrapper.style.display = 'block';
   }
 
   function renderCountryChips(){
