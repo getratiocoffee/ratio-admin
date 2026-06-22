@@ -1552,14 +1552,26 @@
                 <span class="sn-slider-label">High</span>
                 <span class="sn-slider-val" id="sn-acidity-intensity-hot-val">0</span>
               </div>
-              <div class="sn-cata-group">
-                <label class="sn-cata-label">Select 1:</label>
-                <div class="sn-cata-chips" id="sn-acidity-type-hot">
-                  <button type="button" class="sn-chip sn-chip-wide" data-val="DRY">Dry (Herby, Grassy, Tart)</button>
-                  <button type="button" class="sn-chip sn-chip-wide" data-val="SWEET">Sweet (Juicy, Fruit-like, Bright)</button>
+              <div class="sn-cata-group" style="margin-bottom:8px;">
+                <label class="sn-cata-label">Select 1 type with sub-descriptor:</label>
+                <div style="margin-bottom:8px;">
+                  <div style="font-size:12px;font-weight:600;color:#463E3A;margin-bottom:5px;">Dry Acidity</div>
+                  <div class="sn-cata-chips sn-acidity-sub-hot" id="sn-acidity-dry-hot">
+                    <button type="button" class="sn-chip" data-val="DRY_HERBY" data-group="dry">Herby</button>
+                    <button type="button" class="sn-chip" data-val="DRY_GRASSY" data-group="dry">Grassy</button>
+                    <button type="button" class="sn-chip" data-val="DRY_TART" data-group="dry">Tart</button>
+                  </div>
+                </div>
+                <div>
+                  <div style="font-size:12px;font-weight:600;color:#463E3A;margin-bottom:5px;">Sweet Acidity</div>
+                  <div class="sn-cata-chips sn-acidity-sub-hot" id="sn-acidity-sweet-hot">
+                    <button type="button" class="sn-chip" data-val="SWEET_JUICY" data-group="sweet">Juicy</button>
+                    <button type="button" class="sn-chip" data-val="SWEET_FRUIT_LIKE" data-group="sweet">Fruit-like</button>
+                    <button type="button" class="sn-chip" data-val="SWEET_BRIGHT" data-group="sweet">Bright</button>
+                  </div>
                 </div>
               </div>
-              <div class="field-group" style="margin-top:8px;">
+              <div class="field-group" style="margin-top:4px;">
                 <input type="text" class="field-input" id="sn-acidity-notes-hot" placeholder="Notes…" style="font-size:13px;">
               </div>
             </div>
@@ -1570,14 +1582,26 @@
                 <span class="sn-slider-label">High</span>
                 <span class="sn-slider-val" id="sn-acidity-intensity-cold-val">0</span>
               </div>
-              <div class="sn-cata-group">
-                <label class="sn-cata-label">Select 1:</label>
-                <div class="sn-cata-chips" id="sn-acidity-type-cold">
-                  <button type="button" class="sn-chip sn-chip-wide" data-val="DRY">Dry (Herby, Grassy, Tart)</button>
-                  <button type="button" class="sn-chip sn-chip-wide" data-val="SWEET">Sweet (Juicy, Fruit-like, Bright)</button>
+              <div class="sn-cata-group" style="margin-bottom:8px;">
+                <label class="sn-cata-label">Select 1 type with sub-descriptor:</label>
+                <div style="margin-bottom:8px;">
+                  <div style="font-size:12px;font-weight:600;color:#463E3A;margin-bottom:5px;">Dry Acidity</div>
+                  <div class="sn-cata-chips sn-acidity-sub-cold" id="sn-acidity-dry-cold">
+                    <button type="button" class="sn-chip" data-val="DRY_HERBY" data-group="dry">Herby</button>
+                    <button type="button" class="sn-chip" data-val="DRY_GRASSY" data-group="dry">Grassy</button>
+                    <button type="button" class="sn-chip" data-val="DRY_TART" data-group="dry">Tart</button>
+                  </div>
+                </div>
+                <div>
+                  <div style="font-size:12px;font-weight:600;color:#463E3A;margin-bottom:5px;">Sweet Acidity</div>
+                  <div class="sn-cata-chips sn-acidity-sub-cold" id="sn-acidity-sweet-cold">
+                    <button type="button" class="sn-chip" data-val="SWEET_JUICY" data-group="sweet">Juicy</button>
+                    <button type="button" class="sn-chip" data-val="SWEET_FRUIT_LIKE" data-group="sweet">Fruit-like</button>
+                    <button type="button" class="sn-chip" data-val="SWEET_BRIGHT" data-group="sweet">Bright</button>
+                  </div>
                 </div>
               </div>
-              <div class="field-group" style="margin-top:8px;">
+              <div class="field-group" style="margin-top:4px;">
                 <input type="text" class="field-input" id="sn-acidity-notes-cold" placeholder="Notes…" style="font-size:13px;">
               </div>
             </div>
@@ -5158,8 +5182,10 @@
       groups['cata'] = { id: 'sn-' + dim + '-cata-' + temp, limit: 5 };
     if (['flavor','aftertaste'].indexOf(dim) !== -1)
       groups['main'] = { id: 'sn-' + dim + '-main-' + temp, limit: 2 };
-    if (dim === 'acidity')
-      groups['type'] = { id: 'sn-acidity-type-' + temp, limit: 1 };
+    if (dim === 'acidity') {
+      groups['dry'] = { id: 'sn-acidity-dry-' + temp, limit: 1 };
+      groups['sweet'] = { id: 'sn-acidity-sweet-' + temp, limit: 1 };
+    }
     if (dim === 'sweetness')
       groups['present'] = { id: 'sn-sweetness-present-' + temp, limit: 3 };
     if (dim === 'mouthfeel')
@@ -5191,6 +5217,29 @@
         if (slider && val) slider.addEventListener('input', function(){ val.textContent = slider.value; });
       });
     });
+    // Acidity mutual exclusion: selecting Dry clears Sweet and vice versa
+    SN_TEMPS.forEach(function(temp){
+      var dryEl = document.getElementById('sn-acidity-dry-' + temp);
+      var sweetEl = document.getElementById('sn-acidity-sweet-' + temp);
+      if (!dryEl || !sweetEl) return;
+      dryEl.querySelectorAll('.sn-chip').forEach(function(chip){
+        chip.addEventListener('click', function(){
+          sweetEl.querySelectorAll('.sn-chip').forEach(function(c){ c.classList.remove('selected'); });
+          var wasSelected = chip.classList.contains('selected');
+          dryEl.querySelectorAll('.sn-chip').forEach(function(c){ c.classList.remove('selected'); });
+          if (!wasSelected) chip.classList.add('selected');
+        });
+      });
+      sweetEl.querySelectorAll('.sn-chip').forEach(function(chip){
+        chip.addEventListener('click', function(){
+          dryEl.querySelectorAll('.sn-chip').forEach(function(c){ c.classList.remove('selected'); });
+          var wasSelected = chip.classList.contains('selected');
+          sweetEl.querySelectorAll('.sn-chip').forEach(function(c){ c.classList.remove('selected'); });
+          if (!wasSelected) chip.classList.add('selected');
+        });
+      });
+    });
+
     document.querySelectorAll('.sn-temp-btn').forEach(function(btn){
       btn.addEventListener('click', function(){
         var dim = btn.getAttribute('data-dim');
