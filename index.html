@@ -622,6 +622,68 @@
     display: flex; align-items: center; justify-content: center; height: 100%;
     color: #8A7F6F; font-size: 14px;
   }
+
+  /* ===== Time picker modal ===== */
+  .ts-time-display-btn {
+    flex: 1; min-width: 0; padding: 9px 8px; font-size: 14px; border: 1.5px solid #DCD2C2; border-radius: 10px;
+    background: #FFFFFF; color: #2E2925; font-family: inherit; box-sizing: border-box;
+    text-align: center; cursor: pointer;
+  }
+  .ts-time-display-btn.placeholder { color: #B0A491; }
+
+  .time-picker-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(46, 41, 37, 0.4);
+    z-index: 1000; align-items: flex-end; justify-content: center;
+  }
+  .time-picker-overlay.visible { display: flex; }
+  .time-picker-sheet {
+    width: 100%; max-width: 420px; background: #FAF6F0; border-radius: 24px 24px 0 0;
+    padding: 0 0 max(20px, env(safe-area-inset-bottom)); box-sizing: border-box;
+  }
+  .time-picker-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; border-bottom: 1px solid #DCD2C2;
+  }
+  .time-picker-title { font-size: 15px; font-weight: 600; color: #463E3A; }
+  .time-picker-done-btn {
+    font-size: 15px; font-weight: 700; color: #463E3A; background: none; border: none;
+    cursor: pointer; font-family: inherit; padding: 4px 8px;
+  }
+  .time-picker-body {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 20px 20px 24px;
+  }
+  .time-picker-wheel-col {
+    position: relative; width: 70px; height: 180px; overflow: hidden;
+  }
+  .time-picker-wheel-col::before, .time-picker-wheel-col::after {
+    content: ''; position: absolute; left: 0; right: 0; height: 60px; pointer-events: none; z-index: 2;
+  }
+  .time-picker-wheel-col::before { top: 0; background: linear-gradient(to bottom, #FAF6F0, rgba(250,246,240,0)); }
+  .time-picker-wheel-col::after { bottom: 0; background: linear-gradient(to top, #FAF6F0, rgba(250,246,240,0)); }
+  .time-picker-wheel {
+    position: relative; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .time-picker-wheel::-webkit-scrollbar { display: none; }
+  .time-picker-wheel-item {
+    height: 60px; display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: #B0A491; scroll-snap-align: center; font-weight: 500;
+  }
+  .time-picker-wheel-item.selected { color: #2E2925; font-weight: 700; font-size: 26px; }
+  .time-picker-wheel-frame {
+    position: absolute; top: 60px; left: 0; right: 0; height: 60px;
+    border-top: 1.5px solid #DCD2C2; border-bottom: 1.5px solid #DCD2C2; pointer-events: none; z-index: 1;
+  }
+  .time-picker-colon { font-size: 26px; font-weight: 700; color: #2E2925; padding-bottom: 2px; }
+  .time-picker-ampm-col {
+    display: flex; flex-direction: column; gap: 8px; margin-left: 10px;
+  }
+  .time-picker-ampm-btn {
+    width: 56px; height: 44px; border-radius: 12px; border: 1.5px solid #DCD2C2;
+    background: #FFFFFF; color: #463E3A; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  .time-picker-ampm-btn.active { background: #463E3A; color: #fff; border-color: #463E3A; }
 </style>
 </head>
 <body>
@@ -1310,6 +1372,29 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- ===== TIME PICKER MODAL ===== -->
+<div class="time-picker-overlay" id="time-picker-overlay">
+  <div class="time-picker-sheet">
+    <div class="time-picker-header">
+      <span class="time-picker-title">Select time</span>
+      <button class="time-picker-done-btn" id="time-picker-done-btn" type="button">Done</button>
+    </div>
+    <div class="time-picker-body">
+      <div class="time-picker-wheel-col">
+        <div class="time-picker-wheel" id="time-picker-hour-wheel"></div>
+      </div>
+      <div class="time-picker-colon">:</div>
+      <div class="time-picker-wheel-col">
+        <div class="time-picker-wheel" id="time-picker-minute-wheel"></div>
+      </div>
+      <div class="time-picker-ampm-col">
+        <button class="time-picker-ampm-btn" id="time-picker-am-btn" type="button" data-period="AM">AM</button>
+        <button class="time-picker-ampm-btn" id="time-picker-pm-btn" type="button" data-period="PM">PM</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2710,9 +2795,138 @@
     showScreen('screen-menu');
   });
 
+  // ---------- Time picker modal ----------
+  var timePickerTargetInput = null;
+  var timePickerHour = 9;
+  var timePickerMinute = 0;
+  var timePickerPeriod = 'AM';
+  var WHEEL_ITEM_HEIGHT = 60;
+
+  function buildWheel(containerId, count, formatFn, startAt){
+    var el = document.getElementById(containerId);
+    var html = '<div class="time-picker-wheel-frame"></div>';
+    html += '<div class="time-picker-wheel-spacer" style="height:' + WHEEL_ITEM_HEIGHT + 'px;"></div>';
+    for (var i = 0; i < count; i++) {
+      html += '<div class="time-picker-wheel-item" data-value="' + i + '">' + formatFn(i) + '</div>';
+    }
+    html += '<div class="time-picker-wheel-spacer" style="height:' + WHEEL_ITEM_HEIGHT + 'px;"></div>';
+    el.innerHTML = html;
+  }
+
+  function scrollWheelTo(containerId, value){
+    var el = document.getElementById(containerId);
+    el.scrollTop = value * WHEEL_ITEM_HEIGHT;
+  }
+
+  function getWheelValue(containerId){
+    var el = document.getElementById(containerId);
+    return Math.round(el.scrollTop / WHEEL_ITEM_HEIGHT);
+  }
+
+  function highlightWheel(containerId, value){
+    var el = document.getElementById(containerId);
+    el.querySelectorAll('.time-picker-wheel-item').forEach(function(item){
+      item.classList.toggle('selected', parseInt(item.getAttribute('data-value'), 10) === value);
+    });
+  }
+
+  function initTimePickerWheels(){
+    buildWheel('time-picker-hour-wheel', 12, function(i){ return i === 0 ? 12 : i; }, 0);
+    buildWheel('time-picker-minute-wheel', 60, function(i){ return String(i).padStart(2, '0'); }, 0);
+
+    var hourEl = document.getElementById('time-picker-hour-wheel');
+    var minuteEl = document.getElementById('time-picker-minute-wheel');
+
+    var hourScrollTimeout = null;
+    hourEl.addEventListener('scroll', function(){
+      clearTimeout(hourScrollTimeout);
+      hourScrollTimeout = setTimeout(function(){
+        var v = getWheelValue('time-picker-hour-wheel');
+        timePickerHour = v === 0 ? 12 : v;
+        highlightWheel('time-picker-hour-wheel', v);
+      }, 80);
+    });
+    var minuteScrollTimeout = null;
+    minuteEl.addEventListener('scroll', function(){
+      clearTimeout(minuteScrollTimeout);
+      minuteScrollTimeout = setTimeout(function(){
+        var v = getWheelValue('time-picker-minute-wheel');
+        timePickerMinute = v;
+        highlightWheel('time-picker-minute-wheel', v);
+      }, 80);
+    });
+  }
+
+  function setAmPmActive(period){
+    timePickerPeriod = period;
+    document.getElementById('time-picker-am-btn').classList.toggle('active', period === 'AM');
+    document.getElementById('time-picker-pm-btn').classList.toggle('active', period === 'PM');
+  }
+
+  document.getElementById('time-picker-am-btn').addEventListener('click', function(){ setAmPmActive('AM'); });
+  document.getElementById('time-picker-pm-btn').addEventListener('click', function(){ setAmPmActive('PM'); });
+
+  function openTimePicker(inputEl){
+    timePickerTargetInput = inputEl;
+    var current = inputEl.getAttribute('data-value') || '';
+    var t = current ? to12Hour(current) : { hour: 9, minute: 0, period: 'AM' };
+    timePickerHour = t.hour;
+    timePickerMinute = t.minute;
+    setAmPmActive(t.period);
+
+    var hourWheelValue = t.hour === 12 ? 0 : t.hour;
+    scrollWheelTo('time-picker-hour-wheel', hourWheelValue);
+    scrollWheelTo('time-picker-minute-wheel', t.minute);
+    highlightWheel('time-picker-hour-wheel', hourWheelValue);
+    highlightWheel('time-picker-minute-wheel', t.minute);
+
+    document.getElementById('time-picker-overlay').classList.add('visible');
+  }
+
+  function closeTimePicker(){
+    document.getElementById('time-picker-overlay').classList.remove('visible');
+    timePickerTargetInput = null;
+  }
+
+  document.getElementById('time-picker-done-btn').addEventListener('click', function(){
+    if (timePickerTargetInput) {
+      var hhmm = to24Hour(timePickerHour, timePickerMinute, timePickerPeriod);
+      timePickerTargetInput.setAttribute('data-value', hhmm);
+      timePickerTargetInput.textContent = fmtTime12(hhmm);
+      timePickerTargetInput.classList.remove('placeholder');
+      timePickerTargetInput.dispatchEvent(new Event('timechange'));
+    }
+    closeTimePicker();
+  });
+
+  document.getElementById('time-picker-overlay').addEventListener('click', function(e){
+    if (e.target.id === 'time-picker-overlay') closeTimePicker();
+  });
+
+  initTimePickerWheels();
+
+  function renderTimeButton(value, dataAttrs){
+    var label = value ? fmtTime12(value) : 'Set time';
+    return '<button type="button" class="ts-time-display-btn' + (value ? '' : ' placeholder') + '" data-value="' + esc(value || '') + '" ' + dataAttrs + '>' + label + '</button>';
+  }
+
+  function attachTimeButtonHandler(btn, onChangeCallback){
+    btn.addEventListener('click', function(){ openTimePicker(btn); });
+    btn.addEventListener('timechange', function(){ onChangeCallback(btn.getAttribute('data-value')); });
+  }
+
   // ---------- Staff Timesheet ----------
   var DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
   var DAY_LABELS = { mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday', thu: 'Thursday', fri: 'Friday', sat: 'Saturday', sun: 'Sunday' };
+  var DEFAULT_SHIFT_TIMES = {
+    mon: { start: '05:45', end: '14:15' },
+    tue: { start: '05:45', end: '14:15' },
+    wed: { start: '05:45', end: '14:15' },
+    thu: { start: '05:45', end: '14:15' },
+    fri: { start: '05:45', end: '14:15' },
+    sat: { start: '06:15', end: '16:15' },
+    sun: { start: '06:15', end: '16:15' }
+  };
 
   function getMonday(d){
     var date = new Date(d);
@@ -2755,6 +2969,26 @@
   function fmtHours(h){
     if (h == null) return '0 hrs';
     return (Math.round(h * 100) / 100) + ' hrs';
+  }
+  function to12Hour(hhmm){
+    if (!hhmm) return null;
+    var parts = hhmm.split(':');
+    var h = parseInt(parts[0], 10);
+    var m = parseInt(parts[1], 10);
+    var period = h >= 12 ? 'PM' : 'AM';
+    var h12 = h % 12;
+    if (h12 === 0) h12 = 12;
+    return { hour: h12, minute: m, period: period };
+  }
+  function to24Hour(hour12, minute, period){
+    var h = hour12 % 12;
+    if (period === 'PM') h += 12;
+    return String(h).padStart(2, '0') + ':' + String(minute).padStart(2, '0');
+  }
+  function fmtTime12(hhmm){
+    if (!hhmm) return null;
+    var t = to12Hour(hhmm);
+    return t.hour + ':' + String(t.minute).padStart(2, '0') + t.period;
   }
   function getCurrentWeekIso(){
     return isoDate(getMonday(new Date()));
@@ -2873,9 +3107,9 @@
           html += '    <div class="ts-add-shift-row" data-shift-idx="' + idx + '">';
           html += '      <div class="ts-add-shift-row-top"><select class="ts-edit-staff-select">' + staffOptionsHtml(shift.staffId) + '</select></div>';
           html += '      <div class="ts-add-shift-time-fields">';
-          html += '        <input type="time" class="ts-edit-start-input" value="' + esc(shift.start || '') + '">';
+          html += '        ' + renderTimeButton(shift.start, 'data-field="start"');
           html += '        <span>to</span>';
-          html += '        <input type="time" class="ts-edit-end-input" value="' + esc(shift.end || '') + '">';
+          html += '        ' + renderTimeButton(shift.end, 'data-field="end"');
           html += '      </div>';
           html += '      <div style="display:flex; gap:8px; margin-top:8px;">';
           html += '        <button class="import-confirm-btn confirm" data-action="save-edit-shift" type="button" style="flex:1;">Save</button>';
@@ -2885,7 +3119,7 @@
         } else {
           var hrs = hoursBetween(shift.start, shift.end);
           html += '    <div class="ts-shift-row" data-shift-idx="' + idx + '">';
-          html += '      <div><div class="ts-shift-name">' + esc(shift.staffName) + '</div><div class="ts-shift-time">' + esc(shift.start) + ' \u2013 ' + esc(shift.end) + ' \u00b7 ' + fmtHours(hrs) + '</div></div>';
+          html += '      <div><div class="ts-shift-name">' + esc(shift.staffName) + '</div><div class="ts-shift-time">' + (fmtTime12(shift.start) || shift.start) + ' \u2013 ' + (fmtTime12(shift.end) || shift.end) + ' \u00b7 ' + fmtHours(hrs) + '</div></div>';
           html += '      <div class="ts-shift-actions">';
           html += '        <button class="ts-shift-edit-btn" data-action="edit-shift" aria-label="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>';
           html += '        <button class="ts-shift-delete-btn" data-action="delete-shift" aria-label="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
@@ -2929,8 +3163,15 @@
         var dk = dayCard.getAttribute('data-day');
         var idx = parseInt(shiftRow.getAttribute('data-shift-idx'), 10);
         var staffId = shiftRow.querySelector('.ts-edit-staff-select').value;
-        var start = shiftRow.querySelector('.ts-edit-start-input').value;
-        var end = shiftRow.querySelector('.ts-edit-end-input').value;
+        var startBtn = shiftRow.querySelector('[data-field="start"]');
+        var endBtn = shiftRow.querySelector('[data-field="end"]');
+        var start = startBtn ? startBtn.getAttribute('data-value') : '';
+        var end = endBtn ? endBtn.getAttribute('data-value') : '';
+
+        // attach time button handlers so picker works while edit row is open
+        if (startBtn) attachTimeButtonHandler(startBtn, function(val){ startBtn.setAttribute('data-value', val); });
+        if (endBtn) attachTimeButtonHandler(endBtn, function(val){ endBtn.setAttribute('data-value', val); });
+
         var staffMember = staffList.find(function(s){ return s.id === staffId; });
         if (staffId && start && end) {
           week.days[dk][idx] = { staffId: staffId, staffName: staffMember ? staffMember.name : 'Unknown', start: start, end: end };
@@ -3013,9 +3254,9 @@
         html += '      <button class="remove-row-btn" data-action="remove-add-shift" aria-label="Remove"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
         html += '    </div>';
         html += '    <div class="ts-add-shift-time-fields">';
-        html += '      <input type="time" class="ts-add-start-input" value="' + esc(shift.start || '') + '">';
+        html += '      ' + renderTimeButton(shift.start, 'data-field="start"');
         html += '      <span>to</span>';
-        html += '      <input type="time" class="ts-add-end-input" value="' + esc(shift.end || '') + '">';
+        html += '      ' + renderTimeButton(shift.end, 'data-field="end"');
         html += '    </div>';
         html += '  </div>';
       });
@@ -3032,12 +3273,10 @@
         row.querySelector('.ts-add-staff-select').addEventListener('change', function(e){
           tsAddDraft[dk][idx].staffId = e.target.value;
         });
-        row.querySelector('.ts-add-start-input').addEventListener('input', function(e){
-          tsAddDraft[dk][idx].start = e.target.value;
-        });
-        row.querySelector('.ts-add-end-input').addEventListener('input', function(e){
-          tsAddDraft[dk][idx].end = e.target.value;
-        });
+        var startBtn = row.querySelector('[data-field="start"]');
+        var endBtn = row.querySelector('[data-field="end"]');
+        attachTimeButtonHandler(startBtn, function(val){ tsAddDraft[dk][idx].start = val; });
+        attachTimeButtonHandler(endBtn, function(val){ tsAddDraft[dk][idx].end = val; });
         row.querySelector('[data-action="remove-add-shift"]').addEventListener('click', function(){
           tsAddDraft[dk].splice(idx, 1);
           renderAddDays();
@@ -3046,7 +3285,8 @@
 
       dayBlock.querySelector('[data-action="add-draft-shift"]').addEventListener('click', function(){
         if (!tsAddDraft[dk]) tsAddDraft[dk] = [];
-        tsAddDraft[dk].push({ staffId: staffList[0].id, start: '', end: '' });
+        var defaults = DEFAULT_SHIFT_TIMES[dk] || { start: '', end: '' };
+        tsAddDraft[dk].push({ staffId: staffList[0].id, start: defaults.start, end: defaults.end });
         renderAddDays();
       });
     });
@@ -3059,7 +3299,14 @@
       fmtShortDate(weekStart) + ' \u2013 ' + fmtShortDate(dates.sun) + ' (Mon\u2013Sun)';
 
     tsAddDraft = {};
-    DAY_KEYS.forEach(function(dk){ tsAddDraft[dk] = []; });
+    DAY_KEYS.forEach(function(dk){
+      var defaults = DEFAULT_SHIFT_TIMES[dk];
+      if (staffList.length > 0) {
+        tsAddDraft[dk] = [{ staffId: staffList[0].id, start: defaults.start, end: defaults.end }];
+      } else {
+        tsAddDraft[dk] = [];
+      }
+    });
     renderAddDays();
     showScreen('screen-ts-add');
   }
