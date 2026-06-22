@@ -23,6 +23,7 @@ const ALLOWED_KEYS = {
   handover: 'handover-data',
   customers: 'customer-details',
   sensory: 'sensory-sessions',
+  roasted: 'roasted-beans',
 };
 
 export default async function handler(req, res) {

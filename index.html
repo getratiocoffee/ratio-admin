@@ -1758,21 +1758,34 @@
       </div>
     </div>
 
-    <!-- ===== ROASTED BEAN SCREEN (placeholder) ===== -->
+    <!-- ===== ROASTED BEAN SCREEN ===== -->
     <div class="screen" id="screen-roastedbean">
       <div class="form-topbar">
         <div class="back-btn" id="roastedbean-back-btn" aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
         <h1>Roasted Bean</h1>
+        <button class="icon-btn" id="roasted-add-open-btn" aria-label="Add roasted bean" style="margin-left:auto;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
       </div>
-      <div class="form-scroll">
-        <div class="placeholder-screen">
-          <div class="placeholder-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="8" ry="6"/><path d="M12 6c2 2 2 8 0 12"/></svg>
-          </div>
-          <p class="field-hint" style="text-align:center;">Roasted Bean is coming soon.</p>
+
+      <!-- Add form -->
+      <div id="roasted-add-form" style="display:none; flex-shrink:0; padding:12px 20px 4px; border-bottom:1px solid #DCD2C2;">
+        <div class="field-group">
+          <label class="field-label">Bean name <span style="color:#A32D2D;">*</span></label>
+          <select class="field-input" id="roasted-bean-select">
+            <option value="">Select from inventory…</option>
+          </select>
         </div>
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <button class="btn-save" id="roasted-add-btn" type="button" style="flex:1; padding:13px 0; border-radius:14px; font-size:15px;">Add to list</button>
+          <button class="import-confirm-btn cancel" id="roasted-add-cancel-btn" type="button" style="flex:0.5;">Cancel</button>
+        </div>
+      </div>
+
+      <div class="form-scroll">
+        <div id="roasted-bean-list"></div>
       </div>
     </div>
 
@@ -2565,6 +2578,15 @@
     return true;
   }
 
+  async function loadRoastedFromServer(){
+    var data = await apiRequest('roasted', 'GET');
+    return data && Array.isArray(data.items) ? data.items : [];
+  }
+  async function saveRoastedToServer(items){
+    await apiRequest('roasted', 'POST', { items: items });
+    return true;
+  }
+
   async function loadHandoverFromServer(){
     var data = await apiRequest('handover', 'GET');
     // stored as items: [handoverData]
@@ -2587,6 +2609,7 @@
   var naRequests = [];
   var customers = [];
   var sensorySessions = [];
+  var roastedBeans = [];
   var handoverData = { tasks: [], checks: {} }; // checks: { 'YYYY-MM-DD': { taskId: true } }
 
   var state = {
@@ -3924,12 +3947,6 @@
     showScreen('screen-roasting');
   });
   document.getElementById('roasting-back-btn').addEventListener('click', function(){
-    showScreen('screen-menu');
-  });
-  document.getElementById('menu-open-roastedbean-btn').addEventListener('click', function(){
-    showScreen('screen-roastedbean');
-  });
-  document.getElementById('roastedbean-back-btn').addEventListener('click', function(){
     showScreen('screen-menu');
   });
   document.getElementById('list-back-to-menu-btn').addEventListener('click', function(){
@@ -5412,7 +5429,89 @@
 
   snInitChips();
 
-    // ---------- Customers ----------
+    // ---------- Roasted Bean ----------
+  function renderRoastedBeans(){
+    var listEl = document.getElementById('roasted-bean-list');
+    if (roastedBeans.length === 0) {
+      listEl.innerHTML = '<p class="field-hint">No roasted beans listed yet. Tap + to add one.</p>';
+      return;
+    }
+    var html = '';
+    roastedBeans.forEach(function(r){
+      html += '<div class="contact-row" data-id="' + r.id + '" style="align-items:center;">';
+      html += '  <div style="flex:1;">';
+      html += '    <div style="font-size:16px;font-weight:700;color:#2E2925;">' + esc(r.name) + '</div>';
+      html += '  </div>';
+      html += '  <button class="contact-delete-btn" data-action="delete-roasted" aria-label="Remove"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+      html += '</div>';
+    });
+    listEl.innerHTML = html;
+    listEl.querySelectorAll('[data-action="delete-roasted"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.closest('.contact-row').getAttribute('data-id');
+        roastedBeans = roastedBeans.filter(function(r){ return r.id !== id; });
+        saveRoastedToServer(roastedBeans).catch(function(e){ console.error(e); });
+        renderRoastedBeans();
+      });
+    });
+  }
+
+  function openRoastedScreen(){
+    // Populate dropdown from green bean inventory, exclude already listed
+    var listed = roastedBeans.map(function(r){ return r.name; });
+    var sel = document.getElementById('roasted-bean-select');
+    sel.innerHTML = '<option value="">Select from inventory…</option>';
+    beans.filter(function(b){ return listed.indexOf(b.name) === -1; }).forEach(function(b){
+      sel.innerHTML += '<option value="' + esc(b.id) + '">' + esc(b.name) + '</option>';
+    });
+    document.getElementById('roasted-add-form').style.display = 'none';
+    renderRoastedBeans();
+    showScreen('screen-roastedbean');
+  }
+
+  document.getElementById('menu-open-roastedbean-btn').addEventListener('click', openRoastedScreen);
+  document.getElementById('roastedbean-back-btn').addEventListener('click', function(){ showScreen('screen-menu'); });
+
+  document.getElementById('roasted-add-open-btn').addEventListener('click', function(){
+    var form = document.getElementById('roasted-add-form');
+    var isOpen = form.style.display !== 'none';
+    if (!isOpen) {
+      // Refresh dropdown
+      var listed = roastedBeans.map(function(r){ return r.name; });
+      var sel = document.getElementById('roasted-bean-select');
+      sel.innerHTML = '<option value="">Select from inventory…</option>';
+      beans.filter(function(b){ return listed.indexOf(b.name) === -1; }).forEach(function(b){
+        sel.innerHTML += '<option value="' + esc(b.id) + '">' + esc(b.name) + '</option>';
+      });
+    }
+    form.style.display = isOpen ? 'none' : 'block';
+  });
+
+  document.getElementById('roasted-add-cancel-btn').addEventListener('click', function(){
+    document.getElementById('roasted-add-form').style.display = 'none';
+    document.getElementById('roasted-bean-select').value = '';
+  });
+
+  document.getElementById('roasted-add-btn').addEventListener('click', function(){
+    var sel = document.getElementById('roasted-bean-select');
+    var beanId = sel.value;
+    if (!beanId) return;
+    var bean = beans.find(function(b){ return b.id === beanId; });
+    if (!bean) return;
+    roastedBeans.push({ id: uid(), beanId: beanId, name: bean.name });
+    saveRoastedToServer(roastedBeans).catch(function(e){ console.error(e); });
+    sel.value = '';
+    document.getElementById('roasted-add-form').style.display = 'none';
+    renderRoastedBeans();
+    // Refresh dropdown to remove newly added bean
+    var listed = roastedBeans.map(function(r){ return r.name; });
+    sel.innerHTML = '<option value="">Select from inventory…</option>';
+    beans.filter(function(b){ return listed.indexOf(b.name) === -1; }).forEach(function(b){
+      sel.innerHTML += '<option value="' + esc(b.id) + '">' + esc(b.name) + '</option>';
+    });
+  });
+
+  // ---------- Customers ----------
   var expandedCustomer = null;
 
   function persistCustomers(){
@@ -5578,6 +5677,7 @@
       }
       customers = await loadCustomersFromServer();
       sensorySessions = await loadSensoryFromServer();
+      roastedBeans = await loadRoastedFromServer();
       handoverData = await loadHandoverFromServer();
       if (!handoverData.tasksByDate) handoverData.tasksByDate = {};
       if (!handoverData.checks) handoverData.checks = {};
