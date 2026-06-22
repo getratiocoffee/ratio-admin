@@ -44,7 +44,7 @@
   .brand-name { font-size: 18px; font-weight: 600; color: #463E3A; line-height: 1; }
 
   .menu-body {
-    flex: 1; padding: 8px 20px 20px; display: flex; flex-direction: column; gap: 14px;
+    flex: 1; padding: 8px 20px max(20px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 14px; justify-content: flex-end;
   }
 
   /* iOS-style app grid (Dashboard only) */
