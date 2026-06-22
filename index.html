@@ -476,6 +476,16 @@
     font-family: inherit;
   }
 
+  .ts-week-picker {
+    display: flex; gap: 8px; margin-bottom: 14px;
+  }
+  .ts-week-picker-btn {
+    flex: 1; padding: 10px 0; border-radius: 12px; font-size: 14px; font-weight: 600;
+    border: 1.5px solid #DCD2C2; background: #FFFFFF; color: #463E3A;
+    cursor: pointer; font-family: inherit;
+  }
+  .ts-week-picker-btn.active { background: #463E3A; color: #fff; border-color: #463E3A; }
+
   .ts-week-total-bar {
     display: flex; gap: 10px; margin-top: 4px; margin-bottom: 14px;
   }
@@ -832,8 +842,27 @@
           <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
 
-        <div class="divider"></div>
-        <button class="add-row-btn" id="ts-manage-staff-btn" type="button">Manage staff list</button>
+        <button class="menu-card" id="ts-open-contacts-btn">
+          <span class="menu-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <span class="menu-card-text">
+            <span class="menu-card-title">Staff Contacts</span>
+            <span class="menu-card-sub">Phone numbers &amp; emails</span>
+          </span>
+          <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+
+        <button class="menu-card" id="ts-manage-staff-btn">
+          <span class="menu-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </span>
+          <span class="menu-card-text">
+            <span class="menu-card-title">Manage Staff List</span>
+            <span class="menu-card-sub">Add or remove staff members</span>
+          </span>
+          <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
       </div>
     </div>
 
@@ -874,12 +903,29 @@
         <h1>Add New Timesheet</h1>
       </div>
       <div class="form-scroll">
+        <div class="ts-week-picker" id="ts-week-picker">
+          <button class="ts-week-picker-btn active" data-offset="0" type="button">This week</button>
+          <button class="ts-week-picker-btn" data-offset="1" type="button">Next week</button>
+        </div>
         <p class="field-hint" id="ts-add-range" style="margin-bottom: 14px;"></p>
         <div id="ts-add-days"></div>
       </div>
       <div class="form-bottom-bar">
         <button class="btn-save" id="ts-save-week-btn">Save timesheet</button>
-        <p class="required-hint">Hours will be added to this week's timesheet.</p>
+        <p class="required-hint" id="ts-save-hint">Hours will be added to this week's timesheet.</p>
+      </div>
+    </div>
+
+    <!-- ===== STAFF CONTACTS SCREEN ===== -->
+    <div class="screen" id="screen-staff-contacts">
+      <div class="form-topbar">
+        <div class="back-btn" id="staff-contacts-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        <h1>Staff Contacts</h1>
+      </div>
+      <div class="form-scroll">
+        <div id="staff-contacts-list"></div>
       </div>
     </div>
 
@@ -889,15 +935,23 @@
         <div class="back-btn" id="staff-back-btn" aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
-        <h1>Staff list</h1>
+        <h1>Manage Staff List</h1>
       </div>
       <div class="form-scroll">
         <div id="staff-list"></div>
         <div class="divider"></div>
-        <div class="section-label" style="margin-bottom: 10px;">Add staff member</div>
+        <div class="section-label" style="margin-bottom: 12px;">Add staff member</div>
         <div class="field-group">
-          <label class="field-label">Name</label>
+          <label class="field-label">Name <span style="color:#A32D2D;">*</span></label>
           <input type="text" class="field-input" id="staff-name-input" placeholder="e.g. Jordan Pak">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Contact number</label>
+          <input type="tel" class="field-input" id="staff-phone-input" placeholder="e.g. 0412 345 678" inputmode="tel">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Email</label>
+          <input type="email" class="field-input" id="staff-email-input" placeholder="e.g. jordan@example.com" inputmode="email">
         </div>
         <button class="add-row-btn" id="staff-add-btn" type="button">+ Add staff member</button>
       </div>
@@ -3050,13 +3104,44 @@
     });
   }
 
+  function renderStaffContacts(){
+    var listEl = document.getElementById('staff-contacts-list');
+    if (staffList.length === 0) {
+      listEl.innerHTML = '<p class="field-hint">No staff added yet. Add staff members from Manage Staff List.</p>';
+      return;
+    }
+    var html = '';
+    staffList.forEach(function(s){
+      html += '<div class="bean-card" style="margin-bottom:10px;">';
+      html += '  <div class="bean-card-main" style="cursor:default;">';
+      html += '    <div class="bean-card-main-left">';
+      html += '      <div class="bean-name">' + esc(s.name) + '</div>';
+      if (s.phone) html += '      <div class="bean-process">' + esc(s.phone) + '</div>';
+      if (s.email) html += '      <div class="bean-process">' + esc(s.email) + '</div>';
+      if (!s.phone && !s.email) html += '      <div class="bean-process" style="color:#B0A491;font-style:italic;">No contact details</div>';
+      html += '    </div>';
+      html += '  </div>';
+      html += '</div>';
+    });
+    listEl.innerHTML = html;
+  }
+
   document.getElementById('staff-add-btn').addEventListener('click', function(){
-    var input = document.getElementById('staff-name-input');
-    var name = input.value.trim();
+    var nameInput = document.getElementById('staff-name-input');
+    var phoneInput = document.getElementById('staff-phone-input');
+    var emailInput = document.getElementById('staff-email-input');
+    var name = nameInput.value.trim();
     if (!name) return;
-    staffList.push({ id: uid(), name: name });
+    staffList.push({
+      id: uid(),
+      name: name,
+      phone: phoneInput.value.trim(),
+      email: emailInput.value.trim()
+    });
     persistStaff();
-    input.value = '';
+    nameInput.value = '';
+    phoneInput.value = '';
+    emailInput.value = '';
     renderStaffList();
   });
 
@@ -3065,6 +3150,13 @@
     showScreen('screen-staff');
   });
   document.getElementById('staff-back-btn').addEventListener('click', function(){
+    showScreen('screen-timesheet');
+  });
+  document.getElementById('ts-open-contacts-btn').addEventListener('click', function(){
+    renderStaffContacts();
+    showScreen('screen-staff-contacts');
+  });
+  document.getElementById('staff-contacts-back-btn').addEventListener('click', function(){
     showScreen('screen-timesheet');
   });
 
@@ -3261,7 +3353,7 @@
       return;
     }
 
-    var weekStart = getCurrentWeekIso();
+    var weekStart = getWeekIsoByOffset(tsAddWeekOffset);
     var dates = weekDates(weekStart);
 
     var html = '';
@@ -3314,11 +3406,21 @@
     });
   }
 
-  function openAddTimesheetScreen(){
-    var weekStart = getCurrentWeekIso();
+  var tsAddWeekOffset = 0; // 0 = this week, 1 = next week
+
+  function getWeekIsoByOffset(offset){
+    var monday = getMonday(new Date());
+    monday.setDate(monday.getDate() + offset * 7);
+    return isoDate(monday);
+  }
+
+  function refreshAddTimesheetWeek(){
+    var weekStart = getWeekIsoByOffset(tsAddWeekOffset);
     var dates = weekDates(weekStart);
     document.getElementById('ts-add-range').textContent =
       fmtShortDate(weekStart) + ' \u2013 ' + fmtShortDate(dates.sun) + ' (Mon\u2013Sun)';
+    document.getElementById('ts-save-hint').textContent =
+      tsAddWeekOffset === 0 ? "Hours will be added to this week's timesheet." : "Hours will be added to next week's timesheet.";
 
     tsAddDraft = {};
     DAY_KEYS.forEach(function(dk){
@@ -3330,8 +3432,28 @@
       }
     });
     renderAddDays();
+  }
+
+  function openAddTimesheetScreen(){
+    tsAddWeekOffset = 0;
+    document.querySelectorAll('.ts-week-picker-btn').forEach(function(btn){
+      btn.classList.toggle('active', parseInt(btn.getAttribute('data-offset'), 10) === 0);
+    });
+    refreshAddTimesheetWeek();
     showScreen('screen-ts-add');
   }
+
+  document.getElementById('ts-week-picker').addEventListener('click', function(e){
+    var btn = e.target.closest('.ts-week-picker-btn');
+    if (!btn) return;
+    var offset = parseInt(btn.getAttribute('data-offset'), 10);
+    if (offset === tsAddWeekOffset) return;
+    tsAddWeekOffset = offset;
+    document.querySelectorAll('.ts-week-picker-btn').forEach(function(b){
+      b.classList.toggle('active', parseInt(b.getAttribute('data-offset'), 10) === offset);
+    });
+    refreshAddTimesheetWeek();
+  });
 
   document.getElementById('ts-open-add-btn').addEventListener('click', openAddTimesheetScreen);
   document.getElementById('ts-add-back-btn').addEventListener('click', function(){
@@ -3339,7 +3461,7 @@
   });
 
   document.getElementById('ts-save-week-btn').addEventListener('click', function(){
-    var weekStart = getCurrentWeekIso();
+    var weekStart = getWeekIsoByOffset(tsAddWeekOffset);
     var week = getOrCreateWeek(weekStart);
 
     DAY_KEYS.forEach(function(dk){
