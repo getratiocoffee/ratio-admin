@@ -1880,9 +1880,23 @@
 
       <!-- Add form fixed at bottom -->
       <div id="roasted-add-form" style="display:none; flex-shrink:0; padding:12px 20px 4px; border-top:1px solid #DCD2C2;">
+        <!-- Type selector -->
         <div class="field-group">
+          <label class="field-label">Type <span style="color:#A32D2D;">*</span></label>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="sn-chip selected" id="roasted-type-single" style="flex:1; padding:11px 0; font-size:14px; font-weight:600;">Single Origin</button>
+            <button type="button" class="sn-chip" id="roasted-type-blend" style="flex:1; padding:11px 0; font-size:14px; font-weight:600;">Blend</button>
+          </div>
+        </div>
+        <!-- Country (only for Single Origin) -->
+        <div class="field-group" id="roasted-country-group">
+          <label class="field-label">Country</label>
+          <input type="text" class="field-input" id="roasted-country" list="roasted-country-list" placeholder="e.g. Ethiopia" autocomplete="off">
+          <datalist id="roasted-country-list"></datalist>
+        </div>
+        <div class="field-group" style="margin-top:-4px;">
           <label class="field-label">Bean name <span style="color:#A32D2D;">*</span></label>
-          <input type="text" class="field-input" id="roasted-bean-name" placeholder="e.g. Ethiopia Yirgacheffe">
+          <input type="text" class="field-input" id="roasted-bean-name" placeholder="e.g. Yirgacheffe">
         </div>
         <div class="field-group" style="margin-top:-4px;">
           <label class="field-label" style="font-size:11px;color:#8A7F6F;">Or pick from Inventory</label>
@@ -5943,29 +5957,59 @@
       listEl.innerHTML = '<p class="field-hint">No roasted beans listed yet. Tap + to add one.</p>';
       return;
     }
-    var html = '';
-    roastedBeans.forEach(function(r){
-      var done = !!r.sensoryDone;
-      html += '<div class="contact-row" data-id="' + r.id + '" style="align-items:center;gap:10px;' + (done ? 'cursor:pointer;' : '') + '">';
-      html += '  <div style="flex:1;">';
-      html += '    <div style="font-size:16px;font-weight:700;color:' + (done ? '#27500A' : '#2E2925') + ';">' + esc(r.name) + '</div>';
-      if (done) html += '    <div style="font-size:11px;color:#27500A;font-weight:600;margin-top:2px;">✓ Sensory done — tap to view</div>';
-      else html += '    <div style="font-size:11px;color:#B04A10;margin-top:2px;">Sensory not done</div>';
-      html += '  </div>';
-      html += '  <button class="sn-chip' + (done ? ' selected' : '') + '" data-action="toggle-sensory" style="font-size:12px;white-space:nowrap;" aria-label="Toggle sensory done">' + (done ? '✓ Done' : 'Mark done') + '</button>';
-      html += '  <button class="contact-delete-btn" data-action="delete-roasted" aria-label="Remove"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
-      html += '</div>';
+
+    // Group by type then country
+    var blends = roastedBeans.filter(function(r){ return r.type === 'blend'; });
+    var singles = roastedBeans.filter(function(r){ return r.type !== 'blend'; });
+
+    // Group singles by country
+    var byCountry = {};
+    singles.forEach(function(r){
+      var c = (r.country || 'Unspecified').trim() || 'Unspecified';
+      if (!byCountry[c]) byCountry[c] = [];
+      byCountry[c].push(r);
     });
+    var countries = Object.keys(byCountry).sort();
+
+    function beanRow(r){
+      var done = !!r.sensoryDone;
+      return '<div class="contact-row" data-id="' + r.id + '" style="align-items:center;gap:10px;' + (done ? 'cursor:pointer;' : '') + '">' +
+        '<div style="flex:1;">' +
+          '<div style="font-size:16px;font-weight:700;color:' + (done ? '#27500A' : '#2E2925') + ';">' + esc(r.name) + '</div>' +
+          (done ? '<div style="font-size:11px;color:#27500A;font-weight:600;margin-top:2px;">✓ Sensory done — tap to view</div>'
+                : '<div style="font-size:11px;color:#B04A10;margin-top:2px;">Sensory not done</div>') +
+        '</div>' +
+        '<button class="sn-chip' + (done ? ' selected' : '') + '" data-action="toggle-sensory" style="font-size:12px;white-space:nowrap;">' + (done ? '✓ Done' : 'Mark done') + '</button>' +
+        '<button class="contact-delete-btn" data-action="delete-roasted" aria-label="Remove"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>' +
+      '</div>';
+    }
+
+    var html = '';
+
+    // Blend section
+    if (blends.length > 0) {
+      html += '<div class="section-label" style="margin-bottom:8px;margin-top:4px;">Blend</div>';
+      html += blends.map(beanRow).join('');
+    }
+
+    // Single Origin by country
+    if (singles.length > 0) {
+      html += '<div class="section-label" style="margin-bottom:8px;margin-top:' + (blends.length > 0 ? '16' : '4') + 'px;">Single Origin</div>';
+      countries.forEach(function(country){
+        html += '<div style="font-size:12px;font-weight:600;color:#8A7F6F;margin:10px 0 6px;">' + esc(country) + '</div>';
+        html += byCountry[country].map(beanRow).join('');
+      });
+    }
+
     listEl.innerHTML = html;
 
-    // Click on done bean → show radar
+    // Click on done bean → radar
     listEl.querySelectorAll('.contact-row').forEach(function(row){
       row.addEventListener('click', function(e){
-        if (e.target.closest('[data-action]')) return; // let buttons handle themselves
+        if (e.target.closest('[data-action]')) return;
         var id = row.getAttribute('data-id');
         var r = roastedBeans.find(function(x){ return x.id === id; });
         if (!r || !r.sensoryDone) return;
-        // Find latest sensory session for this bean
         var sessions = sensorySessions.filter(function(s){ return s.bean === r.name; });
         if (sessions.length === 0) return;
         var session = sessions.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); })[0];
@@ -6145,11 +6189,34 @@
     beans.filter(function(b){ return listed.indexOf(b.name) === -1; }).forEach(function(b){
       sel.innerHTML += '<option value="' + esc(b.name) + '">' + esc(b.name) + '</option>';
     });
+    // Country datalist from existing beans
+    var seen = {};
+    document.getElementById('roasted-country-list').innerHTML = beans
+      .filter(function(b){ return b.country && !seen[b.country] && (seen[b.country] = true); })
+      .map(function(b){ return '<option value="' + esc(b.country) + '">'; }).join('');
     document.getElementById('roasted-bean-name').value = '';
+    document.getElementById('roasted-country').value = '';
     document.getElementById('roasted-add-form').style.display = 'none';
+    // Reset to Single Origin
+    document.getElementById('roasted-type-single').classList.add('selected');
+    document.getElementById('roasted-type-blend').classList.remove('selected');
+    document.getElementById('roasted-country-group').style.display = '';
     renderRoastedBeans();
     showScreen('screen-roastedbean');
   }
+
+  // Type toggle
+  document.getElementById('roasted-type-single').addEventListener('click', function(){
+    this.classList.add('selected');
+    document.getElementById('roasted-type-blend').classList.remove('selected');
+    document.getElementById('roasted-country-group').style.display = '';
+  });
+  document.getElementById('roasted-type-blend').addEventListener('click', function(){
+    this.classList.add('selected');
+    document.getElementById('roasted-type-single').classList.remove('selected');
+    document.getElementById('roasted-country-group').style.display = 'none';
+    document.getElementById('roasted-country').value = '';
+  });
 
   document.getElementById('menu-open-roastedbean-btn').addEventListener('click', openRoastedScreen);
   document.getElementById('roastedbean-back-btn').addEventListener('click', function(){ showScreen('screen-menu'); });
@@ -6169,8 +6236,17 @@
       beans.filter(function(b){ return listed.indexOf(b.name) === -1; }).forEach(function(b){
         sel.innerHTML += '<option value="' + esc(b.name) + '">' + esc(b.name) + '</option>';
       });
+      var seen = {};
+      document.getElementById('roasted-country-list').innerHTML = beans
+        .filter(function(b){ return b.country && !seen[b.country] && (seen[b.country] = true); })
+        .map(function(b){ return '<option value="' + esc(b.country) + '">'; }).join('');
       document.getElementById('roasted-bean-name').value = '';
+      document.getElementById('roasted-country').value = '';
       sel.value = '';
+      // Reset type to Single Origin
+      document.getElementById('roasted-type-single').classList.add('selected');
+      document.getElementById('roasted-type-blend').classList.remove('selected');
+      document.getElementById('roasted-country-group').style.display = '';
     }
     form.style.display = isOpen ? 'none' : 'block';
     if (!isOpen) document.getElementById('roasted-bean-name').focus();
@@ -6179,15 +6255,19 @@
   document.getElementById('roasted-add-cancel-btn').addEventListener('click', function(){
     document.getElementById('roasted-add-form').style.display = 'none';
     document.getElementById('roasted-bean-name').value = '';
+    document.getElementById('roasted-country').value = '';
     document.getElementById('roasted-bean-select').value = '';
   });
 
   document.getElementById('roasted-add-btn').addEventListener('click', function(){
     var name = document.getElementById('roasted-bean-name').value.trim();
     if (!name) return;
-    roastedBeans.push({ id: uid(), name: name });
+    var isBlend = document.getElementById('roasted-type-blend').classList.contains('selected');
+    var country = isBlend ? '' : document.getElementById('roasted-country').value.trim();
+    roastedBeans.push({ id: uid(), name: name, type: isBlend ? 'blend' : 'single', country: country });
     saveRoastedToServer(roastedBeans).catch(function(e){ console.error(e); });
     document.getElementById('roasted-bean-name').value = '';
+    document.getElementById('roasted-country').value = '';
     document.getElementById('roasted-bean-select').value = '';
     document.getElementById('roasted-add-form').style.display = 'none';
     renderRoastedBeans();
