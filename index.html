@@ -887,55 +887,11 @@
 
       <!-- Pom mascot + bubble -->
       <div id="pom-mascot" style="display:none; flex-shrink:0; align-items:flex-end; padding:0 16px 4px; gap:0;">
-        <!-- Speech bubble -->
         <div style="flex:1; background:#fff; border-radius:16px 16px 16px 4px; border:1.5px solid #E8D8D0; padding:10px 14px; margin-bottom:8px; margin-left:4px;">
           <div id="pom-bubble-text" style="font-size:13px; font-weight:700; color:#463E3A; margin-bottom:2px;"></div>
           <div id="pom-bubble-sub" style="font-size:12px; color:#8A7F6F;"></div>
         </div>
-        <!-- Pom dog SVG -->
-        <svg width="80" height="86" viewBox="0 0 280 300" style="flex-shrink:0;" aria-hidden="true">
-          <ellipse cx="220" cy="205" rx="34" ry="26" fill="white" transform="rotate(-40 220 205)"/>
-          <ellipse cx="140" cy="228" rx="92" ry="78" fill="white"/>
-          <ellipse cx="98" cy="284" rx="32" ry="20" fill="white"/>
-          <ellipse cx="182" cy="284" rx="32" ry="20" fill="white"/>
-          <circle cx="140" cy="126" r="112" fill="white"/>
-          <ellipse cx="60" cy="58" rx="40" ry="50" fill="white" transform="rotate(-14 60 58)"/>
-          <ellipse cx="220" cy="58" rx="40" ry="50" fill="white" transform="rotate(14 220 58)"/>
-          <ellipse cx="220" cy="205" rx="24" ry="17" fill="#EDEADE" stroke="#D4D0C4" stroke-width="1.5" transform="rotate(-40 220 205)"/>
-          <ellipse cx="218" cy="203" rx="14" ry="10" fill="#F8F6F0" transform="rotate(-40 218 203)"/>
-          <ellipse cx="140" cy="226" rx="80" ry="68" fill="#EDEADE" stroke="#D4D0C4" stroke-width="2"/>
-          <ellipse cx="140" cy="236" rx="56" ry="48" fill="#F4F2EA"/>
-          <ellipse cx="140" cy="246" rx="38" ry="32" fill="#FAFAF4"/>
-          <ellipse cx="98" cy="282" rx="24" ry="14" fill="#EDEADE" stroke="#D4D0C4" stroke-width="1.8"/>
-          <ellipse cx="182" cy="282" rx="24" ry="14" fill="#EDEADE" stroke="#D4D0C4" stroke-width="1.8"/>
-          <ellipse cx="60" cy="58" rx="30" ry="40" fill="#E4E0D4" stroke="#D0CCC0" stroke-width="2" transform="rotate(-14 60 58)"/>
-          <ellipse cx="60" cy="60" rx="16" ry="24" fill="#F8C0C8" transform="rotate(-14 60 60)"/>
-          <ellipse cx="220" cy="58" rx="30" ry="40" fill="#E4E0D4" stroke="#D0CCC0" stroke-width="2" transform="rotate(14 220 58)"/>
-          <ellipse cx="220" cy="60" rx="16" ry="24" fill="#F8C0C8" transform="rotate(14 220 60)"/>
-          <circle cx="140" cy="126" r="98" fill="#F0EEE6" stroke="#D4D0C4" stroke-width="2"/>
-          <ellipse cx="106" cy="36" rx="30" ry="18" fill="#EDEADE" stroke="#D4D0C4" stroke-width="1.5" transform="rotate(-8 106 36)"/>
-          <ellipse cx="140" cy="28" rx="32" ry="18" fill="#EDEADE" stroke="#D4D0C4" stroke-width="1.5"/>
-          <ellipse cx="174" cy="36" rx="30" ry="18" fill="#EDEADE" stroke="#D4D0C4" stroke-width="1.5" transform="rotate(8 174 36)"/>
-          <ellipse cx="140" cy="138" rx="70" ry="66" fill="#F8F6F0"/>
-          <ellipse cx="140" cy="150" rx="52" ry="46" fill="#FDFCF8"/>
-          <ellipse cx="82" cy="156" rx="26" ry="18" fill="#FFB8C0" opacity="0.6"/>
-          <ellipse cx="198" cy="156" rx="26" ry="18" fill="#FFB8C0" opacity="0.6"/>
-          <ellipse cx="112" cy="126" rx="20" ry="22" fill="white" stroke="#C8C0B0" stroke-width="1.5"/>
-          <ellipse cx="114" cy="129" rx="14" ry="16" fill="#1A1208"/>
-          <circle cx="120" cy="121" r="6" fill="white"/>
-          <circle cx="108" cy="135" r="2.5" fill="white" opacity="0.55"/>
-          <ellipse cx="168" cy="126" rx="20" ry="22" fill="white" stroke="#C8C0B0" stroke-width="1.5"/>
-          <ellipse cx="166" cy="129" rx="14" ry="16" fill="#1A1208"/>
-          <circle cx="174" cy="121" r="6" fill="white"/>
-          <circle cx="162" cy="135" r="2.5" fill="white" opacity="0.55"/>
-          <ellipse cx="140" cy="162" rx="34" ry="26" fill="#FDFAF4"/>
-          <ellipse cx="140" cy="152" rx="11" ry="8" fill="#C8A0A8"/>
-          <ellipse cx="136" cy="149" rx="3.5" ry="2.5" fill="white" opacity="0.45"/>
-          <path d="M124 168 Q140 184 156 168" fill="none" stroke="#B89098" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M140 168 L140 176" fill="none" stroke="#B89098" stroke-width="2" stroke-linecap="round"/>
-          <ellipse cx="140" cy="183" rx="13" ry="11" fill="#FF8090"/>
-          <ellipse cx="140" cy="189" rx="8" ry="6" fill="#E05870" opacity="0.5"/>
-        </svg>
+        <svg id="pom-svg" width="80" height="90" viewBox="-50 -80 100 100" style="flex-shrink:0; overflow:visible;" aria-hidden="true"></svg>
       </div>
 
       <div class="app-grid-body">
@@ -2814,6 +2770,7 @@
       document.getElementById('gate-error').textContent = '';
     }
     if (id === 'screen-menu') {
+      hidePomMascot();
       renderDashboardHandoverBanner();
       renderDashboardScheduleBanner();
       renderDashboardBeansBanner();
@@ -2831,6 +2788,110 @@
     openRoastedScreen();
   });
 
+  document.getElementById('dashboard-roasted-banner').addEventListener('click', function(){
+    openRoastedScreen();
+  });
+
+  // ---------- Pom Mascot ----------
+  var POM_BASE = [
+    '<ellipse cx="32" cy="-10" rx="18" ry="13" fill="#EDEADE" stroke="#D4D0C4" stroke-width="1.5" transform="rotate(-40 32 -10)"/>',
+    '<ellipse cx="0" cy="10" rx="28" ry="24" fill="#EDEADE" stroke="#D4D0C4" stroke-width="1.8"/>',
+    '<ellipse cx="0" cy="16" rx="18" ry="16" fill="#F8F6F0"/>',
+    '<ellipse cx="-14" cy="32" rx="13" ry="8" fill="#EDEADE" stroke="#D4D0C4" stroke-width="1.5"/>',
+    '<ellipse cx="14" cy="32" rx="13" ry="8" fill="#EDEADE" stroke="#D4D0C4" stroke-width="1.5"/>',
+    '<circle cx="0" cy="-22" r="34" fill="#F0EEE6" stroke="#D4D0C4" stroke-width="1.8"/>',
+    '<ellipse cx="-24" cy="-38" rx="10" ry="14" fill="#E4E0D4" stroke="#D0CCC0" stroke-width="1.5" transform="rotate(-14 -24 -38)"/>',
+    '<ellipse cx="-24" cy="-38" rx="5.5" ry="8" fill="#F8C0C8" transform="rotate(-14 -24 -38)"/>',
+    '<ellipse cx="24" cy="-38" rx="10" ry="14" fill="#E4E0D4" stroke="#D0CCC0" stroke-width="1.5" transform="rotate(14 24 -38)"/>',
+    '<ellipse cx="24" cy="-38" rx="5.5" ry="8" fill="#F8C0C8" transform="rotate(14 24 -38)"/>',
+    '<ellipse cx="0" cy="-18" rx="24" ry="22" fill="#F8F6F0"/>',
+    '<ellipse cx="-28" cy="-20" rx="8" ry="5" fill="#FFB8C0" opacity="0.6"/>',
+    '<ellipse cx="28" cy="-20" rx="8" ry="5" fill="#FFB8C0" opacity="0.6"/>',
+    '<circle cx="-10" cy="-24" r="6.5" fill="#1A1208"/>',
+    '<circle cx="10" cy="-24" r="6.5" fill="#1A1208"/>',
+    '<circle cx="-7" cy="-27" r="2.5" fill="white"/>',
+    '<circle cx="13" cy="-27" r="2.5" fill="white"/>',
+    '<ellipse cx="0" cy="-12" rx="5" ry="3.5" fill="#C8A0A8"/>',
+    '<path d="M-6 -7 Q0 -1 6 -7" fill="none" stroke="#B89098" stroke-width="2" stroke-linecap="round"/>',
+    '<ellipse cx="0" cy="-1" rx="5" ry="4" fill="#FF8090"/>',
+  ].join('');
+
+  var POM_PROPS = {
+    beans:
+      '<ellipse cx="0" cy="-56" rx="24" ry="7" fill="#2D6A4F"/>' +
+      '<ellipse cx="8" cy="-60" rx="9" ry="5" fill="#2D6A4F"/>' +
+      '<rect x="-24" y="-8" width="20" height="18" rx="3" fill="#2D6A4F"/>' +
+      '<path d="M-19 -8 Q-19 -14 -14 -14 Q-9 -14 -9 -8" fill="none" stroke="#1A4A2F" stroke-width="2" stroke-linecap="round"/>' +
+      '<line x1="-18" y1="-2" x2="-8" y2="-2" stroke="#5A9A7F" stroke-width="1.2"/>' +
+      '<line x1="-18" y1="2" x2="-8" y2="2" stroke="#5A9A7F" stroke-width="1.2"/>',
+    timesheet:
+      '<rect x="-20" y="-60" width="40" height="10" rx="5" fill="#5B3FA6"/>' +
+      '<rect x="-24" y="-53" width="48" height="6" rx="3" fill="#3D2875"/>' +
+      '<rect x="-16" y="2" width="32" height="12" rx="4" fill="#5B3FA6"/>' +
+      '<rect x="14" y="-30" width="20" height="26" rx="3" fill="white" stroke="#5B3FA6" stroke-width="1.8"/>' +
+      '<rect x="17" y="-33" width="14" height="5" rx="2" fill="#7A60C0"/>' +
+      '<line x1="17" y1="-22" x2="31" y2="-22" stroke="#5B3FA6" stroke-width="1.2"/>' +
+      '<line x1="17" y1="-17" x2="31" y2="-17" stroke="#5B3FA6" stroke-width="1.2"/>' +
+      '<line x1="17" y1="-12" x2="26" y2="-12" stroke="#5B3FA6" stroke-width="1.2"/>' +
+      '<path d="M17 -7 L19 -5 L24 -9" fill="none" stroke="#5B3FA6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
+    sensory:
+      '<ellipse cx="0" cy="-10" rx="26" ry="7" fill="#B04A10"/>' +
+      '<polygon points="-10,-5 0,6 10,-5" fill="#B04A10"/>' +
+      '<rect x="-18" y="-32" width="16" height="10" rx="5" fill="#F8F6F0"/>' +
+      '<path d="M-17 -27 Q-10 -32 -3 -27" fill="none" stroke="#1A1208" stroke-width="2.5" stroke-linecap="round"/>' +
+      '<rect x="2" y="-32" width="16" height="10" rx="5" fill="#F8F6F0"/>' +
+      '<path d="M3 -27 Q10 -32 17 -27" fill="none" stroke="#1A1208" stroke-width="2.5" stroke-linecap="round"/>' +
+      '<rect x="16" y="-10" width="20" height="18" rx="4" fill="white" stroke="#B04A10" stroke-width="1.8"/>' +
+      '<path d="M36 -5 Q43 -5 43 2 Q43 9 36 9" fill="none" stroke="#B04A10" stroke-width="1.8"/>' +
+      '<rect x="18" y="-8" width="16" height="5" rx="2" fill="#6B2F0A"/>' +
+      '<path d="M22 -12 Q20 -18 22 -24" fill="none" stroke="#C4A882" stroke-width="1.5" stroke-linecap="round"/>' +
+      '<path d="M28 -13 Q26 -20 28 -27" fill="none" stroke="#C4A882" stroke-width="1.5" stroke-linecap="round"/>',
+    handover:
+      '<rect x="-26" y="-58" width="52" height="9" rx="4" fill="#1A5C8A"/>' +
+      '<rect x="-34" y="-46" width="22" height="28" rx="3" fill="white" stroke="#1A5C8A" stroke-width="1.8"/>' +
+      '<rect x="-32" y="-49" width="18" height="5" rx="2" fill="#1A5C8A"/>' +
+      '<line x1="-30" y1="-38" x2="-16" y2="-38" stroke="#1A5C8A" stroke-width="1.2"/>' +
+      '<line x1="-30" y1="-33" x2="-16" y2="-33" stroke="#1A5C8A" stroke-width="1.2"/>' +
+      '<line x1="-30" y1="-28" x2="-22" y2="-28" stroke="#1A5C8A" stroke-width="1.2"/>' +
+      '<path d="M-30 -22 L-27 -19 L-22 -24" fill="none" stroke="#1A5C8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<rect x="20" y="-30" width="5" height="22" rx="2" fill="#1A5C8A" transform="rotate(15 20 -30)"/>' +
+      '<polygon points="22,-8 25,-8 23.5,-2" fill="#FFF0C0" transform="rotate(15 22 -8)"/>',
+    order:
+      '<rect x="-22" y="-60" width="44" height="10" rx="5" fill="#9C1B3E"/>' +
+      '<rect x="-26" y="-53" width="52" height="6" rx="3" fill="#7A1030"/>' +
+      '<rect x="-14" y="-20" width="28" height="22" rx="4" fill="#9C1B3E"/>' +
+      '<line x1="-14" y1="-9" x2="14" y2="-9" stroke="#C84060" stroke-width="1.5"/>' +
+      '<line x1="0" y1="-20" x2="0" y2="2" stroke="#C84060" stroke-width="1.5"/>' +
+      '<path d="M-14 -20 L-8 -26 L8 -26 L14 -20" fill="#B02040" stroke="#9C1B3E" stroke-width="1"/>',
+    roasted:
+      '<ellipse cx="0" cy="-54" rx="22" ry="7" fill="#1E6B3A"/>' +
+      '<rect x="-14" y="-76" width="28" height="24" rx="8" fill="#1E6B3A"/>' +
+      '<ellipse cx="0" cy="-76" rx="14" ry="5" fill="#2A8A4A"/>' +
+      '<path d="M-16 -2 Q0 -6 16 -2 Q18 18 0 22 Q-18 18 -16 -2 Z" fill="#1E6B3A"/>' +
+      '<rect x="-5" y="-6" width="10" height="7" rx="2" fill="#2A8A4A"/>' +
+      '<ellipse cx="26" cy="-2" rx="10" ry="7" fill="#C4956A"/>' +
+      '<ellipse cx="24" cy="-4" rx="5" ry="3" fill="#E0B080" opacity="0.6"/>' +
+      '<line x1="30" y1="3" x2="38" y2="18" stroke="#A07050" stroke-width="3" stroke-linecap="round"/>' +
+      '<ellipse cx="22" cy="-2" rx="3" ry="2" fill="#6B3A10" transform="rotate(-20 22 -2)"/>' +
+      '<ellipse cx="27" cy="-4" rx="3" ry="2" fill="#6B3A10" transform="rotate(10 27 -4)"/>'
+  };
+
+  function showPomMascot(type, title, sub, bubbleColor){
+    var mascot = document.getElementById('pom-mascot');
+    var svg = document.getElementById('pom-svg');
+    if (!mascot || !svg) return;
+    document.getElementById('pom-bubble-text').textContent = title;
+    document.getElementById('pom-bubble-sub').textContent = sub;
+    mascot.querySelector('div').style.borderColor = bubbleColor || '#E8D8D0';
+    svg.innerHTML = POM_BASE + (POM_PROPS[type] || '');
+    mascot.style.display = 'flex';
+  }
+
+  function hidePomMascot(){
+    var mascot = document.getElementById('pom-mascot');
+    if (mascot) mascot.style.display = 'none';
+  }
+
   function renderDashboardBeansBanner(){
     var banner = document.getElementById('dashboard-beans-banner');
     if (!banner) return;
@@ -2845,6 +2906,7 @@
     banner.innerHTML =
       '<div style="font-size:15px;font-weight:700;color:#1A5C30;margin-bottom:4px;">⚠ Green bean info missing (' + incomplete.length + ')</div>' +
       '<div style="font-size:14px;color:#1A5C30;">' + esc(names) + '</div>';
+    showPomMascot('beans', 'Missing bean info!', incomplete.length + ' bean' + (incomplete.length > 1 ? 's' : '') + ' need updating.', '#7DC49A');
   }
 
   document.getElementById('dashboard-beans-banner').addEventListener('click', function(){
@@ -5431,6 +5493,7 @@
       banner.innerHTML = '<div style="font-size:15px;font-weight:600;color:#1A5C8A;">\u2713 All handover tasks done for today</div>';
       banner.style.background = '#E0EEF8';
       banner.style.borderColor = '#90C4E4';
+      showPomMascot('handover', 'All done! Good job!', 'Handover complete for today.', '#90C4E4');
     } else {
       var names = remaining.slice(0,3).map(function(t){ return t.name; }).join(', ');
       if (remaining.length > 3) names += ' +' + (remaining.length - 3) + ' more';
@@ -5439,6 +5502,7 @@
         '<div style="font-size:14px;color:#1A5C8A;">' + esc(names) + '</div>';
       banner.style.background = '#E0EEF8';
       banner.style.borderColor = '#90C4E4';
+      showPomMascot('handover', 'Tasks pending!', remaining.length + ' handover task' + (remaining.length > 1 ? 's' : '') + ' to go.', '#90C4E4');
     }
   }
 
@@ -6061,12 +6125,10 @@
 
   function renderDashboardRoastedBanner(){
     var banner = document.getElementById('dashboard-roasted-banner');
-    var mascot = document.getElementById('pom-mascot');
     if (!banner) return;
     var pending = roastedBeans.filter(function(r){ return !r.sensoryDone; });
     if (roastedBeans.length === 0 || pending.length === 0) {
       banner.style.display = 'none';
-      if (mascot) mascot.style.display = 'none';
       return;
     }
     banner.style.display = 'block';
@@ -6075,11 +6137,7 @@
     banner.innerHTML =
       '<div style="font-size:15px;font-weight:700;color:#7A4A00;margin-bottom:4px;">⚠ Sensory not done (' + pending.length + ')</div>' +
       '<div style="font-size:14px;color:#7A4A00;">' + esc(names) + '</div>';
-    if (mascot) {
-      mascot.style.display = 'flex';
-      document.getElementById('pom-bubble-text').textContent = 'Woof! Sensory reminder 🐾';
-      document.getElementById('pom-bubble-sub').textContent = pending.length + ' bean' + (pending.length > 1 ? 's' : '') + ' still need cupping!';
-    }
+    showPomMascot('roasted', 'Cupping time!', pending.length + ' bean' + (pending.length > 1 ? 's' : '') + ' need sensory.', '#C4A882');
   }
 
   function openRoastedScreen(){
