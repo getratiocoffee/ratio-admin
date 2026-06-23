@@ -6792,7 +6792,7 @@
               }
             });
             return Promise.all(promises).then(function() {
-              return newZip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+              return newZip.generateAsync({ type: 'blob', compression: 'DEFLATE', mimeType: 'application/octet-stream' });
             });
           });
         }).then(function(blob) {
