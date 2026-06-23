@@ -569,6 +569,16 @@
   .sn-temp-panel.active { display: block; }
 
   /* Sensory cupping form */
+  /* Sensory dimension tabs */
+  .sn-dim-tab {
+    padding: 10px 12px; font-size: 12px; font-weight: 600; border: none;
+    background: none; color: #8A7F6F; cursor: pointer; font-family: inherit;
+    white-space: nowrap; border-bottom: 2px solid transparent; flex-shrink: 0;
+  }
+  .sn-dim-tab.active { color: #463E3A; border-bottom-color: #463E3A; }
+  .sn-dim-panel { display: none; }
+  .sn-dim-panel.active { display: block; }
+
   .sn-section {
     border: 1.5px solid #DCD2C2; border-radius: 16px; padding: 14px;
     margin-bottom: 12px; background: #FFFFFF;
@@ -1223,29 +1233,44 @@
       </div>
 
       <!-- Session form view (hidden initially) -->
-      <div id="sensory-form-panel" style="display:none; flex:1; display:none; flex-direction:column; min-height:0;">
-        <div class="form-scroll" id="sensory-form-scroll">
+      <div id="sensory-form-panel" style="display:none; flex:1; flex-direction:column; min-height:0;">
 
-          <!-- Taster & Bean header -->
-          <div class="field-group">
+        <!-- Top: Assessor + Bean (fixed) -->
+        <div style="flex-shrink:0; padding:12px 20px 0; border-bottom:1px solid #DCD2C2;">
+          <div class="field-group" style="margin-bottom:10px;">
             <label class="field-label">Assessor</label>
             <div id="sn-staff-chips" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;"></div>
             <input type="text" class="field-input" id="sn-taster" placeholder="Other — type a name…" autocomplete="off">
           </div>
-
-          <div class="field-group">
+          <div class="field-group" style="margin-bottom:12px;">
             <label class="field-label">Bean / Coffee name</label>
             <input type="text" class="field-input" id="sn-bean" placeholder="e.g. Ethiopia Yirgacheffe">
           </div>
+        </div>
 
-          <div class="sn-section">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-              <div class="sn-section-title" style="margin-bottom:0;">Fragrance <span style="font-size:12px;font-weight:400;color:#8A7F6F;">（乾香）</span></div>
-              <div class="sn-temp-toggle">
-                <button type="button" class="sn-temp-btn hot active" data-dim="fragrance" data-temp="hot">Hot</button>
-                <button type="button" class="sn-temp-btn cold" data-dim="fragrance" data-temp="cold">Cold</button>
-              </div>
-            </div>
+        <!-- Dimension tab bar + Hot/Cold toggle -->
+        <div style="flex-shrink:0; display:flex; align-items:center; gap:0; border-bottom:1px solid #DCD2C2; background:#FAF6F0; padding:0 16px;">
+          <div style="flex:1; overflow-x:auto; display:flex; gap:0; scrollbar-width:none;" id="sn-tab-bar">
+            <button type="button" class="sn-dim-tab active" data-dim="fragrance">Fragrance</button>
+            <button type="button" class="sn-dim-tab" data-dim="aroma">Aroma</button>
+            <button type="button" class="sn-dim-tab" data-dim="flavor">Flavor</button>
+            <button type="button" class="sn-dim-tab" data-dim="aftertaste">Aftertaste</button>
+            <button type="button" class="sn-dim-tab" data-dim="acidity">Acidity</button>
+            <button type="button" class="sn-dim-tab" data-dim="sweetness">Sweetness</button>
+            <button type="button" class="sn-dim-tab" data-dim="mouthfeel">Mouthfeel</button>
+            <button type="button" class="sn-dim-tab" data-dim="overall">Notes</button>
+          </div>
+          <div class="sn-temp-toggle" id="sn-global-temp-toggle" style="flex-shrink:0; margin-left:8px;">
+            <button type="button" class="sn-temp-btn hot active" id="sn-global-hot">Hot</button>
+            <button type="button" class="sn-temp-btn cold" id="sn-global-cold">Cold</button>
+          </div>
+        </div>
+
+        <!-- Dimension panels (scrollable) -->
+        <div class="form-scroll" id="sensory-form-scroll">
+
+          <!-- FRAGRANCE -->
+          <div class="sn-dim-panel active" id="sn-panel-fragrance">
             <div class="sn-temp-panel active" id="sn-fragrance-panel-hot">
               <div class="sn-slider-row">
                 <span class="sn-slider-label">Low</span>
@@ -1328,14 +1353,8 @@
             </div>
           </div>
 
-          <div class="sn-section">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-              <div class="sn-section-title" style="margin-bottom:0;">Aroma <span style="font-size:12px;font-weight:400;color:#8A7F6F;">（濕香）</span></div>
-              <div class="sn-temp-toggle">
-                <button type="button" class="sn-temp-btn hot active" data-dim="aroma" data-temp="hot">Hot</button>
-                <button type="button" class="sn-temp-btn cold" data-dim="aroma" data-temp="cold">Cold</button>
-              </div>
-            </div>
+          <!-- AROMA -->
+          <div class="sn-dim-panel" id="sn-panel-aroma">
             <div class="sn-temp-panel active" id="sn-aroma-panel-hot">
               <div class="sn-slider-row">
                 <span class="sn-slider-label">Low</span>
@@ -1418,14 +1437,8 @@
             </div>
           </div>
 
-          <div class="sn-section">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-              <div class="sn-section-title" style="margin-bottom:0;">Flavor</div>
-              <div class="sn-temp-toggle">
-                <button type="button" class="sn-temp-btn hot active" data-dim="flavor" data-temp="hot">Hot</button>
-                <button type="button" class="sn-temp-btn cold" data-dim="flavor" data-temp="cold">Cold</button>
-              </div>
-            </div>
+          <!-- FLAVOR -->
+          <div class="sn-dim-panel" id="sn-panel-flavor">
             <div class="sn-temp-panel active" id="sn-flavor-panel-hot">
               <div class="sn-slider-row">
                 <span class="sn-slider-label">Low</span>
@@ -1528,14 +1541,8 @@
             </div>
           </div>
 
-          <div class="sn-section">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-              <div class="sn-section-title" style="margin-bottom:0;">Aftertaste</div>
-              <div class="sn-temp-toggle">
-                <button type="button" class="sn-temp-btn hot active" data-dim="aftertaste" data-temp="hot">Hot</button>
-                <button type="button" class="sn-temp-btn cold" data-dim="aftertaste" data-temp="cold">Cold</button>
-              </div>
-            </div>
+          <!-- AFTERTASTE -->
+          <div class="sn-dim-panel" id="sn-panel-aftertaste">
             <div class="sn-temp-panel active" id="sn-aftertaste-panel-hot">
               <div class="sn-slider-row">
                 <span class="sn-slider-label">Low</span>
@@ -1638,14 +1645,8 @@
             </div>
           </div>
 
-          <div class="sn-section">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-              <div class="sn-section-title" style="margin-bottom:0;">Acidity</div>
-              <div class="sn-temp-toggle">
-                <button type="button" class="sn-temp-btn hot active" data-dim="acidity" data-temp="hot">Hot</button>
-                <button type="button" class="sn-temp-btn cold" data-dim="acidity" data-temp="cold">Cold</button>
-              </div>
-            </div>
+          <!-- ACIDITY -->
+          <div class="sn-dim-panel" id="sn-panel-acidity">
             <div class="sn-temp-panel active" id="sn-acidity-panel-hot">
               <div class="sn-slider-row">
                 <span class="sn-slider-label">Low</span>
@@ -1654,7 +1655,7 @@
                 <span class="sn-slider-val" id="sn-acidity-intensity-hot-val">0</span>
               </div>
               <div class="sn-cata-group" style="margin-bottom:8px;">
-                <label class="sn-cata-label">Select 1 type with sub-descriptor:</label>
+                <label class="sn-cata-label">Select 1 type:</label>
                 <div style="margin-bottom:8px;">
                   <div style="font-size:12px;font-weight:600;color:#463E3A;margin-bottom:5px;">Dry Acidity</div>
                   <div class="sn-cata-chips sn-acidity-sub-hot" id="sn-acidity-dry-hot">
@@ -1684,7 +1685,7 @@
                 <span class="sn-slider-val" id="sn-acidity-intensity-cold-val">0</span>
               </div>
               <div class="sn-cata-group" style="margin-bottom:8px;">
-                <label class="sn-cata-label">Select 1 type with sub-descriptor:</label>
+                <label class="sn-cata-label">Select 1 type:</label>
                 <div style="margin-bottom:8px;">
                   <div style="font-size:12px;font-weight:600;color:#463E3A;margin-bottom:5px;">Dry Acidity</div>
                   <div class="sn-cata-chips sn-acidity-sub-cold" id="sn-acidity-dry-cold">
@@ -1708,14 +1709,8 @@
             </div>
           </div>
 
-          <div class="sn-section">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-              <div class="sn-section-title" style="margin-bottom:0;">Sweetness</div>
-              <div class="sn-temp-toggle">
-                <button type="button" class="sn-temp-btn hot active" data-dim="sweetness" data-temp="hot">Hot</button>
-                <button type="button" class="sn-temp-btn cold" data-dim="sweetness" data-temp="cold">Cold</button>
-              </div>
-            </div>
+          <!-- SWEETNESS -->
+          <div class="sn-dim-panel" id="sn-panel-sweetness">
             <div class="sn-temp-panel active" id="sn-sweetness-panel-hot">
               <div class="sn-slider-row">
                 <span class="sn-slider-label">Low</span>
@@ -1774,14 +1769,8 @@
             </div>
           </div>
 
-          <div class="sn-section">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-              <div class="sn-section-title" style="margin-bottom:0;">Mouthfeel</div>
-              <div class="sn-temp-toggle">
-                <button type="button" class="sn-temp-btn hot active" data-dim="mouthfeel" data-temp="hot">Hot</button>
-                <button type="button" class="sn-temp-btn cold" data-dim="mouthfeel" data-temp="cold">Cold</button>
-              </div>
-            </div>
+          <!-- MOUTHFEEL -->
+          <div class="sn-dim-panel" id="sn-panel-mouthfeel">
             <div class="sn-temp-panel active" id="sn-mouthfeel-panel-hot">
               <div class="sn-slider-row">
                 <span class="sn-slider-label">Low</span>
@@ -1826,11 +1815,11 @@
             </div>
           </div>
 
-          <!-- Overall notes -->
-          <div class="sn-section">
-            <div class="sn-section-title">Overall Notes</div>
+          <!-- OVERALL NOTES -->
+          <div class="sn-dim-panel" id="sn-panel-overall">
             <div class="field-group">
-              <textarea class="field-input" id="sn-overall-notes" placeholder="Overall impression…" style="min-height:80px; resize:none; font-size:13px;"></textarea>
+              <label class="field-label">Overall Notes</label>
+              <textarea class="field-input" id="sn-overall-notes" placeholder="Overall impression…" style="min-height:120px; resize:none; font-size:13px;"></textarea>
             </div>
           </div>
 
@@ -5582,11 +5571,47 @@
     renderDashboardMascot();
   });
 
-  // ---------- Sensory ----------
-  var snEditId = null;
-
+  // ---------- Sensory Tab Navigation ----------
+  var snCurrentDim = 'fragrance';
+  var snCurrentTemp = 'hot';
   var SN_DIMS = ['fragrance','aroma','flavor','aftertaste','acidity','sweetness','mouthfeel'];
   var SN_TEMPS = ['hot','cold'];
+
+  function snSwitchDim(dim){
+    snCurrentDim = dim;
+    document.querySelectorAll('.sn-dim-tab').forEach(function(t){
+      t.classList.toggle('active', t.getAttribute('data-dim') === dim);
+    });
+    document.querySelectorAll('.sn-dim-panel').forEach(function(p){
+      p.classList.toggle('active', p.id === 'sn-panel-' + dim);
+    });
+    // Hide global Hot/Cold toggle for Overall Notes
+    var toggle = document.getElementById('sn-global-temp-toggle');
+    if (toggle) toggle.style.display = dim === 'overall' ? 'none' : '';
+    document.getElementById('sensory-form-scroll').scrollTop = 0;
+  }
+
+  function snSwitchTemp(temp){
+    snCurrentTemp = temp;
+    document.getElementById('sn-global-hot').classList.toggle('active', temp === 'hot');
+    document.getElementById('sn-global-cold').classList.toggle('active', temp === 'cold');
+    // Update all dim panels to show correct temp
+    SN_DIMS.forEach(function(dim){
+      var hot = document.getElementById('sn-' + dim + '-panel-hot');
+      var cold = document.getElementById('sn-' + dim + '-panel-cold');
+      if (hot) hot.classList.toggle('active', temp === 'hot');
+      if (cold) cold.classList.toggle('active', temp === 'cold');
+    });
+  }
+
+  document.querySelectorAll('.sn-dim-tab').forEach(function(tab){
+    tab.addEventListener('click', function(){ snSwitchDim(tab.getAttribute('data-dim')); });
+  });
+  document.getElementById('sn-global-hot').addEventListener('click', function(){ snSwitchTemp('hot'); });
+  document.getElementById('sn-global-cold').addEventListener('click', function(){ snSwitchTemp('cold'); });
+
+  // ---------- Sensory ----------
+  var snEditId = null;
 
   function snChipGroups(dim, temp){
     var groups = {};
@@ -5729,16 +5754,18 @@
 
   function snResetForm(){
     document.getElementById('sn-taster').value = '';
+    document.querySelectorAll('.sn-staff-chip').forEach(function(c){ c.classList.remove('selected'); });
     document.getElementById('sn-bean').value = '';
     document.getElementById('sn-overall-notes').value = '';
     SN_DIMS.forEach(function(dim){
       SN_TEMPS.forEach(function(temp){ snLoadDimData(dim, temp, {}); });
-      document.querySelectorAll('.sn-temp-btn[data-dim="' + dim + '"]').forEach(function(b){
-        b.classList.toggle('active', b.getAttribute('data-temp') === 'hot');
-      });
-      document.getElementById('sn-' + dim + '-panel-hot').classList.add('active');
-      document.getElementById('sn-' + dim + '-panel-cold').classList.remove('active');
+      var hot = document.getElementById('sn-' + dim + '-panel-hot');
+      var cold = document.getElementById('sn-' + dim + '-panel-cold');
+      if (hot) { hot.classList.add('active'); }
+      if (cold) { cold.classList.remove('active'); }
     });
+    snSwitchDim('fragrance');
+    snSwitchTemp('hot');
     snEditId = null;
   }
 
@@ -5820,17 +5847,28 @@
         return '<span class="sn-session-chip">' + esc(c.replace(/_/g,' ').toLowerCase().replace(/\b\w/g,function(l){return l.toUpperCase();})) + '</span>';
       }).join('');
       var dateStr = s.date ? new Date(s.date + 'T00:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
-      html += '<div class="sn-session-card" data-id="' + s.id + '">';
-      html += '  <div class="sn-session-bean">' + esc(s.bean || 'Untitled') + '</div>';
-      html += '  <div class="sn-session-date">' + dateStr + (s.taster ? ' · Sensory done by ' + esc(s.taster) : '') + '</div>';
-      if (chipHtml) html += '  <div class="sn-session-chips">' + chipHtml + '</div>';
+      html += '<div class="sn-session-card" data-id="' + s.id + '" style="display:flex;align-items:flex-start;gap:8px;">';
+      html += '  <div style="flex:1;min-width:0;">';
+      html += '    <div class="sn-session-bean">' + esc(s.bean || 'Untitled') + '</div>';
+      html += '    <div class="sn-session-date">' + dateStr + (s.taster ? ' · ' + esc(s.taster) : '') + '</div>';
+      if (chipHtml) html += '    <div class="sn-session-chips">' + chipHtml + '</div>';
+      html += '  </div>';
+      html += '  <button class="contact-delete-btn" data-action="delete-session" aria-label="Delete session" style="flex-shrink:0;margin-top:2px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
       html += '</div>';
     });
     var sessionsDiv = document.createElement('div');
     sessionsDiv.innerHTML = html;
     listEl.appendChild(sessionsDiv);
     listEl.querySelectorAll('.sn-session-card[data-id]').forEach(function(card){
-      card.addEventListener('click', function(){
+      card.querySelector('[data-action="delete-session"]').addEventListener('click', function(e){
+        e.stopPropagation();
+        var id = card.getAttribute('data-id');
+        sensorySessions = sensorySessions.filter(function(x){ return x.id !== id; });
+        saveSensoryToServer(sensorySessions).catch(function(e){ console.error(e); });
+        snShowList();
+      });
+      card.addEventListener('click', function(e){
+        if (e.target.closest('[data-action]')) return;
         var id = card.getAttribute('data-id');
         var s = sensorySessions.find(function(x){ return x.id === id; });
         if (!s) return;
