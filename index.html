@@ -958,6 +958,7 @@
 
         <!-- Left dock: Green Bean, Timesheet, Sensory, Roasting -->
         <div class="app-grid-dock-left">
+          <div style="grid-column:1/-1; font-size:11px; font-weight:700; color:#A08858; letter-spacing:0.8px; text-transform:uppercase; margin-bottom:2px;">Retail</div>
           <button class="app-grid-item" id="menu-open-greenbean-btn" data-key="greenbean">
             <span class="app-grid-icon" style="background:#D6EBDB;">
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h8l1 3H7L8 3z"/><path d="M6.5 6C4.5 7 3 9.5 3 12.5 3 17.5 6 21 12 21s9-3.5 9-8.5C21 9.5 19.5 7 17.5 6"/><path d="M9 13c0-1.7 1.3-3 3-3s3 1.3 3 3-1.3 3-3 3-3-1.3-3-3z"/><path d="M12 10V8M10 11.5 8.5 10M14 11.5l1.5-1.5"/></svg>
@@ -986,6 +987,7 @@
 
         <!-- Right dock: Hand Over, Order, Roasted Bean, Setting -->
         <div class="app-grid-dock-right">
+          <div style="grid-column:1/-1; font-size:11px; font-weight:700; color:#A08858; letter-spacing:0.8px; text-transform:uppercase; margin-bottom:2px;">Wholesale</div>
           <button class="app-grid-item" id="menu-open-handover-btn" data-key="handover">
             <span class="app-grid-icon" style="background:#E0EEF8;">
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A5C8A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12h6M9 16h4"/><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -2966,34 +2968,52 @@
       '<ellipse cx="27" cy="-4" rx="3" ry="2" fill="#6B3A10" transform="rotate(10 27 -4)"/>'
   };
 
-  // ---------- Grid icon order ----------
-  var GRID_DEFAULT_ORDER = ['greenbean','timesheet','sensory','roasting','handover','order','roastedbean'];
+  // ---------- Grid icon swap ----------
   var gridEditing = false;
   var gridTouchDragEl = null;
   var gridTouchClone = null;
+  var gridLongPressTimer = null;
 
-  function gridApplyOrder(order){
-    // Disabled — fixed two-box dock layout
-  }
-
-  function gridCurrentOrder(){
-    var grid = document.getElementById('app-grid-body');
-    return Array.from(grid.querySelectorAll('.app-grid-item[data-key]')).map(function(el){
-      return el.getAttribute('data-key');
+  // Save: store {key: 'left'|'right', pos: 0-3} for each icon
+  function gridCurrentLayout(){
+    var layout = {};
+    ['left','right'].forEach(function(side){
+      var box = document.querySelector('.app-grid-dock-' + side);
+      if (!box) return;
+      Array.from(box.querySelectorAll('.app-grid-item[data-key]')).forEach(function(el, i){
+        layout[el.getAttribute('data-key')] = { side: side, pos: i };
+      });
     });
+    return layout;
   }
 
-  function gridLoadOrder(){
-    fetch('/api/gridorder').then(function(r){ return r.json(); }).then(function(d){
-      if (d.order && d.order.length) gridApplyOrder(d.order);
-    }).catch(function(){});
-  }
-
-  function gridSaveOrder(){
+  function gridSaveLayout(){
     fetch('/api/gridorder', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ order: gridCurrentOrder() })
+      body: JSON.stringify({ order: gridCurrentLayout() })
+    }).catch(function(){});
+  }
+
+  function gridLoadLayout(){
+    fetch('/api/gridorder').then(function(r){ return r.json(); }).then(function(d){
+      if (!d.order || Array.isArray(d.order)) return; // old format, skip
+      var layout = d.order;
+      ['left','right'].forEach(function(side){
+        var box = document.querySelector('.app-grid-dock-' + side);
+        var label = box && box.querySelector('div[style*="letter-spacing"]');
+        if (!box) return;
+        // Get icons that belong to this side, sorted by pos
+        var entries = Object.keys(layout)
+          .filter(function(k){ return layout[k].side === side; })
+          .sort(function(a,b){ return layout[a].pos - layout[b].pos; });
+        entries.forEach(function(key){
+          var el = document.querySelector('.app-grid-item[data-key="' + key + '"]');
+          if (el) box.appendChild(el);
+        });
+        // Keep label first
+        if (label) box.insertBefore(label, box.firstChild);
+      });
     }).catch(function(){});
   }
 
@@ -3008,11 +3028,24 @@
     document.getElementById('app-grid-body').classList.remove('grid-editing');
     document.getElementById('grid-edit-done-btn').style.display = 'none';
     document.querySelectorAll('.grid-drag-over').forEach(function(el){ el.classList.remove('grid-drag-over'); });
-    gridSaveOrder();
+    gridSaveLayout();
+  }
+
+  // Swap two icon elements (works across boxes)
+  function gridSwap(a, b){
+    var aParent = a.parentNode, bParent = b.parentNode;
+    var aNext = a.nextSibling === b ? b : a.nextSibling;
+    var bNext = b.nextSibling === a ? a : b.nextSibling;
+    bParent.insertBefore(a, bNext);
+    aParent.insertBefore(b, aNext);
+    // Re-insert labels at top of each box
+    [aParent, bParent].forEach(function(box){
+      var label = box.querySelector('div[style*="letter-spacing"]');
+      if (label) box.insertBefore(label, box.firstChild);
+    });
   }
 
   // Long press to enter edit mode
-  var gridLongPressTimer = null;
   document.getElementById('app-grid-body').addEventListener('touchstart', function(e){
     if (gridEditing) return;
     var item = e.target.closest('.app-grid-item');
@@ -3025,7 +3058,7 @@
   document.getElementById('app-grid-body').addEventListener('touchend', function(){ clearTimeout(gridLongPressTimer); });
   document.getElementById('app-grid-body').addEventListener('touchmove', function(){ clearTimeout(gridLongPressTimer); }, { passive: true });
 
-  // Touch drag & drop
+  // Touch drag & drop (swap on release)
   document.getElementById('app-grid-body').addEventListener('touchstart', function(e){
     if (!gridEditing) return;
     var item = e.target.closest('.app-grid-item');
@@ -3033,7 +3066,7 @@
     gridTouchDragEl = item;
     var rect = item.getBoundingClientRect();
     gridTouchClone = item.cloneNode(true);
-    gridTouchClone.style.cssText = 'position:fixed;left:' + rect.left + 'px;top:' + rect.top + 'px;width:' + rect.width + 'px;opacity:0.7;pointer-events:none;z-index:999;';
+    gridTouchClone.style.cssText = 'position:fixed;left:' + rect.left + 'px;top:' + rect.top + 'px;width:' + rect.width + 'px;opacity:0.75;pointer-events:none;z-index:999;transition:none;';
     document.body.appendChild(gridTouchClone);
     item.style.opacity = '0.3';
     e.preventDefault();
@@ -3063,23 +3096,13 @@
     var target = el && el.closest('.app-grid-item[data-key]');
     document.querySelectorAll('.grid-drag-over').forEach(function(x){ x.classList.remove('grid-drag-over'); });
     if (target && target !== gridTouchDragEl) {
-      var grid = document.getElementById('app-grid-body');
-      var items = Array.from(grid.querySelectorAll('.app-grid-item[data-key]'));
-      var fromIdx = items.indexOf(gridTouchDragEl);
-      var toIdx = items.indexOf(target);
-      if (fromIdx !== -1 && toIdx !== -1) {
-        if (fromIdx < toIdx) grid.insertBefore(gridTouchDragEl, target.nextSibling);
-        else grid.insertBefore(gridTouchDragEl, target);
-        var doneBtn = document.getElementById('grid-edit-done-btn');
-        if (doneBtn) grid.appendChild(doneBtn);
-      }
+      gridSwap(gridTouchDragEl, target);
     }
     gridTouchDragEl = null;
   });
 
   document.getElementById('grid-edit-done-btn').addEventListener('click', gridExitEdit);
-  // Grid order disabled — two fixed dock boxes
-  // gridLoadOrder();
+  gridLoadLayout();
 
   function initPomSvgs(){
     document.querySelectorAll('.pom-svg').forEach(function(svg){
