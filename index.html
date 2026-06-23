@@ -62,10 +62,9 @@
     padding: 12px 14px max(24px, env(safe-area-inset-bottom));
   }
   .glass-header { display: flex; align-items: center; justify-content: center; margin-bottom: 10px; flex-shrink: 0; }
-  .glass-footer { display: flex; flex-direction: column; margin-top: 12px; flex-shrink: 0; }
-  .footer-labels { display: flex; gap: 12px; }
-  .footer-labels .frame-label { flex: 1 1 0; text-align: center; }
-  .footer-actions { display: flex; align-items: center; justify-content: center; margin-top: 10px; }
+  .glass-footer { display: flex; gap: 12px; align-items: center; margin-top: 12px; flex-shrink: 0; position: relative; min-height: 32px; }
+  .glass-footer .frame-label { flex: 1 1 0; text-align: center; }
+  .glass-footer .glass-toggle { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
   .glass-swap-btn {
     flex-shrink: 0; width: 38px; height: 38px; border-radius: 50%;
     display: inline-flex; align-items: center; justify-content: center;
@@ -1105,15 +1104,11 @@
           </div></div></div>
         </div>
         <div class="glass-footer">
-          <div class="footer-labels">
-            <span class="frame-label" id="label-left">Retail</span>
-            <span class="frame-label" id="label-right">Roastery</span>
-          </div>
-          <div class="footer-actions">
-            <button class="glass-toggle" id="glass-refresh-btn" role="switch" aria-checked="true" aria-label="Lock / refresh">
-              <span class="glass-toggle-knob"></span>
-            </button>
-          </div>
+          <span class="frame-label" id="label-left">Retail</span>
+          <span class="frame-label" id="label-right">Roastery</span>
+          <button class="glass-toggle" id="glass-refresh-btn" role="switch" aria-checked="true" aria-label="Lock / refresh">
+            <span class="glass-toggle-knob"></span>
+          </button>
         </div>
       </div>
     </div>
