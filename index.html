@@ -5637,7 +5637,7 @@
     // Combine staff contacts + names used in past sessions
     var seen = {};
     var names = [];
-    staffContacts.forEach(function(s){
+    staffList.forEach(function(s){
       if (s.name && !seen[s.name.toLowerCase()]) {
         seen[s.name.toLowerCase()] = true;
         names.push(s.name);
