@@ -172,6 +172,13 @@
   /* Timesheet 1x4 icon row inside a glass frame */
   .ts-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 4px; align-content: center; }
 
+  /* Collapsible N/A status banner (shrinks upward) */
+  .ts-na-collapse { overflow: hidden; transition: max-height 0.25s ease; max-height: 240px; flex-shrink: 0; }
+  .ts-na-collapse.collapsed { max-height: 0; }
+  .glass-footer .ts-na-arrow { position: absolute; left: 2px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; padding: 0; border: none; background: transparent; color: #8A7F6F; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .ts-na-chevron { transition: transform 0.25s ease; }
+  .ts-na-arrow.collapsed .ts-na-chevron { transform: rotate(180deg); }
+
   /* Timesheet in-page tabs (no screen switch) */
   #ts-tab-host { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
   #ts-tab-host .ts-panel { flex: 1; min-height: 0; }
@@ -1160,13 +1167,15 @@
         </button>
       </div>
 
-      <!-- N/A status banner -->
+      <!-- N/A status banner (collapsible) -->
+      <div id="ts-na-collapse" class="ts-na-collapse">
       <div class="na-banner" id="na-banner" style="display:none; margin:0 20px 12px; padding:12px 14px; background:#E8E0F5; border-radius:14px; border:1.5px solid #B8A6E8; flex-shrink:0;">
         <div style="font-size:15px;font-weight:700;color:#3D2875;margin-bottom:6px;">⚠ Staff N/A</div>
         <div id="na-banner-content" style="font-size:14px;color:#3D2875;line-height:1.6;"></div>
       </div>
       <div class="na-banner" id="na-all-ok-banner" style="display:none; margin:0 20px 12px; padding:10px 14px; background:#E8E0F5; border-radius:14px; border:1.5px solid #B8A6E8; flex-shrink:0;">
         <div style="font-size:15px;font-weight:600;color:#3D2875;">✓ All staff available today</div>
+      </div>
       </div>
 
       <div id="ts-tab-host"></div>
@@ -1201,6 +1210,9 @@
           </div>
         </div>
         <div class="glass-footer">
+          <button class="ts-na-arrow" id="ts-na-toggle" aria-label="Collapse status" aria-expanded="true">
+            <svg class="ts-na-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 15 12 9 18 15"/></svg>
+          </button>
           <span class="frame-label" id="ts-page-name">Timesheet</span>
           <span class="frame-label" aria-hidden="true"></span>
           <button class="glass-toggle" id="ts-refresh-btn" role="switch" aria-checked="true" aria-label="Lock / refresh">
@@ -5012,6 +5024,13 @@
       try { setSessionPassword(''); } catch(e) {}
       location.reload();
     }, 240);
+  });
+  var tsNaToggleBtn = document.getElementById('ts-na-toggle');
+  var tsNaCollapseEl = document.getElementById('ts-na-collapse');
+  if (tsNaToggleBtn && tsNaCollapseEl) tsNaToggleBtn.addEventListener('click', function(){
+    var collapsed = tsNaCollapseEl.classList.toggle('collapsed');
+    tsNaToggleBtn.classList.toggle('collapsed', collapsed);
+    tsNaToggleBtn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
   });
   document.getElementById('menu-open-roasting-btn').addEventListener('click', function(){
     showScreen('screen-roasting');
