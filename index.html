@@ -876,13 +876,37 @@
         </div>
       </div>
 
-      <!-- Pom mascot — single row above icons, shows highest priority alert -->
-      <div id="pom-mascot" style="display:none; flex-shrink:0; align-items:flex-end; padding:0 16px 4px; gap:0;">
-        <div id="pom-bubble" style="flex:1; background:#fff; border-radius:16px 16px 16px 4px; border:1.5px solid #E8D8D0; padding:10px 14px; margin-bottom:8px; margin-left:4px; cursor:pointer;">
-          <div id="pom-bubble-text" style="font-size:13px; font-weight:700; color:#463E3A; margin-bottom:2px;"></div>
-          <div id="pom-bubble-sub" style="font-size:12px; color:#8A7F6F;"></div>
+      <!-- Dashboard banners with pom mascots -->
+      <div id="banner-handover" style="display:none; flex-shrink:0; align-items:flex-end; padding:0 16px 4px; gap:0; cursor:pointer;">
+        <div id="bubble-handover" style="flex:1; background:#E0EEF8; border-radius:16px 16px 16px 4px; border:1.5px solid #90C4E4; padding:10px 14px; margin-bottom:8px; margin-left:4px;">
+          <div id="text-handover" style="font-size:14px; font-weight:700; color:#1A5C8A; margin-bottom:2px;"></div>
+          <div id="sub-handover" style="font-size:13px; color:#1A5C8A;"></div>
         </div>
-        <svg id="pom-svg" width="80" height="90" viewBox="-50 -80 100 100" style="flex-shrink:0; overflow:visible;" aria-hidden="true"></svg>
+        <svg class="pom-svg" width="72" height="82" viewBox="-50 -80 100 100" style="flex-shrink:0; overflow:visible;" aria-hidden="true" data-type="handover"></svg>
+      </div>
+
+      <div id="banner-roasted" style="display:none; flex-shrink:0; align-items:flex-end; padding:0 16px 4px; gap:0; cursor:pointer;">
+        <div style="flex:1; background:#F5EBD8; border-radius:16px 16px 16px 4px; border:1.5px solid #C4A882; padding:10px 14px; margin-bottom:8px; margin-left:4px;">
+          <div id="text-roasted" style="font-size:14px; font-weight:700; color:#7A4A00; margin-bottom:2px;"></div>
+          <div id="sub-roasted" style="font-size:13px; color:#7A4A00;"></div>
+        </div>
+        <svg class="pom-svg" width="72" height="82" viewBox="-50 -80 100 100" style="flex-shrink:0; overflow:visible;" aria-hidden="true" data-type="roasted"></svg>
+      </div>
+
+      <div id="banner-timesheet" style="display:none; flex-shrink:0; align-items:flex-end; padding:0 16px 4px; gap:0; cursor:pointer;">
+        <div style="flex:1; background:#E8E0F5; border-radius:16px 16px 16px 4px; border:1.5px solid #B8A6E8; padding:10px 14px; margin-bottom:8px; margin-left:4px;">
+          <div style="font-size:14px; font-weight:700; color:#3D2875; margin-bottom:2px;">⚠ Next week's timesheet not set</div>
+          <div style="font-size:13px; color:#3D2875;">Tap to add the schedule now.</div>
+        </div>
+        <svg class="pom-svg" width="72" height="82" viewBox="-50 -80 100 100" style="flex-shrink:0; overflow:visible;" aria-hidden="true" data-type="timesheet"></svg>
+      </div>
+
+      <div id="banner-beans" style="display:none; flex-shrink:0; align-items:flex-end; padding:0 16px 4px; gap:0; cursor:pointer;">
+        <div style="flex:1; background:#D6EBDB; border-radius:16px 16px 16px 4px; border:1.5px solid #7DC49A; padding:10px 14px; margin-bottom:8px; margin-left:4px;">
+          <div id="text-beans" style="font-size:14px; font-weight:700; color:#1A5C30; margin-bottom:2px;"></div>
+          <div id="sub-beans" style="font-size:13px; color:#1A5C30;"></div>
+        </div>
+        <svg class="pom-svg" width="72" height="82" viewBox="-50 -80 100 100" style="flex-shrink:0; overflow:visible;" aria-hidden="true" data-type="beans"></svg>
       </div>
 
       <div class="app-grid-body">
@@ -2761,6 +2785,7 @@
       document.getElementById('gate-error').textContent = '';
     }
     if (id === 'screen-menu') {
+      initPomSvgs();
       renderDashboardMascot();
     }
     if (id === 'screen-greenbean') {
@@ -2857,50 +2882,49 @@
       '<ellipse cx="27" cy="-4" rx="3" ry="2" fill="#6B3A10" transform="rotate(10 27 -4)"/>'
   };
 
-  function showPomMascot(type, title, sub, bubbleColor){
-    var mascot = document.getElementById('pom-mascot');
-    var svg = document.getElementById('pom-svg');
-    if (!mascot || !svg) return;
-    document.getElementById('pom-bubble-text').textContent = title;
-    document.getElementById('pom-bubble-sub').textContent = sub;
-    mascot.querySelector('div').style.borderColor = bubbleColor || '#E8D8D0';
-    svg.innerHTML = POM_BASE + (POM_PROPS[type] || '');
-    mascot.style.display = 'flex';
+  function initPomSvgs(){
+    document.querySelectorAll('.pom-svg').forEach(function(svg){
+      var type = svg.getAttribute('data-type');
+      svg.innerHTML = POM_BASE + (POM_PROPS[type] || '');
+    });
   }
-
-  function hidePomMascot(){
-    var mascot = document.getElementById('pom-mascot');
-    if (mascot) mascot.style.display = 'none';
-  }
-
-  var pomMascotAction = null;
 
   function renderDashboardMascot(){
-    // Priority: Hand Over > Roasted Bean > Order > Timesheet > Green Bean > Sensory > Roasting
-    // Check each condition in order
-
-    // 1. Hand Over
+    // Hand Over
     var todayIso = isoDate(new Date());
     var tasks = getHandoverTasksForDate(todayIso);
     var todayChecks = (handoverData.checks && handoverData.checks[todayIso]) || {};
     var remaining = tasks.filter(function(t){ return !todayChecks[t.id]; });
-    if (tasks.length > 0 && remaining.length > 0) {
-      var names = remaining.slice(0,2).map(function(t){ return t.name; }).join(', ');
-      if (remaining.length > 2) names += ' +' + (remaining.length - 2) + ' more';
-      showPomMascot('handover', 'Hand Over tasks pending!', names, '#90C4E4');
-      pomMascotAction = function(){ renderHandover(); showScreen('screen-handover'); };
-      return;
+    var bannerHO = document.getElementById('banner-handover');
+    if (tasks.length > 0) {
+      bannerHO.style.display = 'flex';
+      if (remaining.length === 0) {
+        document.getElementById('text-handover').textContent = '✓ All handover tasks done!';
+        document.getElementById('sub-handover').textContent = 'Great work today.';
+      } else {
+        var names = remaining.slice(0,2).map(function(t){ return t.name; }).join(', ');
+        if (remaining.length > 2) names += ' +' + (remaining.length - 2) + ' more';
+        document.getElementById('text-handover').textContent = '⚠ Check List (' + remaining.length + ' remaining)';
+        document.getElementById('sub-handover').textContent = names;
+      }
+    } else {
+      bannerHO.style.display = 'none';
     }
 
-    // 2. Roasted Bean (sensory not done)
+    // Roasted Bean sensory
     var pendingRoasted = roastedBeans.filter(function(r){ return !r.sensoryDone; });
+    var bannerR = document.getElementById('banner-roasted');
     if (pendingRoasted.length > 0) {
-      showPomMascot('roasted', 'Cupping time!', pendingRoasted.length + ' bean' + (pendingRoasted.length > 1 ? 's' : '') + ' need sensory.', '#C4A882');
-      pomMascotAction = function(){ openRoastedScreen(); };
-      return;
+      bannerR.style.display = 'flex';
+      var rnames = pendingRoasted.slice(0,2).map(function(r){ return r.name; }).join(', ');
+      if (pendingRoasted.length > 2) rnames += ' +' + (pendingRoasted.length - 2) + ' more';
+      document.getElementById('text-roasted').textContent = '⚠ Sensory not done (' + pendingRoasted.length + ')';
+      document.getElementById('sub-roasted').textContent = rnames;
+    } else {
+      bannerR.style.display = 'none';
     }
 
-    // 3. Timesheet (next week not set)
+    // Timesheet
     var nextMonday = getMonday(new Date());
     nextMonday.setDate(nextMonday.getDate() + 7);
     var nextWeekIso = isoDate(nextMonday);
@@ -2908,29 +2932,34 @@
     var hasEntries = nextWeek && nextWeek.days && DAY_KEYS.some(function(dk){
       return nextWeek.days[dk] && nextWeek.days[dk].length > 0;
     });
-    if (!hasEntries) {
-      showPomMascot('timesheet', "Next week's schedule not set!", 'Tap to add the timesheet now.', '#B8A6E8');
-      pomMascotAction = function(){ tsAddWeekOffset = 1; openAddTimesheetScreen(); showScreen('screen-ts-add'); };
-      return;
-    }
+    document.getElementById('banner-timesheet').style.display = hasEntries ? 'none' : 'flex';
 
-    // 4. Green Bean (missing info)
+    // Green Bean missing info
     var incomplete = beans.filter(isIncomplete);
+    var bannerB = document.getElementById('banner-beans');
     if (incomplete.length > 0) {
+      bannerB.style.display = 'flex';
       var bnames = incomplete.slice(0,2).map(function(b){ return b.name; }).join(', ');
       if (incomplete.length > 2) bnames += ' +' + (incomplete.length - 2) + ' more';
-      showPomMascot('beans', 'Bean info missing!', bnames, '#7DC49A');
-      pomMascotAction = function(){ state.showOnlyIncomplete = true; showScreen('screen-list'); render(); };
-      return;
+      document.getElementById('text-beans').textContent = '⚠ Bean info missing (' + incomplete.length + ')';
+      document.getElementById('sub-beans').textContent = bnames;
+    } else {
+      bannerB.style.display = 'none';
     }
-
-    // Nothing to show
-    hidePomMascot();
-    pomMascotAction = null;
   }
 
-  document.getElementById('pom-bubble').addEventListener('click', function(){
-    if (pomMascotAction) pomMascotAction();
+  // Banner click events
+  document.getElementById('banner-handover').addEventListener('click', function(){
+    renderHandover(); showScreen('screen-handover');
+  });
+  document.getElementById('banner-roasted').addEventListener('click', function(){
+    openRoastedScreen();
+  });
+  document.getElementById('banner-timesheet').addEventListener('click', function(){
+    tsAddWeekOffset = 1; openAddTimesheetScreen(); showScreen('screen-ts-add');
+  });
+  document.getElementById('banner-beans').addEventListener('click', function(){
+    state.showOnlyIncomplete = true; showScreen('screen-list'); render();
   });
 
   // ---------- List rendering ----------
