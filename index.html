@@ -4318,34 +4318,41 @@
     rangeEl.textContent = '';
     updatedEl.textContent = 'Fetching live price…';
 
-    // Use allorigins proxy to fetch Trading Economics coffee page JSON
-    var url = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://markets.tradingeconomics.com/chart?s=kc1:com:icf&interval=1d&span=5d&securify=new&url=/commodity/coffee&AUTH=&ohlc=1');
-    fetch(url)
-      .then(function(r){ return r.json(); })
-      .then(function(data){
-        var json = JSON.parse(data.contents);
-        var rows = json[0] && json[0].data;
-        if (!rows || rows.length === 0) throw new Error('No data');
-        var last = rows[rows.length - 1];
-        var prev = rows[rows.length - 2];
-        var price = parseFloat(last[1]);
-        var prevClose = prev ? parseFloat(prev[1]) : null;
-        var change = prevClose ? (price - prevClose) : null;
-        var changePct = prevClose ? ((price - prevClose) / prevClose * 100) : null;
-        priceEl.textContent = price.toFixed(2);
-        if (change !== null) {
-          var sign = change >= 0 ? '+' : '';
-          changeEl.textContent = sign + change.toFixed(2) + ' (' + sign + changePct.toFixed(2) + '%)';
-          changeEl.style.color = change >= 0 ? '#2D7A3A' : '#B03020';
-        }
-        rangeEl.textContent = '';
-        updatedEl.textContent = 'Updated: ' + new Date(last[0]).toLocaleString('en-AU');
+    fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 300,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user', content: 'What is the current ICE Arabica Coffee C futures price in USc/lb? Search for the latest price and return ONLY a JSON object with fields: price (number), change (number, today vs prev close), changePct (number), low (number), high (number). No other text.' }]
       })
-      .catch(function(){
-        // Fallback: show link to Investing.com
-        priceEl.textContent = '—';
-        updatedEl.innerHTML = 'Could not load live price.<br><a href="https://www.investing.com/commodities/us-coffee-c" target="_blank" style="color:#B07A10;font-weight:600;">View on Investing.com ↗</a>';
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var text = '';
+      (data.content || []).forEach(function(block){
+        if (block.type === 'text') text += block.text;
       });
+      var match = text.match(/\{[\s\S]*?\}/);
+      if (!match) throw new Error('No JSON');
+      var d = JSON.parse(match[0]);
+      if (!d.price) throw new Error('No price');
+      priceEl.textContent = parseFloat(d.price).toFixed(2);
+      if (d.change !== undefined) {
+        var sign = d.change >= 0 ? '+' : '';
+        changeEl.textContent = sign + parseFloat(d.change).toFixed(2) + ' (' + sign + parseFloat(d.changePct || 0).toFixed(2) + '%)';
+        changeEl.style.color = d.change >= 0 ? '#2D7A3A' : '#B03020';
+      }
+      if (d.low && d.high) {
+        rangeEl.textContent = 'Today: ' + parseFloat(d.low).toFixed(2) + ' – ' + parseFloat(d.high).toFixed(2);
+      }
+      updatedEl.textContent = 'Updated: ' + new Date().toLocaleTimeString('en-AU');
+    })
+    .catch(function(err){
+      priceEl.textContent = '—';
+      updatedEl.innerHTML = 'Could not load live price.<br><a href="https://www.investing.com/commodities/us-coffee-c" target="_blank" style="color:#B07A10;font-weight:600;">View on Investing.com ↗</a>';
+    });
   }
 
   document.getElementById('greenbean-back-btn').addEventListener('click', function(){
