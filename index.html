@@ -1005,6 +1005,16 @@
           </span>
           <span class="app-grid-label">Roasted Bean</span>
         </button>
+
+        <button class="app-grid-item" id="menu-open-setting-btn">
+          <span class="app-grid-icon" style="background:#E8EFF5;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2D5A8E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </span>
+          <span class="app-grid-label">Setting</span>
+        </button>
       </div>
     </div>
 
@@ -2606,6 +2616,72 @@
     </div>
   </div>
 </div>
+
+    <!-- ===== SETTING SCREEN ===== -->
+    <div class="screen" id="screen-setting">
+      <div class="form-topbar">
+        <div class="back-btn" id="setting-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        <h1>Setting</h1>
+      </div>
+      <div class="form-scroll" style="padding:20px;">
+
+        <div style="font-size:13px; font-weight:700; color:#A08858; letter-spacing:0.6px; text-transform:uppercase; margin-bottom:14px;">Print Label</div>
+
+        <!-- Template upload -->
+        <div style="margin-bottom:16px; padding:14px; background:#F5F0EA; border-radius:14px; border:1.5px dashed #DCD2C2;">
+          <div style="font-size:13px; font-weight:600; color:#463E3A; margin-bottom:4px;">Label Template (.lbx)</div>
+          <div style="font-size:12px; color:#A08858; margin-bottom:10px;">Upload JUNE_Sugar_Daddy.lbx as template</div>
+          <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+            <div style="padding:8px 16px; background:#463E3A; color:#FAF6F0; border-radius:10px; font-size:13px; font-weight:600; white-space:nowrap;">Choose File</div>
+            <span id="label-template-name" style="font-size:13px; color:#A08858;">No file chosen</span>
+            <input type="file" id="label-template-input" accept=".lbx" style="display:none;">
+          </label>
+        </div>
+
+        <div class="field-group" style="margin-bottom:12px;">
+          <label class="field-label">Bean Name</label>
+          <input type="text" class="field-input" id="label-bean-name" placeholder="e.g. SUGAR DADDY">
+        </div>
+
+        <div class="field-group" style="margin-bottom:4px;">
+          <label class="field-label">Origin <span style="font-weight:400; color:#A08858;">(max 31 chars)</span></label>
+          <input type="text" class="field-input" id="label-origin" placeholder="e.g. Villa Clara | Alo Bona | Danche">
+        </div>
+        <div id="label-origin-count" style="font-size:11px; color:#A08858; text-align:right; margin-bottom:12px;"></div>
+
+        <div class="field-group" style="margin-bottom:4px;">
+          <label class="field-label">Edition <span style="font-weight:400; color:#A08858;">(max 31 chars)</span></label>
+          <input type="text" class="field-input" id="label-edition" placeholder="e.g. V2.0 | Limited Edition">
+        </div>
+        <div id="label-edition-count" style="font-size:11px; color:#A08858; text-align:right; margin-bottom:12px;"></div>
+
+        <div class="field-group" style="margin-bottom:4px;">
+          <label class="field-label">Flavour Notes <span style="font-weight:400; color:#A08858;">(max 26 chars)</span></label>
+          <input type="text" class="field-input" id="label-flavour" placeholder="e.g. Strawberry | Honeydew | Grape">
+        </div>
+        <div id="label-flavour-count" style="font-size:11px; color:#A08858; text-align:right; margin-bottom:12px;"></div>
+
+        <div style="display:flex; gap:10px; margin-bottom:16px;">
+          <div class="field-group" style="flex:1; margin-bottom:0;">
+            <label class="field-label">Brew Date (DD | MM)</label>
+            <input type="text" class="field-input" id="label-brew-date" placeholder="e.g. 18 | 06">
+          </div>
+          <div class="field-group" style="flex:1; margin-bottom:0;">
+            <label class="field-label">Net Weight (g)</label>
+            <input type="number" class="field-input" id="label-net-weight" placeholder="e.g. 150" inputmode="numeric">
+          </div>
+        </div>
+
+        <div id="label-error" style="display:none; background:#FDE8D8; border-radius:12px; padding:10px 14px; font-size:13px; color:#B04A10; margin-bottom:12px;"></div>
+
+        <button id="label-generate-btn" style="width:100%; padding:14px; background:#463E3A; color:#FAF6F0; border:none; border-radius:14px; font-size:15px; font-weight:600; cursor:pointer;">
+          Generate .lbx
+        </button>
+
+      </div>
+    </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
@@ -6537,7 +6613,131 @@
     if (e.key === 'Enter') gateSubmitBtn.click();
   });
 
-  // ---------- Backup: export ----------
+  // ---------- Setting screen ----------
+  document.getElementById('menu-open-setting-btn').addEventListener('click', function(){
+    showScreen('screen-setting');
+  });
+  document.getElementById('setting-back-btn').addEventListener('click', function(){
+    showScreen('screen-menu');
+  });
+
+  // ---------- Print Label ----------
+  function setupCounter(inputId, countId, maxLen) {
+    var input = document.getElementById(inputId);
+    var counter = document.getElementById(countId);
+    function update() {
+      var len = input.value.length;
+      counter.textContent = len + ' / ' + maxLen;
+      counter.style.color = len > maxLen ? '#B04A10' : '#A08858';
+    }
+    input.addEventListener('input', update);
+    update();
+  }
+  setupCounter('label-origin',  'label-origin-count',  31);
+  setupCounter('label-edition', 'label-edition-count', 31);
+  setupCounter('label-flavour', 'label-flavour-count', 26);
+
+  var labelTemplateFile = null;
+  document.getElementById('label-template-input').addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    labelTemplateFile = file;
+    document.getElementById('label-template-name').textContent = file.name;
+    document.getElementById('label-template-name').style.color = '#2D6A4F';
+  });
+
+  function loadJSZip(cb) {
+    if (window.JSZip) { cb(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    s.onload = cb;
+    document.head.appendChild(s);
+  }
+
+  document.getElementById('label-generate-btn').addEventListener('click', function() {
+    var beanName  = (document.getElementById('label-bean-name').value.trim() || '').toUpperCase();
+    var origin    = document.getElementById('label-origin').value.trim();
+    var edition   = document.getElementById('label-edition').value.trim();
+    var flavour   = document.getElementById('label-flavour').value.trim();
+    var brewDate  = document.getElementById('label-brew-date').value.trim();
+    var netWeight = document.getElementById('label-net-weight').value.trim();
+    var errEl     = document.getElementById('label-error');
+    errEl.style.display = 'none';
+
+    var errors = [];
+    if (!labelTemplateFile) errors.push('Please upload a .lbx template file');
+    if (!beanName)  errors.push('Bean name is required');
+    if (!origin)    errors.push('Origin is required');
+    if (!edition)   errors.push('Edition is required');
+    if (!flavour)   errors.push('Flavour notes is required');
+    if (!brewDate)  errors.push('Brew date is required');
+    if (!netWeight) errors.push('Net weight is required');
+    if (origin.length  > 31) errors.push('Origin exceeds 31 chars (' + origin.length + ')');
+    if (edition.length > 31) errors.push('Edition exceeds 31 chars (' + edition.length + ')');
+    if (flavour.length > 26) errors.push('Flavour exceeds 26 chars (' + flavour.length + ')');
+
+    if (errors.length) {
+      errEl.innerHTML = errors.join('<br>');
+      errEl.style.display = 'block';
+      return;
+    }
+
+    var btn = document.getElementById('label-generate-btn');
+    btn.textContent = 'Generating\u2026';
+    btn.disabled = true;
+
+    loadJSZip(function() {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        JSZip.loadAsync(e.target.result).then(function(zip) {
+          return zip.file('label.xml').async('string').then(function(xml) {
+            var reps = [
+              ['SUGAR DADDY',                    beanName],
+              ['Villa Clara | Alo Bona | Danche', origin],
+              ['V2.0 | Limited Edition',          edition],
+              ['Strawberry | Honeydew | Grape',   flavour],
+              ['READY BREW DATE: 18 | 06',        'READY BREW DATE: ' + brewDate],
+              ['NET 150G',                        'NET ' + netWeight + 'G'],
+            ];
+            var newXml = xml;
+            reps.forEach(function(r) {
+              newXml = newXml.split('<pt:data>' + r[0] + '</pt:data>').join('<pt:data>' + r[1] + '</pt:data>');
+            });
+            var newZip = new JSZip();
+            var promises = [];
+            zip.forEach(function(path, file) {
+              if (path === 'label.xml') {
+                newZip.file(path, newXml);
+              } else {
+                promises.push(file.async('arraybuffer').then(function(data) {
+                  newZip.file(path, data);
+                }));
+              }
+            });
+            return Promise.all(promises).then(function() {
+              return newZip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+            });
+          });
+        }).then(function(blob) {
+          var safeName = beanName.replace(/[^A-Za-z0-9]/g, '_') || 'Label';
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url; a.download = safeName + '.lbx';
+          document.body.appendChild(a); a.click();
+          document.body.removeChild(a); URL.revokeObjectURL(url);
+          btn.textContent = 'Generate .lbx';
+          btn.disabled = false;
+        }).catch(function(err) {
+          btn.textContent = 'Generate .lbx';
+          btn.disabled = false;
+          errEl.textContent = 'Error: ' + err.message;
+          errEl.style.display = 'block';
+        });
+      };
+      reader.readAsArrayBuffer(labelTemplateFile);
+    });
+  });
+
   // ---------- Init ----------
   showScreen('screen-gate');
 })();
