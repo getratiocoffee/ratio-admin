@@ -74,9 +74,14 @@
     transition: transform 0.12s ease;
   }
   .glass-swap-btn:active { transform: scale(0.95); }
-  .glass-row { display: flex; gap: 12px; align-items: stretch; }
+  .glass-row { display: flex; gap: 12px; align-items: flex-start; }
+  .frame-col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
+  .frame-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+    color: #8A7F6F; text-align: center; margin-bottom: 7px;
+  }
   .glass-frame {
-    flex: 1 1 0; min-width: 0;
+    width: 100%;
     border-radius: 26px; padding: 16px 8px;
     background: linear-gradient(155deg, rgba(255,255,255,0.66), rgba(255,255,255,0.30));
     -webkit-backdrop-filter: blur(14px) saturate(170%); backdrop-filter: blur(14px) saturate(170%);
@@ -970,7 +975,7 @@
           </button>
         </div>
         <div class="glass-row" id="glass-row">
-          <div class="glass-frame"><div class="glass-grid" data-side="left" id="glass-left">
+          <div class="frame-col" data-frame="retail"><div class="frame-label">Retail</div><div class="glass-frame"><div class="glass-grid" id="grid-retail">
         <button class="app-grid-item" id="menu-open-greenbean-btn">
           <span class="app-grid-icon" style="background:#D6EBDB;">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1025,8 +1030,8 @@
           </span>
           <span class="app-grid-label">Roasting</span>
         </button>
-          </div></div>
-          <div class="glass-frame"><div class="glass-grid" data-side="right" id="glass-right">
+          </div></div></div>
+          <div class="frame-col" data-frame="roastery"><div class="frame-label">Roastery</div><div class="glass-frame"><div class="glass-grid" id="grid-roastery">
         <button class="app-grid-item" id="menu-open-handover-btn">
           <span class="app-grid-icon" style="background:#E0EEF8;">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A5C8A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1069,7 +1074,7 @@
           </span>
           <span class="app-grid-label">Setting</span>
         </button>
-          </div></div>
+          </div></div></div>
         </div>
       </div>
     </div>
@@ -6873,36 +6878,46 @@
 
   // ---------- Draggable dashboard icons across two glass frames ----------
   (function setupDraggableFrames(){
-    var LAYOUT_KEY = 'ratio-dashboard-layout-v2';
+    var LAYOUT_KEY = 'ratio-dashboard-layout-v3';
     var glassRow = document.getElementById('glass-row');
-    var leftGrid = document.getElementById('glass-left');
-    var rightGrid = document.getElementById('glass-right');
-    if (!glassRow || !leftGrid || !rightGrid) return;
+    var retailGrid = document.getElementById('grid-retail');
+    var roasteryGrid = document.getElementById('grid-roastery');
+    if (!glassRow || !retailGrid || !roasteryGrid) return;
+    function colOf(name){ return glassRow.querySelector('.frame-col[data-frame="' + name + '"]'); }
 
     function itemsIn(grid){
       return Array.prototype.slice.call(grid.querySelectorAll('.app-grid-item'));
     }
     function idsIn(grid){ return itemsIn(grid).map(function(b){ return b.id; }); }
+    function currentOrder(){
+      return Array.prototype.slice.call(glassRow.querySelectorAll('.frame-col'))
+        .map(function(c){ return c.getAttribute('data-frame'); });
+    }
 
     function saveLayout(){
       try {
-        localStorage.setItem(LAYOUT_KEY, JSON.stringify({ left: idsIn(leftGrid), right: idsIn(rightGrid) }));
+        localStorage.setItem(LAYOUT_KEY, JSON.stringify({
+          retail: idsIn(retailGrid), roastery: idsIn(roasteryGrid), order: currentOrder()
+        }));
       } catch(e) {}
     }
     function applyLayout(){
       var saved = null;
       try { saved = JSON.parse(localStorage.getItem(LAYOUT_KEY) || 'null'); } catch(e) {}
-      if (!saved || !Array.isArray(saved.left) || !Array.isArray(saved.right)) return;
-      saved.left.forEach(function(id){ var el = document.getElementById(id); if (el) leftGrid.appendChild(el); });
-      saved.right.forEach(function(id){ var el = document.getElementById(id); if (el) rightGrid.appendChild(el); });
+      if (!saved) return;
+      if (Array.isArray(saved.retail)) saved.retail.forEach(function(id){ var el = document.getElementById(id); if (el) retailGrid.appendChild(el); });
+      if (Array.isArray(saved.roastery)) saved.roastery.forEach(function(id){ var el = document.getElementById(id); if (el) roasteryGrid.appendChild(el); });
+      // Restore which labeled frame sits on the left
+      if (Array.isArray(saved.order) && saved.order.length === 2) {
+        saved.order.forEach(function(name){ var c = colOf(name); if (c) glassRow.appendChild(c); });
+      }
     }
     applyLayout();
 
-    // ----- Swap the two frames as whole groups -----
+    // ----- Swap the two whole frames (labels travel with their icons) -----
     function swapFrames(){
-      var l = itemsIn(leftGrid), r = itemsIn(rightGrid);
-      l.forEach(function(el){ rightGrid.appendChild(el); });
-      r.forEach(function(el){ leftGrid.appendChild(el); });
+      var cols = Array.prototype.slice.call(glassRow.querySelectorAll('.frame-col'));
+      if (cols.length === 2) glassRow.insertBefore(cols[1], cols[0]); // put second before first
       saveLayout();
       if (navigator.vibrate) { try { navigator.vibrate(15); } catch(e) {} }
     }
