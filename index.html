@@ -2173,16 +2173,9 @@
 
     </div>
 
-    <!-- C Market overlay -->
     <div class="radar-overlay" id="cmarket-overlay" style="z-index:1200;">
-      <div class="radar-card" style="max-width:320px; text-align:center; padding:28px 24px 24px;">
-        <div style="font-size:13px; font-weight:600; color:#8A7F6F; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">ICE Arabica Coffee C</div>
-        <div style="font-size:13px; color:#8A7F6F; margin-bottom:20px;">KCc1 · USc/lb</div>
-        <div id="cmarket-price" style="font-size:52px; font-weight:800; color:#463E3A; line-height:1; margin-bottom:8px;">—</div>
-        <div id="cmarket-change" style="font-size:16px; font-weight:600; margin-bottom:6px;"></div>
-        <div id="cmarket-range" style="font-size:13px; color:#8A7F6F; margin-bottom:20px;"></div>
-        <div id="cmarket-updated" style="font-size:11px; color:#B0A491; margin-bottom:20px;"></div>
-        <button class="radar-close" id="cmarket-close-btn">Close</button>
+      <div class="radar-card" style="max-width:340px; padding:24px 20px 20px;">
+        <div id="cmarket-price"></div>
       </div>
     </div>
 
@@ -4313,45 +4306,25 @@
     var changeEl = document.getElementById('cmarket-change');
     var rangeEl = document.getElementById('cmarket-range');
     var updatedEl = document.getElementById('cmarket-updated');
-    priceEl.textContent = '…';
-    changeEl.textContent = '';
-    rangeEl.textContent = '';
-    updatedEl.textContent = 'Fetching live price…';
-
-    fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 300,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{ role: 'user', content: 'What is the current ICE Arabica Coffee C futures price in USc/lb? Search for the latest price and return ONLY a JSON object with fields: price (number), change (number, today vs prev close), changePct (number), low (number), high (number). No other text.' }]
-      })
-    })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      var text = '';
-      (data.content || []).forEach(function(block){
-        if (block.type === 'text') text += block.text;
-      });
-      var match = text.match(/\{[\s\S]*?\}/);
-      if (!match) throw new Error('No JSON');
-      var d = JSON.parse(match[0]);
-      if (!d.price) throw new Error('No price');
-      priceEl.textContent = parseFloat(d.price).toFixed(2);
-      if (d.change !== undefined) {
-        var sign = d.change >= 0 ? '+' : '';
-        changeEl.textContent = sign + parseFloat(d.change).toFixed(2) + ' (' + sign + parseFloat(d.changePct || 0).toFixed(2) + '%)';
-        changeEl.style.color = d.change >= 0 ? '#2D7A3A' : '#B03020';
-      }
-      if (d.low && d.high) {
-        rangeEl.textContent = 'Today: ' + parseFloat(d.low).toFixed(2) + ' – ' + parseFloat(d.high).toFixed(2);
-      }
-      updatedEl.textContent = 'Updated: ' + new Date().toLocaleTimeString('en-AU');
-    })
-    .catch(function(err){
-      priceEl.textContent = '—';
-      updatedEl.innerHTML = 'Could not load live price.<br><a href="https://www.investing.com/commodities/us-coffee-c" target="_blank" style="color:#B07A10;font-weight:600;">View on Investing.com ↗</a>';
+    // Replace with iframe embed from TradingView (free, no CORS)
+    var container = priceEl.parentElement;
+    container.innerHTML =
+      '<div style="font-size:13px;font-weight:600;color:#8A7F6F;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">ICE Arabica Coffee C</div>' +
+      '<div style="font-size:13px;color:#8A7F6F;margin-bottom:12px;">KCc1 · USc/lb</div>' +
+      '<div style="border-radius:12px;overflow:hidden;margin-bottom:16px;">' +
+        '<iframe src="https://s.tradingview.com/embed-widget/single-quote/?locale=en#%7B%22symbol%22%3A%22ICEEUR%3ARC1!%22%2C%22width%22%3A%22100%25%22%2C%22colorTheme%22%3A%22light%22%2C%22isTransparent%22%3Atrue%2C%22locale%22%3A%22en%22%7D"' +
+        ' width="100%" height="80" frameborder="0" allowtransparency="true" scrolling="no"' +
+        ' style="display:block;"></iframe>' +
+      '</div>' +
+      '<div style="border-radius:12px;overflow:hidden;margin-bottom:16px;">' +
+        '<iframe src="https://s.tradingview.com/embed-widget/mini-symbol-overview/?locale=en#%7B%22symbol%22%3A%22ICEEUR%3ARC1!%22%2C%22width%22%3A%22100%25%22%2C%22height%22%3A%22180%22%2C%22dateRange%22%3A%221M%22%2C%22colorTheme%22%3A%22light%22%2C%22trendLineColor%22%3A%22%23463E3A%22%2C%22underLineColor%22%3A%22%23F5EBD8%22%2C%22isTransparent%22%3Atrue%2C%22locale%22%3A%22en%22%7D"' +
+        ' width="100%" height="180" frameborder="0" allowtransparency="true" scrolling="no"' +
+        ' style="display:block;"></iframe>' +
+      '</div>' +
+      '<button class="radar-close" id="cmarket-close-btn" style="width:100%;">Close</button>';
+    // Re-attach close button listener
+    document.getElementById('cmarket-close-btn').addEventListener('click', function(){
+      document.getElementById('cmarket-overlay').classList.remove('visible');
     });
   }
 
