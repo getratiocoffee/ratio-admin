@@ -2973,13 +2973,7 @@
   var gridTouchClone = null;
 
   function gridApplyOrder(order){
-    var grid = document.getElementById('app-grid-body');
-    var doneBtn = document.getElementById('grid-edit-done-btn');
-    order.forEach(function(key){
-      var el = grid.querySelector('[data-key="' + key + '"]');
-      if (el) grid.appendChild(el);
-    });
-    if (doneBtn) grid.appendChild(doneBtn);
+    // Disabled — fixed two-box dock layout
   }
 
   function gridCurrentOrder(){
@@ -3084,7 +3078,8 @@
   });
 
   document.getElementById('grid-edit-done-btn').addEventListener('click', gridExitEdit);
-  gridLoadOrder();
+  // Grid order disabled — two fixed dock boxes
+  // gridLoadOrder();
 
   function initPomSvgs(){
     document.querySelectorAll('.pom-svg').forEach(function(svg){
