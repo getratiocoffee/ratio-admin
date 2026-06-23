@@ -1816,10 +1816,18 @@
 
         </div><!-- /sensory-form-scroll -->
 
-        <!-- BOTTOM: Tab bar + Hot/Cold + Save -->
+        <!-- BOTTOM: Hot/Cold + Tab bar + Save -->
         <div style="flex-shrink:0; border-top:1px solid #DCD2C2; background:#FAF6F0;">
+          <!-- Hot/Cold + Save row -->
+          <div style="display:flex; align-items:center; gap:12px; padding:10px 16px 6px;">
+            <div id="sn-global-temp-toggle" style="display:flex;">
+              <button type="button" class="sn-temp-btn hot active" id="sn-global-hot">Hot</button>
+              <button type="button" class="sn-temp-btn cold" id="sn-global-cold">Cold</button>
+            </div>
+            <button class="btn-save" id="sn-save-btn" style="flex:1; padding:13px 0; border-radius:14px; font-size:15px;">Save Session</button>
+          </div>
           <!-- Tab bar -->
-          <div style="display:flex; align-items:center; border-bottom:1px solid #EDE8E2; padding:0 0 0 8px; position:relative;">
+          <div style="display:flex; align-items:center; border-top:1px solid #EDE8E2; padding:0 0 0 8px; position:relative;">
             <div style="flex:1; overflow-x:auto; display:flex; gap:0; scrollbar-width:none;" id="sn-tab-bar">
               <button type="button" class="sn-dim-tab active" data-dim="fragrance">Fragrance</button>
               <button type="button" class="sn-dim-tab" data-dim="aroma">Aroma</button>
@@ -1833,14 +1841,6 @@
             <div id="sn-tab-scroll-hint" style="position:absolute; right:0; top:0; bottom:0; width:44px; pointer-events:none; background:linear-gradient(to right, transparent, #FAF6F0 70%); display:flex; align-items:center; justify-content:flex-end; padding-right:6px;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B0A491" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
-          </div>
-          <!-- Hot/Cold + Save -->
-          <div style="display:flex; align-items:center; gap:12px; padding:10px 16px 16px;">
-            <div id="sn-global-temp-toggle" style="display:flex;">
-              <button type="button" class="sn-temp-btn hot active" id="sn-global-hot">Hot</button>
-              <button type="button" class="sn-temp-btn cold" id="sn-global-cold">Cold</button>
-            </div>
-            <button class="btn-save" id="sn-save-btn" style="flex:1; padding:13px 0; border-radius:14px; font-size:15px;">Save Session</button>
           </div>
         </div>
       </div><!-- /sensory-form-panel -->
@@ -5642,6 +5642,19 @@
       if (hot) hot.classList.toggle('active', temp === 'hot');
       if (cold) cold.classList.toggle('active', temp === 'cold');
     });
+    // Tint header area to match Hot/Cold
+    var headerEl = document.getElementById('sn-header-collapsed');
+    var headerExp = document.getElementById('sn-header-expanded');
+    var headerWrap = headerEl && headerEl.parentElement;
+    if (headerWrap) {
+      if (temp === 'hot') {
+        headerWrap.style.background = '#FFF0EE';
+        headerWrap.style.borderBottomColor = '#F5B8B0';
+      } else {
+        headerWrap.style.background = '#EEF4FF';
+        headerWrap.style.borderBottomColor = '#A8C4E8';
+      }
+    }
   }
 
   document.querySelectorAll('.sn-dim-tab').forEach(function(tab){
@@ -5818,6 +5831,9 @@
     snSwitchTemp('hot');
     snSetHeaderOpen(false);
     snUpdateHeaderDisplay();
+    // Reset header colour
+    var headerWrap = document.getElementById('sn-header-collapsed') && document.getElementById('sn-header-collapsed').parentElement;
+    if (headerWrap) { headerWrap.style.background = ''; headerWrap.style.borderBottomColor = ''; }
     snEditId = null;
   }
 
