@@ -1207,8 +1207,8 @@
           <!-- Taster & Bean header -->
           <div class="field-group">
             <label class="field-label">Assessor</label>
-            <input type="text" class="field-input" id="sn-taster" list="sn-staff-list" placeholder="e.g. Daniel" autocomplete="off">
-            <datalist id="sn-staff-list"></datalist>
+            <div id="sn-staff-chips" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;"></div>
+            <input type="text" class="field-input" id="sn-taster" placeholder="Or type a name…" autocomplete="off">
           </div>
 
           <div class="field-group">
@@ -5519,6 +5519,7 @@
 
   function snResetForm(){
     document.getElementById('sn-taster').value = '';
+    document.querySelectorAll('.sn-staff-chip').forEach(function(c){ c.classList.remove('selected'); });
     document.getElementById('sn-bean').value = '';
     document.getElementById('sn-overall-notes').value = '';
     SN_DIMS.forEach(function(dim){
@@ -5543,6 +5544,9 @@
 
   function snLoadForm(session){
     document.getElementById('sn-taster').value = session.taster || '';
+    document.querySelectorAll('.sn-staff-chip').forEach(function(c){
+      c.classList.toggle('selected', c.getAttribute('data-name') === session.taster);
+    });
     document.getElementById('sn-bean').value = session.bean || '';
     document.getElementById('sn-overall-notes').value = session.overallNotes || '';
     SN_DIMS.forEach(function(dim){
@@ -5632,9 +5636,11 @@
   }
 
   function snPopulateStaffList(){
-    var datalist = document.getElementById('sn-staff-list');
-    if (!datalist) return;
-    // Combine staff contacts + names used in past sessions
+    var chipsEl = document.getElementById('sn-staff-chips');
+    var input = document.getElementById('sn-taster');
+    if (!chipsEl) return;
+
+    // Combine staff list + names used in past sessions
     var seen = {};
     var names = [];
     staffList.forEach(function(s){
@@ -5650,9 +5656,35 @@
       }
     });
     names.sort(function(a, b){ return a.localeCompare(b); });
-    datalist.innerHTML = names.map(function(n){
-      return '<option value="' + esc(n) + '">';
+
+    if (names.length === 0) { chipsEl.style.display = 'none'; return; }
+    chipsEl.style.display = 'flex';
+    chipsEl.innerHTML = names.map(function(n){
+      return '<button type="button" class="sn-chip sn-staff-chip" data-name="' + esc(n) + '">' + esc(n) + '</button>';
     }).join('');
+
+    // Click chip → fill input and highlight chip
+    chipsEl.querySelectorAll('.sn-staff-chip').forEach(function(chip){
+      chip.addEventListener('click', function(){
+        var name = chip.getAttribute('data-name');
+        var already = input.value === name;
+        chipsEl.querySelectorAll('.sn-staff-chip').forEach(function(c){ c.classList.remove('selected'); });
+        if (already) {
+          input.value = '';
+        } else {
+          chip.classList.add('selected');
+          input.value = name;
+        }
+      });
+    });
+
+    // Sync chip highlight when user types manually
+    input.addEventListener('input', function(){
+      var val = input.value.toLowerCase();
+      chipsEl.querySelectorAll('.sn-staff-chip').forEach(function(c){
+        c.classList.toggle('selected', c.getAttribute('data-name').toLowerCase() === val);
+      });
+    });
   }
 
   function snShowForm(){
