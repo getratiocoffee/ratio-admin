@@ -599,8 +599,8 @@
   .sn-cata-label { font-size: 14px; color: #8A7F6F; display: block; margin-bottom: 8px; }
   .sn-cata-chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .sn-chip {
-    padding: 9px 16px; border-radius: 20px; border: 1.5px solid #DCD2C2;
-    background: #FAF6F0; color: #463E3A; font-size: 15px; font-weight: 500;
+    padding: 11px 18px; border-radius: 20px; border: 1.5px solid #DCD2C2;
+    background: #FAF6F0; color: #463E3A; font-size: 16px; font-weight: 500;
     cursor: pointer; font-family: inherit; white-space: nowrap;
   }
   .sn-chip.selected { background: #463E3A; color: #fff; border-color: #463E3A; }
@@ -1235,19 +1235,17 @@
       <!-- Session form view (hidden initially) -->
       <div id="sensory-form-panel" style="display:none; flex:1; flex-direction:column; min-height:0;">
 
-        <!-- Top: Assessor + Bean (collapsible) -->
+        <!-- TOP: Assessor + Bean (always visible, collapsible) -->
         <div style="flex-shrink:0; border-bottom:1px solid #DCD2C2;">
-          <!-- Collapsed header — always visible, tap to expand -->
           <div id="sn-header-collapsed" style="display:flex; align-items:center; padding:10px 20px; cursor:pointer; gap:10px;">
             <div style="flex:1; min-width:0;">
-              <div id="sn-header-bean-display" style="font-size:15px; font-weight:700; color:#2E2925; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">New Session</div>
-              <div id="sn-header-taster-display" style="font-size:12px; color:#8A7F6F; margin-top:1px;"></div>
+              <div id="sn-header-bean-display" style="font-size:16px; font-weight:700; color:#2E2925; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">New Session</div>
+              <div id="sn-header-taster-display" style="font-size:13px; color:#8A7F6F; margin-top:2px;"></div>
             </div>
-            <svg id="sn-header-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A7F6F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+            <svg id="sn-header-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8A7F6F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
-          <!-- Expanded fields — hidden by default -->
-          <div id="sn-header-expanded" style="display:none; padding:0 20px 12px;">
-            <div class="field-group" style="margin-bottom:10px;">
+          <div id="sn-header-expanded" style="display:none; padding:0 20px 14px;">
+            <div class="field-group" style="margin-bottom:12px;">
               <label class="field-label">Assessor</label>
               <div id="sn-staff-chips" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;"></div>
               <input type="text" class="field-input" id="sn-taster" placeholder="Other — type a name…" autocomplete="off">
@@ -1259,31 +1257,7 @@
           </div>
         </div>
 
-        <!-- Dimension tab bar -->
-        <div style="flex-shrink:0; display:flex; align-items:center; border-bottom:1px solid #DCD2C2; background:#FAF6F0; padding:0 0 0 16px; position:relative;">
-          <div style="flex:1; overflow-x:auto; display:flex; gap:0; scrollbar-width:none;" id="sn-tab-bar">
-            <button type="button" class="sn-dim-tab active" data-dim="fragrance">Fragrance</button>
-            <button type="button" class="sn-dim-tab" data-dim="aroma">Aroma</button>
-            <button type="button" class="sn-dim-tab" data-dim="flavor">Flavor</button>
-            <button type="button" class="sn-dim-tab" data-dim="aftertaste">Aftertaste</button>
-            <button type="button" class="sn-dim-tab" data-dim="acidity">Acidity</button>
-            <button type="button" class="sn-dim-tab" data-dim="sweetness">Sweetness</button>
-            <button type="button" class="sn-dim-tab" data-dim="mouthfeel">Mouthfeel</button>
-            <button type="button" class="sn-dim-tab" data-dim="overall">Notes</button>
-          </div>
-          <!-- Fade + arrow hint on the right -->
-          <div id="sn-tab-scroll-hint" style="position:absolute; right:0; top:0; bottom:0; width:44px; pointer-events:none; background:linear-gradient(to right, transparent, #FAF6F0 70%); display:flex; align-items:center; justify-content:flex-end; padding-right:6px;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B0A491" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-          </div>
-        </div>
-
-        <!-- Dimension panels (scrollable) -->
-        <!-- Hot/Cold toggle (fixed, above panels) -->
-        <div id="sn-global-temp-toggle" style="flex-shrink:0; display:flex; align-items:center; padding:8px 20px 6px; border-bottom:1px solid #EDE8E2; background:#FAF6F0;">
-          <button type="button" class="sn-temp-btn hot active" id="sn-global-hot">Hot</button>
-          <button type="button" class="sn-temp-btn cold" id="sn-global-cold">Cold</button>
-        </div>
-
+        <!-- MIDDLE: Dimension panels (scrollable) -->
         <div class="form-scroll" id="sensory-form-scroll">
 
           <!-- FRAGRANCE -->
@@ -1841,8 +1815,33 @@
           </div>
 
         </div><!-- /sensory-form-scroll -->
-        <div class="form-bottom-bar">
-          <button class="btn-save" id="sn-save-btn">Save Session</button>
+
+        <!-- BOTTOM: Tab bar + Hot/Cold + Save -->
+        <div style="flex-shrink:0; border-top:1px solid #DCD2C2; background:#FAF6F0;">
+          <!-- Tab bar -->
+          <div style="display:flex; align-items:center; border-bottom:1px solid #EDE8E2; padding:0 0 0 8px; position:relative;">
+            <div style="flex:1; overflow-x:auto; display:flex; gap:0; scrollbar-width:none;" id="sn-tab-bar">
+              <button type="button" class="sn-dim-tab active" data-dim="fragrance">Fragrance</button>
+              <button type="button" class="sn-dim-tab" data-dim="aroma">Aroma</button>
+              <button type="button" class="sn-dim-tab" data-dim="flavor">Flavor</button>
+              <button type="button" class="sn-dim-tab" data-dim="aftertaste">Aftertaste</button>
+              <button type="button" class="sn-dim-tab" data-dim="acidity">Acidity</button>
+              <button type="button" class="sn-dim-tab" data-dim="sweetness">Sweetness</button>
+              <button type="button" class="sn-dim-tab" data-dim="mouthfeel">Mouthfeel</button>
+              <button type="button" class="sn-dim-tab" data-dim="overall">Notes</button>
+            </div>
+            <div id="sn-tab-scroll-hint" style="position:absolute; right:0; top:0; bottom:0; width:44px; pointer-events:none; background:linear-gradient(to right, transparent, #FAF6F0 70%); display:flex; align-items:center; justify-content:flex-end; padding-right:6px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B0A491" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+          <!-- Hot/Cold + Save -->
+          <div style="display:flex; align-items:center; gap:12px; padding:10px 16px 16px;">
+            <div id="sn-global-temp-toggle" style="display:flex;">
+              <button type="button" class="sn-temp-btn hot active" id="sn-global-hot">Hot</button>
+              <button type="button" class="sn-temp-btn cold" id="sn-global-cold">Cold</button>
+            </div>
+            <button class="btn-save" id="sn-save-btn" style="flex:1; padding:13px 0; border-radius:14px; font-size:15px;">Save Session</button>
+          </div>
         </div>
       </div><!-- /sensory-form-panel -->
     </div>
@@ -5871,6 +5870,7 @@
           snResetForm();
           document.getElementById('sn-bean').value = card.getAttribute('data-name');
           snRoastedIdForSession = card.getAttribute('data-roasted-id');
+          snUpdateHeaderDisplay();
           snShowForm();
         });
       });
