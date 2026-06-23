@@ -885,6 +885,59 @@
       <div id="dashboard-beans-banner" style="display:none; margin:0 20px 4px; padding:10px 14px; border-radius:14px; border:1.5px solid #7DC49A; background:#D6EBDB; flex-shrink:0; cursor:pointer;"></div>
       <div id="dashboard-roasted-banner" style="display:none; margin:0 20px 4px; padding:10px 14px; border-radius:14px; border:1.5px solid #C4A882; background:#F5EBD8; flex-shrink:0; cursor:pointer;"></div>
 
+      <!-- Pom mascot + bubble -->
+      <div id="pom-mascot" style="display:none; flex-shrink:0; align-items:flex-end; padding:0 16px 4px; gap:0;">
+        <!-- Speech bubble -->
+        <div style="flex:1; background:#fff; border-radius:16px 16px 16px 4px; border:1.5px solid #E8D8D0; padding:10px 14px; margin-bottom:8px; margin-left:4px;">
+          <div id="pom-bubble-text" style="font-size:13px; font-weight:700; color:#463E3A; margin-bottom:2px;"></div>
+          <div id="pom-bubble-sub" style="font-size:12px; color:#8A7F6F;"></div>
+        </div>
+        <!-- Pom dog SVG -->
+        <svg width="80" height="86" viewBox="0 0 280 300" style="flex-shrink:0;" aria-hidden="true">
+          <ellipse cx="220" cy="205" rx="34" ry="26" fill="white" transform="rotate(-40 220 205)"/>
+          <ellipse cx="140" cy="228" rx="92" ry="78" fill="white"/>
+          <ellipse cx="98" cy="284" rx="32" ry="20" fill="white"/>
+          <ellipse cx="182" cy="284" rx="32" ry="20" fill="white"/>
+          <circle cx="140" cy="126" r="112" fill="white"/>
+          <ellipse cx="60" cy="58" rx="40" ry="50" fill="white" transform="rotate(-14 60 58)"/>
+          <ellipse cx="220" cy="58" rx="40" ry="50" fill="white" transform="rotate(14 220 58)"/>
+          <ellipse cx="220" cy="205" rx="24" ry="17" fill="#EDEADE" stroke="#D4D0C4" stroke-width="1.5" transform="rotate(-40 220 205)"/>
+          <ellipse cx="218" cy="203" rx="14" ry="10" fill="#F8F6F0" transform="rotate(-40 218 203)"/>
+          <ellipse cx="140" cy="226" rx="80" ry="68" fill="#EDEADE" stroke="#D4D0C4" stroke-width="2"/>
+          <ellipse cx="140" cy="236" rx="56" ry="48" fill="#F4F2EA"/>
+          <ellipse cx="140" cy="246" rx="38" ry="32" fill="#FAFAF4"/>
+          <ellipse cx="98" cy="282" rx="24" ry="14" fill="#EDEADE" stroke="#D4D0C4" stroke-width="1.8"/>
+          <ellipse cx="182" cy="282" rx="24" ry="14" fill="#EDEADE" stroke="#D4D0C4" stroke-width="1.8"/>
+          <ellipse cx="60" cy="58" rx="30" ry="40" fill="#E4E0D4" stroke="#D0CCC0" stroke-width="2" transform="rotate(-14 60 58)"/>
+          <ellipse cx="60" cy="60" rx="16" ry="24" fill="#F8C0C8" transform="rotate(-14 60 60)"/>
+          <ellipse cx="220" cy="58" rx="30" ry="40" fill="#E4E0D4" stroke="#D0CCC0" stroke-width="2" transform="rotate(14 220 58)"/>
+          <ellipse cx="220" cy="60" rx="16" ry="24" fill="#F8C0C8" transform="rotate(14 220 60)"/>
+          <circle cx="140" cy="126" r="98" fill="#F0EEE6" stroke="#D4D0C4" stroke-width="2"/>
+          <ellipse cx="106" cy="36" rx="30" ry="18" fill="#EDEADE" stroke="#D4D0C4" stroke-width="1.5" transform="rotate(-8 106 36)"/>
+          <ellipse cx="140" cy="28" rx="32" ry="18" fill="#EDEADE" stroke="#D4D0C4" stroke-width="1.5"/>
+          <ellipse cx="174" cy="36" rx="30" ry="18" fill="#EDEADE" stroke="#D4D0C4" stroke-width="1.5" transform="rotate(8 174 36)"/>
+          <ellipse cx="140" cy="138" rx="70" ry="66" fill="#F8F6F0"/>
+          <ellipse cx="140" cy="150" rx="52" ry="46" fill="#FDFCF8"/>
+          <ellipse cx="82" cy="156" rx="26" ry="18" fill="#FFB8C0" opacity="0.6"/>
+          <ellipse cx="198" cy="156" rx="26" ry="18" fill="#FFB8C0" opacity="0.6"/>
+          <ellipse cx="112" cy="126" rx="20" ry="22" fill="white" stroke="#C8C0B0" stroke-width="1.5"/>
+          <ellipse cx="114" cy="129" rx="14" ry="16" fill="#1A1208"/>
+          <circle cx="120" cy="121" r="6" fill="white"/>
+          <circle cx="108" cy="135" r="2.5" fill="white" opacity="0.55"/>
+          <ellipse cx="168" cy="126" rx="20" ry="22" fill="white" stroke="#C8C0B0" stroke-width="1.5"/>
+          <ellipse cx="166" cy="129" rx="14" ry="16" fill="#1A1208"/>
+          <circle cx="174" cy="121" r="6" fill="white"/>
+          <circle cx="162" cy="135" r="2.5" fill="white" opacity="0.55"/>
+          <ellipse cx="140" cy="162" rx="34" ry="26" fill="#FDFAF4"/>
+          <ellipse cx="140" cy="152" rx="11" ry="8" fill="#C8A0A8"/>
+          <ellipse cx="136" cy="149" rx="3.5" ry="2.5" fill="white" opacity="0.45"/>
+          <path d="M124 168 Q140 184 156 168" fill="none" stroke="#B89098" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M140 168 L140 176" fill="none" stroke="#B89098" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="140" cy="183" rx="13" ry="11" fill="#FF8090"/>
+          <ellipse cx="140" cy="189" rx="8" ry="6" fill="#E05870" opacity="0.5"/>
+        </svg>
+      </div>
+
       <div class="app-grid-body">
         <button class="app-grid-item" id="menu-open-greenbean-btn">
           <span class="app-grid-icon" style="background:#D6EBDB;">
@@ -6008,10 +6061,12 @@
 
   function renderDashboardRoastedBanner(){
     var banner = document.getElementById('dashboard-roasted-banner');
+    var mascot = document.getElementById('pom-mascot');
     if (!banner) return;
     var pending = roastedBeans.filter(function(r){ return !r.sensoryDone; });
     if (roastedBeans.length === 0 || pending.length === 0) {
       banner.style.display = 'none';
+      if (mascot) mascot.style.display = 'none';
       return;
     }
     banner.style.display = 'block';
@@ -6020,6 +6075,11 @@
     banner.innerHTML =
       '<div style="font-size:15px;font-weight:700;color:#7A4A00;margin-bottom:4px;">⚠ Sensory not done (' + pending.length + ')</div>' +
       '<div style="font-size:14px;color:#7A4A00;">' + esc(names) + '</div>';
+    if (mascot) {
+      mascot.style.display = 'flex';
+      document.getElementById('pom-bubble-text').textContent = 'Woof! Sensory reminder 🐾';
+      document.getElementById('pom-bubble-sub').textContent = pending.length + ' bean' + (pending.length > 1 ? 's' : '') + ' still need cupping!';
+    }
   }
 
   function openRoastedScreen(){
