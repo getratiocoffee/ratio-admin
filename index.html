@@ -3001,11 +3001,14 @@
 
   function gridLoadLayout(){
     fetch('/api/gridorder').then(function(r){ return r.json(); }).then(function(d){
-      if (!d.order || Array.isArray(d.order)) return; // old format, skip
+      if (!d.order || Array.isArray(d.order)) return; // old format or empty, skip
       var layout = d.order;
+      // Validate: must have all 8 keys
+      var expected = ['timesheet','greenbean','sensory','roasting','handover','order','roastedbean','setting'];
+      var valid = expected.every(function(k){ return layout[k] && layout[k].side; });
+      if (!valid) return;
       ['left','right'].forEach(function(side){
         var box = document.querySelector('.app-grid-dock-' + side);
-        var label = box && box.querySelector('div[style*="letter-spacing"]');
         if (!box) return;
         // Get icons that belong to this side, sorted by pos
         var entries = Object.keys(layout)
@@ -3015,8 +3018,6 @@
           var el = document.querySelector('.app-grid-item[data-key="' + key + '"]');
           if (el) box.appendChild(el);
         });
-        // Keep label first
-        if (label) box.insertBefore(label, box.firstChild);
       });
     }).catch(function(){});
   }
@@ -3042,11 +3043,6 @@
     var bNext = b.nextSibling === a ? a : b.nextSibling;
     bParent.insertBefore(a, bNext);
     aParent.insertBefore(b, aNext);
-    // Re-insert labels at top of each box
-    [aParent, bParent].forEach(function(box){
-      var label = box.querySelector('div[style*="letter-spacing"]');
-      if (label) box.insertBefore(label, box.firstChild);
-    });
   }
 
   // Long press to enter edit mode
