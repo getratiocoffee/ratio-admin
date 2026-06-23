@@ -176,6 +176,7 @@
   .ts-na-collapse { overflow: hidden; transition: max-height 0.25s ease; max-height: 240px; flex-shrink: 0; }
   .ts-na-collapse.collapsed { max-height: 0; }
   .ts-na-arrow { width: 34px; height: 34px; padding: 0; border: none; background: transparent; color: #8A7F6F; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .ts-na-arrow-row { display: flex; justify-content: center; }
   .ts-na-chevron { transition: transform 0.25s ease; }
   .ts-na-arrow.collapsed .ts-na-chevron { transform: rotate(180deg); }
   .glass-footer .ts-foot-back { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
@@ -1159,11 +1160,6 @@
 
     <!-- ===== STAFF TIMESHEET SCREEN ===== -->
     <div class="screen" id="screen-timesheet">
-      <div class="form-topbar" style="justify-content:center;">
-        <button class="ts-na-arrow" id="ts-na-toggle" aria-label="Collapse status" aria-expanded="true">
-          <svg class="ts-na-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 15 12 9 18 15"/></svg>
-        </button>
-      </div>
 
       <!-- N/A status banner (collapsible) -->
       <div id="ts-na-collapse" class="ts-na-collapse">
@@ -1179,6 +1175,11 @@
       <div id="ts-tab-host"></div>
 
       <div class="menu-body" id="ts-bottom-bar">
+        <div class="ts-na-arrow-row">
+          <button class="ts-na-arrow" id="ts-na-toggle" aria-label="Collapse status" aria-expanded="true">
+            <svg class="ts-na-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 15 12 9 18 15"/></svg>
+          </button>
+        </div>
         <div class="glass-frame">
           <div class="ts-grid">
             <button class="app-grid-item" id="ts-open-current-btn">
