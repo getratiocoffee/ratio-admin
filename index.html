@@ -4294,20 +4294,14 @@
     document.getElementById('cmarket-overlay').classList.add('visible');
     fetchCMarketPrice();
   });
-  document.getElementById('cmarket-close-btn').addEventListener('click', function(){
-    document.getElementById('cmarket-overlay').classList.remove('visible');
-  });
   document.getElementById('cmarket-overlay').addEventListener('click', function(e){
     if (e.target === this) this.classList.remove('visible');
   });
 
   function fetchCMarketPrice(){
-    var priceEl = document.getElementById('cmarket-price');
-    var changeEl = document.getElementById('cmarket-change');
-    var rangeEl = document.getElementById('cmarket-range');
-    var updatedEl = document.getElementById('cmarket-updated');
-    // Replace with iframe embed from TradingView (free, no CORS)
-    var container = priceEl.parentElement;
+    var container = document.getElementById('cmarket-price');
+    if (!container) return;
+    container.innerHTML = '<p style="color:#8A7F6F;font-size:13px;margin-bottom:12px;">Loading…</p>';
     container.innerHTML =
       '<div style="font-size:13px;font-weight:600;color:#8A7F6F;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">ICE Arabica Coffee C</div>' +
       '<div style="font-size:13px;color:#8A7F6F;margin-bottom:12px;">KCc1 · USc/lb</div>' +
