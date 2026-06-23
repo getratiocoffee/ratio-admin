@@ -1208,7 +1208,7 @@
           <div class="field-group">
             <label class="field-label">Assessor</label>
             <div id="sn-staff-chips" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;"></div>
-            <input type="text" class="field-input" id="sn-taster" placeholder="Or type a name…" autocomplete="off">
+            <input type="text" class="field-input" id="sn-taster" placeholder="Other — type a name…" autocomplete="off">
           </div>
 
           <div class="field-group">
@@ -5583,7 +5583,6 @@
 
   function snResetForm(){
     document.getElementById('sn-taster').value = '';
-    document.querySelectorAll('.sn-staff-chip').forEach(function(c){ c.classList.remove('selected'); });
     document.getElementById('sn-bean').value = '';
     document.getElementById('sn-overall-notes').value = '';
     SN_DIMS.forEach(function(dim){
@@ -5608,9 +5607,6 @@
 
   function snLoadForm(session){
     document.getElementById('sn-taster').value = session.taster || '';
-    document.querySelectorAll('.sn-staff-chip').forEach(function(c){
-      c.classList.toggle('selected', c.getAttribute('data-name') === session.taster);
-    });
     document.getElementById('sn-bean').value = session.bean || '';
     document.getElementById('sn-overall-notes').value = session.overallNotes || '';
     SN_DIMS.forEach(function(dim){
@@ -5704,7 +5700,6 @@
     var input = document.getElementById('sn-taster');
     if (!chipsEl) return;
 
-    // Combine staff list + names used in past sessions
     var seen = {};
     var names = [];
     staffList.forEach(function(s){
@@ -5723,32 +5718,40 @@
 
     if (names.length === 0) { chipsEl.style.display = 'none'; return; }
     chipsEl.style.display = 'flex';
+
+    function updateChips(selectedName){
+      chipsEl.querySelectorAll('.sn-staff-chip').forEach(function(c){
+        var active = c.getAttribute('data-name') === selectedName;
+        c.style.background = active ? '#463E3A' : '#fff';
+        c.style.color = active ? '#fff' : '#463E3A';
+        c.style.borderColor = active ? '#463E3A' : '#DCD2C2';
+      });
+    }
+
     chipsEl.innerHTML = names.map(function(n){
-      return '<button type="button" class="sn-chip sn-staff-chip" data-name="' + esc(n) + '">' + esc(n) + '</button>';
+      return '<button type="button" class="sn-staff-chip" data-name="' + esc(n) + '" style="padding:10px 18px;border-radius:20px;border:1.5px solid #DCD2C2;background:#fff;font-size:14px;font-weight:600;color:#463E3A;cursor:pointer;font-family:inherit;">' + esc(n) + '</button>';
     }).join('');
 
-    // Click chip → fill input and highlight chip
     chipsEl.querySelectorAll('.sn-staff-chip').forEach(function(chip){
       chip.addEventListener('click', function(){
         var name = chip.getAttribute('data-name');
         var already = input.value === name;
-        chipsEl.querySelectorAll('.sn-staff-chip').forEach(function(c){ c.classList.remove('selected'); });
         if (already) {
           input.value = '';
+          updateChips(null);
         } else {
-          chip.classList.add('selected');
           input.value = name;
+          updateChips(name);
         }
       });
     });
 
-    // Sync chip highlight when user types manually
     input.addEventListener('input', function(){
-      var val = input.value.toLowerCase();
-      chipsEl.querySelectorAll('.sn-staff-chip').forEach(function(c){
-        c.classList.toggle('selected', c.getAttribute('data-name').toLowerCase() === val);
-      });
+      updateChips(null); // clear chip highlight when typing manually
     });
+
+    // Restore highlight if value already set
+    if (input.value) updateChips(input.value);
   }
 
   function snShowForm(){
