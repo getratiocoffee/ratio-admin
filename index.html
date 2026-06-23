@@ -1204,7 +1204,13 @@
       <div id="sensory-form-panel" style="display:none; flex:1; display:none; flex-direction:column; min-height:0;">
         <div class="form-scroll" id="sensory-form-scroll">
 
-          <!-- Bean & date header -->
+          <!-- Taster & Bean header -->
+          <div class="field-group">
+            <label class="field-label">Tasted by</label>
+            <input type="text" class="field-input" id="sn-taster" list="sn-staff-list" placeholder="e.g. Daniel" autocomplete="off">
+            <datalist id="sn-staff-list"></datalist>
+          </div>
+
           <div class="field-group">
             <label class="field-label">Bean / Coffee name</label>
             <input type="text" class="field-input" id="sn-bean" placeholder="e.g. Ethiopia Yirgacheffe">
@@ -5512,6 +5518,7 @@
   }
 
   function snResetForm(){
+    document.getElementById('sn-taster').value = '';
     document.getElementById('sn-bean').value = '';
     document.getElementById('sn-overall-notes').value = '';
     SN_DIMS.forEach(function(dim){
@@ -5526,7 +5533,7 @@
   }
 
   function snReadForm(){
-    var session = { id: snEditId || uid(), bean: document.getElementById('sn-bean').value.trim(), date: snEditId ? (sensorySessions.find(function(s){return s.id===snEditId;})||{}).date || isoDate(new Date()) : isoDate(new Date()), overallNotes: document.getElementById('sn-overall-notes').value.trim() };
+    var session = { id: snEditId || uid(), taster: document.getElementById('sn-taster').value.trim(), bean: document.getElementById('sn-bean').value.trim(), date: snEditId ? (sensorySessions.find(function(s){return s.id===snEditId;})||{}).date || isoDate(new Date()) : isoDate(new Date()), overallNotes: document.getElementById('sn-overall-notes').value.trim() };
     SN_DIMS.forEach(function(dim){
       session[dim] = {};
       SN_TEMPS.forEach(function(temp){ session[dim][temp] = snReadDimData(dim, temp); });
@@ -5535,6 +5542,7 @@
   }
 
   function snLoadForm(session){
+    document.getElementById('sn-taster').value = session.taster || '';
     document.getElementById('sn-bean').value = session.bean || '';
     document.getElementById('sn-overall-notes').value = session.overallNotes || '';
     SN_DIMS.forEach(function(dim){
@@ -5604,7 +5612,7 @@
       var dateStr = s.date ? new Date(s.date + 'T00:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
       html += '<div class="sn-session-card" data-id="' + s.id + '">';
       html += '  <div class="sn-session-bean">' + esc(s.bean || 'Untitled') + '</div>';
-      html += '  <div class="sn-session-date">' + dateStr + '</div>';
+      html += '  <div class="sn-session-date">' + dateStr + (s.taster ? ' · Sensory done by ' + esc(s.taster) : '') + '</div>';
       if (chipHtml) html += '  <div class="sn-session-chips">' + chipHtml + '</div>';
       html += '</div>';
     });
@@ -5623,10 +5631,19 @@
     });
   }
 
+  function snPopulateStaffList(){
+    var datalist = document.getElementById('sn-staff-list');
+    if (!datalist) return;
+    datalist.innerHTML = staffContacts.map(function(s){
+      return '<option value="' + esc(s.name) + '">';
+    }).join('');
+  }
+
   function snShowForm(){
     document.getElementById('sensory-list-panel').style.display = 'none';
     document.getElementById('sensory-form-panel').style.display = 'flex';
     document.getElementById('sensory-new-btn').style.display = 'none';
+    snPopulateStaffList();
     document.getElementById('sensory-form-scroll').scrollTop = 0;
   }
 
