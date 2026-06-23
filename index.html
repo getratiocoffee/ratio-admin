@@ -561,10 +561,10 @@
   }
   .sn-temp-btn {
     padding: 5px 14px; font-size: 12px; font-weight: 600; border: none;
-    background: #FAF6F0; color: #8A7F6F; cursor: pointer; font-family: inherit;
+    background: #EDE8E2; color: #8A7F6F; cursor: pointer; font-family: inherit;
   }
-  .sn-temp-btn.hot.active { background: #FDEAEA; color: #B83030; }
-  .sn-temp-btn.cold.active { background: #E0EEF8; color: #1A5C8A; }
+  .sn-temp-btn.hot.active { background: #C0392B; color: #fff; }
+  .sn-temp-btn.cold.active { background: #2471A3; color: #fff; }
   .sn-temp-panel { display: none; }
   .sn-temp-panel.active { display: block; }
 
@@ -1206,7 +1206,7 @@
 
           <!-- Taster & Bean header -->
           <div class="field-group">
-            <label class="field-label">Tasted by</label>
+            <label class="field-label">Assessor</label>
             <input type="text" class="field-input" id="sn-taster" list="sn-staff-list" placeholder="e.g. Daniel" autocomplete="off">
             <datalist id="sn-staff-list"></datalist>
           </div>
@@ -1220,8 +1220,8 @@
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
               <div class="sn-section-title" style="margin-bottom:0;">Fragrance <span style="font-size:12px;font-weight:400;color:#8A7F6F;">（乾香）</span></div>
               <div class="sn-temp-toggle">
-                <button type="button" class="sn-temp-btn hot active" data-dim="fragrance" data-temp="hot">☕ Hot</button>
-                <button type="button" class="sn-temp-btn cold" data-dim="fragrance" data-temp="cold">🧊 Cold</button>
+                <button type="button" class="sn-temp-btn hot active" data-dim="fragrance" data-temp="hot">Hot</button>
+                <button type="button" class="sn-temp-btn cold" data-dim="fragrance" data-temp="cold">Cold</button>
               </div>
             </div>
             <div class="sn-temp-panel active" id="sn-fragrance-panel-hot">
@@ -1294,8 +1294,8 @@
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
               <div class="sn-section-title" style="margin-bottom:0;">Aroma <span style="font-size:12px;font-weight:400;color:#8A7F6F;">（濕香）</span></div>
               <div class="sn-temp-toggle">
-                <button type="button" class="sn-temp-btn hot active" data-dim="aroma" data-temp="hot">☕ Hot</button>
-                <button type="button" class="sn-temp-btn cold" data-dim="aroma" data-temp="cold">🧊 Cold</button>
+                <button type="button" class="sn-temp-btn hot active" data-dim="aroma" data-temp="hot">Hot</button>
+                <button type="button" class="sn-temp-btn cold" data-dim="aroma" data-temp="cold">Cold</button>
               </div>
             </div>
             <div class="sn-temp-panel active" id="sn-aroma-panel-hot">
@@ -1368,8 +1368,8 @@
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
               <div class="sn-section-title" style="margin-bottom:0;">Flavor</div>
               <div class="sn-temp-toggle">
-                <button type="button" class="sn-temp-btn hot active" data-dim="flavor" data-temp="hot">☕ Hot</button>
-                <button type="button" class="sn-temp-btn cold" data-dim="flavor" data-temp="cold">🧊 Cold</button>
+                <button type="button" class="sn-temp-btn hot active" data-dim="flavor" data-temp="hot">Hot</button>
+                <button type="button" class="sn-temp-btn cold" data-dim="flavor" data-temp="cold">Cold</button>
               </div>
             </div>
             <div class="sn-temp-panel active" id="sn-flavor-panel-hot">
@@ -1462,8 +1462,8 @@
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
               <div class="sn-section-title" style="margin-bottom:0;">Aftertaste</div>
               <div class="sn-temp-toggle">
-                <button type="button" class="sn-temp-btn hot active" data-dim="aftertaste" data-temp="hot">☕ Hot</button>
-                <button type="button" class="sn-temp-btn cold" data-dim="aftertaste" data-temp="cold">🧊 Cold</button>
+                <button type="button" class="sn-temp-btn hot active" data-dim="aftertaste" data-temp="hot">Hot</button>
+                <button type="button" class="sn-temp-btn cold" data-dim="aftertaste" data-temp="cold">Cold</button>
               </div>
             </div>
             <div class="sn-temp-panel active" id="sn-aftertaste-panel-hot">
@@ -1556,8 +1556,8 @@
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
               <div class="sn-section-title" style="margin-bottom:0;">Acidity</div>
               <div class="sn-temp-toggle">
-                <button type="button" class="sn-temp-btn hot active" data-dim="acidity" data-temp="hot">☕ Hot</button>
-                <button type="button" class="sn-temp-btn cold" data-dim="acidity" data-temp="cold">🧊 Cold</button>
+                <button type="button" class="sn-temp-btn hot active" data-dim="acidity" data-temp="hot">Hot</button>
+                <button type="button" class="sn-temp-btn cold" data-dim="acidity" data-temp="cold">Cold</button>
               </div>
             </div>
             <div class="sn-temp-panel active" id="sn-acidity-panel-hot">
@@ -1626,8 +1626,8 @@
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
               <div class="sn-section-title" style="margin-bottom:0;">Sweetness</div>
               <div class="sn-temp-toggle">
-                <button type="button" class="sn-temp-btn hot active" data-dim="sweetness" data-temp="hot">☕ Hot</button>
-                <button type="button" class="sn-temp-btn cold" data-dim="sweetness" data-temp="cold">🧊 Cold</button>
+                <button type="button" class="sn-temp-btn hot active" data-dim="sweetness" data-temp="hot">Hot</button>
+                <button type="button" class="sn-temp-btn cold" data-dim="sweetness" data-temp="cold">Cold</button>
               </div>
             </div>
             <div class="sn-temp-panel active" id="sn-sweetness-panel-hot">
@@ -1692,8 +1692,8 @@
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
               <div class="sn-section-title" style="margin-bottom:0;">Mouthfeel</div>
               <div class="sn-temp-toggle">
-                <button type="button" class="sn-temp-btn hot active" data-dim="mouthfeel" data-temp="hot">☕ Hot</button>
-                <button type="button" class="sn-temp-btn cold" data-dim="mouthfeel" data-temp="cold">🧊 Cold</button>
+                <button type="button" class="sn-temp-btn hot active" data-dim="mouthfeel" data-temp="hot">Hot</button>
+                <button type="button" class="sn-temp-btn cold" data-dim="mouthfeel" data-temp="cold">Cold</button>
               </div>
             </div>
             <div class="sn-temp-panel active" id="sn-mouthfeel-panel-hot">
@@ -1830,8 +1830,8 @@
         <div class="radar-date" id="radar-session-date"></div>
         <div style="display:flex; justify-content:center; margin-bottom:12px;">
           <div class="sn-temp-toggle">
-            <button type="button" class="sn-temp-btn hot active" id="radar-hot-btn">☕ Hot</button>
-            <button type="button" class="sn-temp-btn cold" id="radar-cold-btn">🧊 Cold</button>
+            <button type="button" class="sn-temp-btn hot active" id="radar-hot-btn">Hot</button>
+            <button type="button" class="sn-temp-btn cold" id="radar-cold-btn">Cold</button>
           </div>
         </div>
         <canvas id="radar-canvas" width="280" height="280" style="display:block;margin:0 auto;"></canvas>
@@ -5634,8 +5634,24 @@
   function snPopulateStaffList(){
     var datalist = document.getElementById('sn-staff-list');
     if (!datalist) return;
-    datalist.innerHTML = staffContacts.map(function(s){
-      return '<option value="' + esc(s.name) + '">';
+    // Combine staff contacts + names used in past sessions
+    var seen = {};
+    var names = [];
+    staffContacts.forEach(function(s){
+      if (s.name && !seen[s.name.toLowerCase()]) {
+        seen[s.name.toLowerCase()] = true;
+        names.push(s.name);
+      }
+    });
+    sensorySessions.forEach(function(s){
+      if (s.taster && !seen[s.taster.toLowerCase()]) {
+        seen[s.taster.toLowerCase()] = true;
+        names.push(s.taster);
+      }
+    });
+    names.sort(function(a, b){ return a.localeCompare(b); });
+    datalist.innerHTML = names.map(function(n){
+      return '<option value="' + esc(n) + '">';
     }).join('');
   }
 
