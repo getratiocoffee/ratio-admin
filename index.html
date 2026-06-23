@@ -77,10 +77,9 @@
   .glass-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .glass-toggle {
     flex-shrink: 0; width: 48px; height: 28px; border-radius: 14px;
-    padding: 2px; border: 1px solid rgba(255,255,255,0.7);
-    background: rgba(140,127,111,0.30);
-    box-shadow: inset 0 1px 3px rgba(70,62,58,0.18);
-    -webkit-backdrop-filter: blur(8px) saturate(150%); backdrop-filter: blur(8px) saturate(150%);
+    padding: 2px; border: 1px solid rgba(255,255,255,0.55);
+    background: #34C759;
+    box-shadow: inset 0 1px 3px rgba(70,62,58,0.10);
     display: flex; align-items: center; cursor: pointer;
     transition: background 0.22s ease;
     -webkit-tap-highlight-color: transparent;
@@ -89,11 +88,14 @@
     width: 22px; height: 22px; border-radius: 50%; background: #FFFFFF;
     box-shadow: 0 1px 3px rgba(70,62,58,0.35);
     display: flex; align-items: center; justify-content: center;
-    color: #8A7F6F;
+    color: #34C759; transform: translateX(20px);
     transition: transform 0.22s ease, color 0.22s ease;
   }
-  .glass-toggle.on { background: #463E3A; }
-  .glass-toggle.on .glass-toggle-knob { transform: translateX(20px); color: #463E3A; }
+  .glass-toggle.off {
+    background: rgba(140,127,111,0.38);
+    -webkit-backdrop-filter: blur(8px) saturate(150%); backdrop-filter: blur(8px) saturate(150%);
+  }
+  .glass-toggle.off .glass-toggle-knob { transform: translateX(0); color: #8A7F6F; }
   .glass-row { display: flex; gap: 12px; align-items: flex-start; }
   .frame-col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
   .frame-label {
@@ -996,7 +998,7 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
               Swap sides
             </button>
-            <button class="glass-toggle" id="glass-refresh-btn" role="switch" aria-checked="false" aria-label="Lock / refresh">
+            <button class="glass-toggle" id="glass-refresh-btn" role="switch" aria-checked="true" aria-label="Lock / refresh">
               <span class="glass-toggle-knob">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
               </span>
@@ -6969,8 +6971,8 @@
 
     var refreshBtn = document.getElementById('glass-refresh-btn');
     if (refreshBtn) refreshBtn.addEventListener('click', function(){
-      refreshBtn.classList.add('on');
-      refreshBtn.setAttribute('aria-checked', 'true');
+      refreshBtn.classList.add('off');
+      refreshBtn.setAttribute('aria-checked', 'false');
       setTimeout(function(){
         try { setSessionPassword(''); } catch(e) {}
         location.reload();
