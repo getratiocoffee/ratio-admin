@@ -175,9 +175,11 @@
   /* Collapsible N/A status banner (shrinks upward) */
   .ts-na-collapse { overflow: hidden; transition: max-height 0.25s ease; max-height: 240px; flex-shrink: 0; }
   .ts-na-collapse.collapsed { max-height: 0; }
-  .glass-footer .ts-na-arrow { position: absolute; left: 2px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; padding: 0; border: none; background: transparent; color: #8A7F6F; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .ts-na-arrow { width: 34px; height: 34px; padding: 0; border: none; background: transparent; color: #8A7F6F; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .ts-na-chevron { transition: transform 0.25s ease; }
   .ts-na-arrow.collapsed .ts-na-chevron { transform: rotate(180deg); }
+  .glass-footer .ts-foot-back { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
+  .glass-footer .ts-foot-add { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
 
   /* Timesheet in-page tabs (no screen switch) */
   #ts-tab-host { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
@@ -1157,13 +1159,9 @@
 
     <!-- ===== STAFF TIMESHEET SCREEN ===== -->
     <div class="screen" id="screen-timesheet">
-      <div class="form-topbar">
-        <div class="back-btn" id="timesheet-back-btn" aria-label="Back">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        </div>
-        <h1 id="ts-topbar-title">Staff Timesheet</h1>
-        <button class="icon-btn" id="ts-tab-action-btn" aria-label="Add" style="margin-left:auto; display:none;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      <div class="form-topbar" style="justify-content:center;">
+        <button class="ts-na-arrow" id="ts-na-toggle" aria-label="Collapse status" aria-expanded="true">
+          <svg class="ts-na-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 15 12 9 18 15"/></svg>
         </button>
       </div>
 
@@ -1210,13 +1208,16 @@
           </div>
         </div>
         <div class="glass-footer">
-          <button class="ts-na-arrow" id="ts-na-toggle" aria-label="Collapse status" aria-expanded="true">
-            <svg class="ts-na-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 15 12 9 18 15"/></svg>
-          </button>
+          <div class="back-btn ts-foot-back" id="timesheet-back-btn" aria-label="Back">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </div>
           <span class="frame-label" id="ts-page-name">Timesheet</span>
           <span class="frame-label" aria-hidden="true"></span>
           <button class="glass-toggle" id="ts-refresh-btn" role="switch" aria-checked="true" aria-label="Lock / refresh">
             <span class="glass-toggle-knob"></span>
+          </button>
+          <button class="icon-btn ts-foot-add" id="ts-tab-action-btn" aria-label="Add" style="display:none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
           </button>
         </div>
       </div>
