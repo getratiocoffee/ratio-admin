@@ -4060,10 +4060,6 @@
       showScreen('screen-gate');
     }
   })();
-})();
-
-
-
 
   // ---------- Setting screen ----------
   document.getElementById('menu-open-setting-btn').addEventListener('click', function(){
@@ -4122,7 +4118,6 @@
     var errEl = document.getElementById('label-error');
     errEl.style.display = 'none';
 
-    // Validate
     var errors = [];
     if (!labelTemplateFile) errors.push('Please upload a .lbx template file');
     if (!beanName)  errors.push('Bean name is required');
@@ -4142,7 +4137,7 @@
     }
 
     var btn = document.getElementById('label-generate-btn');
-    btn.textContent = 'Generating…';
+    btn.textContent = 'Generating\u2026';
     btn.disabled = true;
 
     loadJSZip(function() {
@@ -4150,10 +4145,8 @@
       reader.onload = function(e) {
         JSZip.loadAsync(e.target.result).then(function(zip) {
           return zip.file('label.xml').async('string').then(function(xml) {
-
             var netWeightFmt = 'NET ' + netWeight + 'G';
             var brewDateFmt  = 'READY BREW DATE: ' + brewDate;
-
             var reps = [
               ['SUGAR DADDY',                    beanName],
               ['Villa Clara | Alo Bona | Danche', origin],
@@ -4162,13 +4155,10 @@
               ['READY BREW DATE: 18 | 06',        brewDateFmt],
               ['NET 150G',                        netWeightFmt],
             ];
-
             var newXml = xml;
             reps.forEach(function(r) {
               newXml = newXml.split('<pt:data>' + r[0] + '</pt:data>').join('<pt:data>' + r[1] + '</pt:data>');
             });
-
-            // Rebuild zip
             var newZip = new JSZip();
             var promises = [];
             zip.forEach(function(path, file) {
@@ -4180,7 +4170,6 @@
                 }));
               }
             });
-
             return Promise.all(promises).then(function() {
               return newZip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
             });
@@ -4208,10 +4197,7 @@
     });
   });
 
-</script>
-</body>
-</html>
-
+})();
 </script>
 </body>
 </html>
