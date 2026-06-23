@@ -915,6 +915,9 @@
       <div class="form-topbar" style="justify-content:center;">
         <img src="/logo.png" width="24" height="24" alt="Ratio logo" style="display:block;">
         <span style="font-size:17px; font-weight:700; color:#241C10;">Ratio Coffee</span>
+        <button id="dashboard-refresh-btn" class="icon-btn" aria-label="Refresh" style="position:absolute; right:16px;" title="Refresh app">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        </button>
       </div>
 
       <!-- Dashboard banners with pom mascots -->
@@ -4622,6 +4625,10 @@
   document.getElementById('menu-open-transfer-btn').addEventListener('click', function(){
     showTransferPinOverlay(function(){ openTransferScreen(); });
   });
+  document.getElementById('dashboard-refresh-btn').addEventListener('click', function(){
+    location.reload();
+  });
+
   document.getElementById('menu-open-timesheet-btn').addEventListener('click', function(){
     renderNaBanner();
     showScreen('screen-timesheet');
