@@ -1922,6 +1922,16 @@
       </div>
     </div>
 
+    <!-- Confirm delete overlay -->
+    <div class="radar-overlay" id="confirm-overlay" style="z-index:1200;">
+      <div class="radar-card" style="max-width:300px; text-align:center;">
+        <div id="confirm-title" style="font-size:17px;font-weight:700;color:#2E2925;margin-bottom:6px;">Delete?</div>
+        <div id="confirm-message" style="font-size:13px;color:#8A7F6F;margin-bottom:20px;">This cannot be undone.</div>
+        <button class="import-confirm-btn confirm" id="confirm-ok-btn" style="width:100%;background:#A32D2D;">Delete</button>
+        <button class="import-confirm-btn cancel" id="confirm-cancel-btn" style="width:100%;margin-top:10px;">Cancel</button>
+      </div>
+    </div>
+
     <!-- Radar chart overlay -->
     <div class="radar-overlay" id="radar-overlay">
       <div class="radar-card">
@@ -2861,13 +2871,7 @@
   };
 
   async function persist(){
-    try {
-      await saveBeansToServer(beans);
-      flashSaveStatus(true);
-    } catch(e) {
-      console.error('Save failed', e);
-      flashSaveStatus(false);
-    }
+    return saveWithStatus(saveBeansToServer(beans));
   }
 
   function flashSaveStatus(ok){
@@ -2877,6 +2881,55 @@
     el.style.opacity = '1';
     clearTimeout(flashSaveStatus._t);
     flashSaveStatus._t = setTimeout(function(){ el.style.opacity = '0'; }, 1600);
+  }
+
+  // ---------- Global save feedback (works on any screen) ----------
+  function showToast(msg, isError){
+    var t = document.getElementById('global-save-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'global-save-toast';
+      t.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom));z-index:2000;padding:11px 18px;border-radius:14px;font-size:13px;font-weight:600;font-family:inherit;box-shadow:0 4px 16px rgba(46,41,37,0.22);opacity:0;transition:opacity .2s;pointer-events:none;max-width:88vw;text-align:center;';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.background = isError ? '#A32D2D' : '#463E3A';
+    t.style.color = '#fff';
+    t.style.opacity = '1';
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(function(){ t.style.opacity = '0'; }, isError ? 3200 : 1500);
+  }
+
+  // Route every server save through this: awaits the promise and reports
+  // success or failure. Accepts a promise (or the return value of a save fn).
+  function saveWithStatus(promise){
+    return Promise.resolve(promise)
+      .then(function(){ showToast('Saved', false); })
+      .catch(function(e){ console.error('Save failed', e); showToast("Couldn't save \u2014 check your connection", true); });
+  }
+
+  // ---------- Reusable delete confirmation ----------
+  function confirmDanger(message, onConfirm, opts){
+    opts = opts || {};
+    var overlay = document.getElementById('confirm-overlay');
+    document.getElementById('confirm-title').textContent = opts.title || 'Delete?';
+    document.getElementById('confirm-message').textContent = message || 'This cannot be undone.';
+    var okBtn = document.getElementById('confirm-ok-btn');
+    var cancelBtn = document.getElementById('confirm-cancel-btn');
+    okBtn.textContent = opts.okText || 'Delete';
+    function cleanup(){
+      overlay.classList.remove('visible');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      overlay.removeEventListener('click', onBackdrop);
+    }
+    function onOk(){ cleanup(); onConfirm(); }
+    function onCancel(){ cleanup(); }
+    function onBackdrop(e){ if (e.target === overlay) cleanup(); }
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+    overlay.addEventListener('click', onBackdrop);
+    overlay.classList.add('visible');
   }
 
   // ---------- Screen navigation ----------
@@ -3302,10 +3355,14 @@
       if (deleteBtn) {
         deleteBtn.addEventListener('click', function(e){
           e.stopPropagation();
-          beans = beans.filter(function(b){ return b.id !== id; });
-          if (state.expandedId === id) state.expandedId = null;
-          persist();
-          render();
+          var bean = beans.filter(function(b){ return b.id === id; })[0];
+          var nm = bean && bean.name ? bean.name : 'this bean';
+          confirmDanger('Delete "' + nm + '" from inventory? This cannot be undone.', function(){
+            beans = beans.filter(function(b){ return b.id !== id; });
+            if (state.expandedId === id) state.expandedId = null;
+            persist();
+            render();
+          });
         });
       }
     });
@@ -3638,7 +3695,7 @@
 
   // ---------- Roaster contacts ----------
   async function persistContacts(){
-    try { await saveContactsToServer(contacts); } catch(e) { console.error('Save contacts failed', e); }
+    saveWithStatus(saveContactsToServer(contacts));
   }
 
   function renderContactsList(){
@@ -3659,10 +3716,12 @@
       btn.addEventListener('click', function(){
         var row = btn.closest('.contact-row');
         var id = row.getAttribute('data-id');
-        contacts = contacts.filter(function(c){ return c.id !== id; });
-        persistContacts();
-        renderContactsList();
-        populateContactSelect();
+        confirmDanger('Delete this contact? This cannot be undone.', function(){
+          contacts = contacts.filter(function(c){ return c.id !== id; });
+          persistContacts();
+          renderContactsList();
+          populateContactSelect();
+        });
       });
     });
   }
@@ -3988,7 +4047,7 @@
     }
 
     transferHistory.push(record);
-    try { saveTransfersToServer(transferHistory); } catch(e) { console.error('Save transfer history failed', e); }
+    saveWithStatus(saveTransfersToServer(transferHistory));
 
     lastTransferRecord = record;
 
@@ -4175,7 +4234,7 @@
     doc.text('Ratio Coffee \u00b7 Crows Nest NSW \u00b7 ABN ' + RATIO_PAYMENT_DETAILS.abn, 20, y);
 
     invoiceLog.push(invoiceNumber);
-    try { saveInvoiceLogToServer(invoiceLog); } catch(e) { console.error('Save invoice log failed', e); }
+    saveWithStatus(saveInvoiceLogToServer(invoiceLog));
 
     var fileName = 'ratio-invoice-' + invoiceNumber + '.pdf';
     doc.save(fileName);
@@ -4279,10 +4338,12 @@
         e.stopPropagation();
         var row = btn.closest('.transfer-history-row');
         var id = row.getAttribute('data-id');
-        transferHistory = transferHistory.filter(function(r){ return r.id !== id; });
-        delete selectedForInvoice[id];
-        try { saveTransfersToServer(transferHistory); } catch(e) { console.error('Save transfer history failed', e); }
-        renderTransferHistory();
+        confirmDanger('Delete this transfer record? This cannot be undone.', function(){
+          transferHistory = transferHistory.filter(function(r){ return r.id !== id; });
+          delete selectedForInvoice[id];
+          saveWithStatus(saveTransfersToServer(transferHistory));
+          renderTransferHistory();
+        });
       });
     });
 
@@ -4663,10 +4724,10 @@
   }
 
   async function persistTimesheets(){
-    try { await saveTimesheetsToServer(timesheets); } catch(e) { console.error('Save timesheets failed', e); }
+    saveWithStatus(saveTimesheetsToServer(timesheets));
   }
   async function persistStaff(){
-    try { await saveStaffToServer(staffList); } catch(e) { console.error('Save staff failed', e); }
+    saveWithStatus(saveStaffToServer(staffList));
   }
 
   // ----- Manage staff -----
@@ -4739,10 +4800,12 @@
       btn.addEventListener('click', function(){
         var card = btn.closest('.bean-card');
         var id = card.getAttribute('data-id');
-        staffList = staffList.filter(function(s){ return s.id !== id; });
-        persistStaff();
-        expandedStaffContact = null;
-        renderStaffContacts();
+        confirmDanger('Delete this staff member? This cannot be undone.', function(){
+          staffList = staffList.filter(function(s){ return s.id !== id; });
+          persistStaff();
+          expandedStaffContact = null;
+          renderStaffContacts();
+        });
       });
     });
   }
@@ -4879,9 +4942,11 @@
         var dk = dayCard.getAttribute('data-day');
         var row = btn.closest('.ts-shift-row');
         var idx = parseInt(row.getAttribute('data-shift-idx'), 10);
-        week.days[dk].splice(idx, 1);
-        persistTimesheets();
-        onChange();
+        confirmDanger('Remove this shift? This cannot be undone.', function(){
+          week.days[dk].splice(idx, 1);
+          persistTimesheets();
+          onChange();
+        }, { okText: 'Remove' });
       });
     });
     containerEl.querySelectorAll('[data-action="save-edit-shift"]').forEach(function(btn){
@@ -5272,10 +5337,12 @@
     container.querySelectorAll('[data-action="delete-na"]').forEach(function(btn){
       btn.addEventListener('click', function(){
         var id = btn.getAttribute('data-id');
-        naRequests = naRequests.filter(function(r){ return r.id !== id; });
-        saveNaToServer(naRequests).catch(function(e){ console.error(e); });
-        renderNaExistingList();
-        renderNaBanner();
+        confirmDanger('Remove this unavailability request?', function(){
+          naRequests = naRequests.filter(function(r){ return r.id !== id; });
+          saveWithStatus(saveNaToServer(naRequests));
+          renderNaExistingList();
+          renderNaBanner();
+        }, { okText: 'Remove' });
       });
     });
   }
@@ -5325,7 +5392,7 @@
     } else {
       naRequests.push({ id: uid(), staffId: staffId, staffName: staffMember.name, dates: newDates });
     }
-    saveNaToServer(naRequests).catch(function(e){ console.error(e); });
+    saveWithStatus(saveNaToServer(naRequests));
     document.getElementById('na-period-preview').style.display = 'none';
     document.getElementById('na-save-btn').disabled = true;
     renderNaExistingList();
@@ -5334,7 +5401,7 @@
 
   // ---------- Handover ----------
   function persistHandover(){
-    saveHandoverToServer(handoverData).catch(function(e){ console.error('Save handover failed', e); });
+    saveWithStatus(saveHandoverToServer(handoverData));
   }
 
   function getHandoverTasksForDate(dateIso){
@@ -5529,10 +5596,12 @@
     listEl.querySelectorAll('[data-action="delete-template"]').forEach(function(btn){
       btn.addEventListener('click', function(){
         var id = btn.closest('.ho-template-row').getAttribute('data-id');
-        handoverData.templates = handoverData.templates.filter(function(t){ return t.id !== id; });
-        if (expandedTemplate === id) expandedTemplate = null;
-        persistHandover();
-        renderHoTemplates();
+        confirmDanger('Delete this template? This cannot be undone.', function(){
+          handoverData.templates = handoverData.templates.filter(function(t){ return t.id !== id; });
+          if (expandedTemplate === id) expandedTemplate = null;
+          persistHandover();
+          renderHoTemplates();
+        });
       });
     });
     listEl.querySelectorAll('[data-action="save-template"]').forEach(function(btn){
@@ -5577,10 +5646,12 @@
       listEl.querySelectorAll('[data-action="delete-task"]').forEach(function(btn){
         btn.addEventListener('click', function(){
           var id = btn.closest('.contact-row').getAttribute('data-id');
-          handoverData.tasksByDate[manageDate] = handoverData.tasksByDate[manageDate].filter(function(t){ return t.id !== id; });
-          persistHandover();
-          renderHandoverManage();
-          renderDashboardMascot();
+          confirmDanger('Delete this task?', function(){
+            handoverData.tasksByDate[manageDate] = handoverData.tasksByDate[manageDate].filter(function(t){ return t.id !== id; });
+            persistHandover();
+            renderHandoverManage();
+            renderDashboardMascot();
+          });
         });
       });
     }
@@ -5939,9 +6010,11 @@
       card.querySelector('[data-action="delete-session"]').addEventListener('click', function(e){
         e.stopPropagation();
         var id = card.getAttribute('data-id');
-        sensorySessions = sensorySessions.filter(function(x){ return x.id !== id; });
-        saveSensoryToServer(sensorySessions).catch(function(e){ console.error(e); });
-        snShowList();
+        confirmDanger('Delete this cupping session? This cannot be undone.', function(){
+          sensorySessions = sensorySessions.filter(function(x){ return x.id !== id; });
+          saveWithStatus(saveSensoryToServer(sensorySessions));
+          snShowList();
+        });
       });
       card.addEventListener('click', function(e){
         if (e.target.closest('[data-action]')) return;
@@ -6053,12 +6126,12 @@
         roastedBeans = roastedBeans.map(function(r){
           return r.id === snRoastedIdForSession ? Object.assign({}, r, { sensoryDone: true }) : r;
         });
-        saveRoastedToServer(roastedBeans).catch(function(e){ console.error(e); });
+        saveWithStatus(saveRoastedToServer(roastedBeans));
         renderDashboardMascot();
         snRoastedIdForSession = null;
       }
     }
-    saveSensoryToServer(sensorySessions).catch(function(e){ console.error(e); });
+    saveWithStatus(saveSensoryToServer(sensorySessions));
     snShowList();
   });
 
@@ -6137,7 +6210,7 @@
         roastedBeans = roastedBeans.map(function(r){
           return r.id === id ? Object.assign({}, r, { sensoryDone: !r.sensoryDone }) : r;
         });
-        saveRoastedToServer(roastedBeans).catch(function(e){ console.error(e); });
+        saveWithStatus(saveRoastedToServer(roastedBeans));
         renderRoastedBeans();
         renderDashboardMascot();
       });
@@ -6145,10 +6218,12 @@
     listEl.querySelectorAll('[data-action="delete-roasted"]').forEach(function(btn){
       btn.addEventListener('click', function(){
         var id = btn.closest('.contact-row').getAttribute('data-id');
-        roastedBeans = roastedBeans.filter(function(r){ return r.id !== id; });
-        saveRoastedToServer(roastedBeans).catch(function(e){ console.error(e); });
-        renderRoastedBeans();
-        renderDashboardMascot();
+        confirmDanger('Delete this roasted bean? This cannot be undone.', function(){
+          roastedBeans = roastedBeans.filter(function(r){ return r.id !== id; });
+          saveWithStatus(saveRoastedToServer(roastedBeans));
+          renderRoastedBeans();
+          renderDashboardMascot();
+        });
       });
     });
   }
@@ -6379,7 +6454,7 @@
     var isBlend = document.getElementById('roasted-type-blend').classList.contains('selected');
     var country = isBlend ? '' : document.getElementById('roasted-country').value.trim();
     roastedBeans.push({ id: uid(), name: name, type: isBlend ? 'blend' : 'single', country: country });
-    saveRoastedToServer(roastedBeans).catch(function(e){ console.error(e); });
+    saveWithStatus(saveRoastedToServer(roastedBeans));
     document.getElementById('roasted-bean-name').value = '';
     document.getElementById('roasted-country').value = '';
     document.getElementById('roasted-bean-select').value = '';
@@ -6391,7 +6466,7 @@
   var expandedCustomer = null;
 
   function persistCustomers(){
-    saveCustomersToServer(customers).catch(function(e){ console.error('Save customers failed', e); });
+    saveWithStatus(saveCustomersToServer(customers));
   }
 
   function renderCustomers(){
@@ -6464,10 +6539,12 @@
     listEl.querySelectorAll('[data-action="delete-customer"]').forEach(function(btn){
       btn.addEventListener('click', function(){
         var id = btn.closest('.bean-card').getAttribute('data-id');
-        customers = customers.filter(function(c){ return c.id !== id; });
-        persistCustomers();
-        expandedCustomer = null;
-        renderCustomers();
+        confirmDanger('Delete this customer? This cannot be undone.', function(){
+          customers = customers.filter(function(c){ return c.id !== id; });
+          persistCustomers();
+          expandedCustomer = null;
+          renderCustomers();
+        });
       });
     });
   }
@@ -6558,7 +6635,7 @@
         return r.dates && r.dates.some(function(d){ return d >= today; });
       });
       if (naRequests.length !== loadedNa.length) {
-        try { saveNaToServer(naRequests); } catch(e) {}
+        saveNaToServer(naRequests).catch(function(){});
       }
       customers = await loadCustomersFromServer();
       sensorySessions = await loadSensoryFromServer();
@@ -6584,7 +6661,7 @@
       Object.keys(handoverData.checks).forEach(function(d){
         if (d < cutoff) delete handoverData.checks[d];
       });
-      if (tasksDirty) { try { saveHandoverToServer(handoverData); } catch(e2) {} }
+      if (tasksDirty) { saveHandoverToServer(handoverData).catch(function(){}); }
       showScreen('screen-menu');
       render();
     } catch(e) {
