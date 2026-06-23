@@ -1214,9 +1214,28 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
         <h1>Sensory</h1>
-        <button class="icon-btn" id="sensory-new-btn" aria-label="New session" style="margin-left:auto;" title="New cupping session">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-        </button>
+        <div style="display:flex; gap:8px; margin-left:auto; align-items:center;">
+          <button class="icon-btn" id="sensory-timer-btn" aria-label="4 minute timer" title="4 min cupping timer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9 3h6"/><path d="M12 3v2"/></svg>
+          </button>
+          <button class="icon-btn" id="sensory-new-btn" aria-label="New session" title="New cupping session">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Timer overlay -->
+      <div class="radar-overlay" id="timer-overlay" style="z-index:1200;">
+        <div class="radar-card" style="max-width:280px; text-align:center; padding:32px 28px 24px;">
+          <div style="font-size:13px;font-weight:600;color:#8A7F6F;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Cupping Timer</div>
+          <div id="timer-display" style="font-size:72px;font-weight:800;color:#463E3A;line-height:1;letter-spacing:-2px;margin-bottom:8px;font-variant-numeric:tabular-nums;">4:00</div>
+          <div id="timer-label" style="font-size:13px;color:#8A7F6F;margin-bottom:28px;">4 minutes</div>
+          <div style="display:flex;gap:10px;margin-bottom:12px;">
+            <button id="timer-start-btn" class="btn-save" style="flex:1;padding:14px 0;border-radius:14px;font-size:16px;">Start</button>
+            <button id="timer-reset-btn" class="import-confirm-btn cancel" style="flex:0.5;border-radius:14px;font-size:16px;">Reset</button>
+          </div>
+          <button id="timer-close-btn" class="radar-close" style="width:100%;">Close</button>
+        </div>
       </div>
 
       <!-- Session list view -->
@@ -6100,6 +6119,78 @@
   }
 
   var snRoastedIdForSession = null;
+
+  // ---------- Sensory Timer ----------
+  var timerTotal = 4 * 60; // 4 minutes in seconds
+  var timerRemaining = timerTotal;
+  var timerInterval = null;
+  var timerRunning = false;
+
+  function timerFormat(s){
+    var m = Math.floor(s / 60);
+    var sec = s % 60;
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+
+  function timerUpdate(){
+    document.getElementById('timer-display').textContent = timerFormat(timerRemaining);
+    var startBtn = document.getElementById('timer-start-btn');
+    if (startBtn) startBtn.textContent = timerRunning ? 'Pause' : (timerRemaining < timerTotal ? 'Resume' : 'Start');
+    // Colour display red when under 30s
+    var display = document.getElementById('timer-display');
+    if (display) display.style.color = timerRemaining <= 30 ? '#C0392B' : '#463E3A';
+  }
+
+  function timerStart(){
+    if (timerRunning) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      timerUpdate();
+      return;
+    }
+    if (timerRemaining <= 0) return;
+    timerRunning = true;
+    timerUpdate();
+    timerInterval = setInterval(function(){
+      timerRemaining--;
+      timerUpdate();
+      if (timerRemaining <= 0) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        document.getElementById('timer-display').textContent = 'Done!';
+        document.getElementById('timer-label').textContent = 'Time\'s up ☕';
+        // Vibrate if supported
+        if (navigator.vibrate) navigator.vibrate([400, 100, 400]);
+      }
+    }, 1000);
+  }
+
+  function timerReset(){
+    clearInterval(timerInterval);
+    timerRunning = false;
+    timerRemaining = timerTotal;
+    document.getElementById('timer-label').textContent = '4 minutes';
+    timerUpdate();
+  }
+
+  document.getElementById('sensory-timer-btn').addEventListener('click', function(){
+    timerReset();
+    document.getElementById('timer-overlay').classList.add('visible');
+  });
+  document.getElementById('timer-start-btn').addEventListener('click', timerStart);
+  document.getElementById('timer-reset-btn').addEventListener('click', timerReset);
+  document.getElementById('timer-close-btn').addEventListener('click', function(){
+    clearInterval(timerInterval);
+    timerRunning = false;
+    document.getElementById('timer-overlay').classList.remove('visible');
+  });
+  document.getElementById('timer-overlay').addEventListener('click', function(e){
+    if (e.target === this) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      this.classList.remove('visible');
+    }
+  });
 
   document.getElementById('sensory-new-btn').addEventListener('click', function(){
     snRoastedIdForSession = null;
