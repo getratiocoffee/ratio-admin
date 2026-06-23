@@ -2155,8 +2155,35 @@
           </span>
           <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
+
+        <button class="menu-card" id="menu-open-cmarket-btn">
+          <span class="menu-card-icon" style="background:#FFF8E8;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B07A10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+              <polyline points="16 7 22 7 22 13"/>
+            </svg>
+          </span>
+          <span class="menu-card-text">
+            <span class="menu-card-title">C Market</span>
+            <span class="menu-card-sub">Live Arabica coffee futures price</span>
+          </span>
+          <svg class="chevron menu-card-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
       </div>
 
+    </div>
+
+    <!-- C Market overlay -->
+    <div class="radar-overlay" id="cmarket-overlay" style="z-index:1200;">
+      <div class="radar-card" style="max-width:320px; text-align:center; padding:28px 24px 24px;">
+        <div style="font-size:13px; font-weight:600; color:#8A7F6F; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">ICE Arabica Coffee C</div>
+        <div style="font-size:13px; color:#8A7F6F; margin-bottom:20px;">KCc1 · USc/lb</div>
+        <div id="cmarket-price" style="font-size:52px; font-weight:800; color:#463E3A; line-height:1; margin-bottom:8px;">—</div>
+        <div id="cmarket-change" style="font-size:16px; font-weight:600; margin-bottom:6px;"></div>
+        <div id="cmarket-range" style="font-size:13px; color:#8A7F6F; margin-bottom:20px;"></div>
+        <div id="cmarket-updated" style="font-size:11px; color:#B0A491; margin-bottom:20px;"></div>
+        <button class="radar-close" id="cmarket-close-btn">Close</button>
+      </div>
     </div>
 
     <div class="screen" id="screen-list">
@@ -4270,6 +4297,57 @@
   document.getElementById('menu-open-greenbean-btn').addEventListener('click', function(){
     showScreen('screen-greenbean');
   });
+  document.getElementById('menu-open-cmarket-btn').addEventListener('click', function(){
+    document.getElementById('cmarket-overlay').classList.add('visible');
+    fetchCMarketPrice();
+  });
+  document.getElementById('cmarket-close-btn').addEventListener('click', function(){
+    document.getElementById('cmarket-overlay').classList.remove('visible');
+  });
+  document.getElementById('cmarket-overlay').addEventListener('click', function(e){
+    if (e.target === this) this.classList.remove('visible');
+  });
+
+  function fetchCMarketPrice(){
+    var priceEl = document.getElementById('cmarket-price');
+    var changeEl = document.getElementById('cmarket-change');
+    var rangeEl = document.getElementById('cmarket-range');
+    var updatedEl = document.getElementById('cmarket-updated');
+    priceEl.textContent = '…';
+    changeEl.textContent = '';
+    rangeEl.textContent = '';
+    updatedEl.textContent = 'Fetching live price…';
+
+    // Use allorigins proxy to fetch Trading Economics coffee page JSON
+    var url = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://markets.tradingeconomics.com/chart?s=kc1:com:icf&interval=1d&span=5d&securify=new&url=/commodity/coffee&AUTH=&ohlc=1');
+    fetch(url)
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        var json = JSON.parse(data.contents);
+        var rows = json[0] && json[0].data;
+        if (!rows || rows.length === 0) throw new Error('No data');
+        var last = rows[rows.length - 1];
+        var prev = rows[rows.length - 2];
+        var price = parseFloat(last[1]);
+        var prevClose = prev ? parseFloat(prev[1]) : null;
+        var change = prevClose ? (price - prevClose) : null;
+        var changePct = prevClose ? ((price - prevClose) / prevClose * 100) : null;
+        priceEl.textContent = price.toFixed(2);
+        if (change !== null) {
+          var sign = change >= 0 ? '+' : '';
+          changeEl.textContent = sign + change.toFixed(2) + ' (' + sign + changePct.toFixed(2) + '%)';
+          changeEl.style.color = change >= 0 ? '#2D7A3A' : '#B03020';
+        }
+        rangeEl.textContent = '';
+        updatedEl.textContent = 'Updated: ' + new Date(last[0]).toLocaleString('en-AU');
+      })
+      .catch(function(){
+        // Fallback: show link to Investing.com
+        priceEl.textContent = '—';
+        updatedEl.innerHTML = 'Could not load live price.<br><a href="https://www.investing.com/commodities/us-coffee-c" target="_blank" style="color:#B07A10;font-weight:600;">View on Investing.com ↗</a>';
+      });
+  }
+
   document.getElementById('greenbean-back-btn').addEventListener('click', function(){
     showScreen('screen-menu');
   });
