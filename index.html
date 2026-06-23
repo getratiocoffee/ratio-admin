@@ -4303,10 +4303,14 @@
     if (!container) return;
     container.innerHTML =
       '<div style="font-size:13px;font-weight:600;color:#8A7F6F;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">ICE Arabica Coffee C</div>' +
-      '<div style="font-size:13px;color:#8A7F6F;margin-bottom:16px;">KC=F · USc/lb</div>' +
-      '<div style="font-size:48px;font-weight:800;color:#463E3A;line-height:1;margin-bottom:8px;" id="cmarket-val">…</div>' +
-      '<div style="font-size:15px;font-weight:600;margin-bottom:6px;" id="cmarket-chg"></div>' +
-      '<div style="font-size:13px;color:#8A7F6F;margin-bottom:4px;" id="cmarket-rng"></div>' +
+      '<div style="font-size:13px;color:#8A7F6F;margin-bottom:12px;">KC=F · USc/lb</div>' +
+      '<div style="font-size:48px;font-weight:800;color:#463E3A;line-height:1;margin-bottom:6px;" id="cmarket-val">…</div>' +
+      '<div style="font-size:15px;font-weight:600;margin-bottom:4px;" id="cmarket-chg"></div>' +
+      '<div style="font-size:13px;color:#8A7F6F;margin-bottom:12px;" id="cmarket-rng"></div>' +
+      '<canvas id="cmarket-canvas" width="280" height="90" style="width:100%;border-radius:8px;background:#FAF6F0;display:block;margin-bottom:6px;"></canvas>' +
+      '<div style="display:flex;justify-content:space-between;font-size:11px;color:#B0A491;margin-bottom:12px;">' +
+        '<span id="cmarket-date-from"></span><span>6 months</span><span id="cmarket-date-to"></span>' +
+      '</div>' +
       '<div style="font-size:11px;color:#B0A491;margin-bottom:20px;" id="cmarket-time"></div>' +
       '<button class="radar-close" id="cmarket-close-btn" style="width:100%;">Close</button>';
 
@@ -4314,27 +4318,55 @@
       document.getElementById('cmarket-overlay').classList.remove('visible');
     });
 
-    fetch('/api/cmarket')
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if (d.error) throw new Error(d.error);
-        document.getElementById('cmarket-val').textContent = d.price;
-        var sign = parseFloat(d.change) >= 0 ? '+' : '';
-        var chgEl = document.getElementById('cmarket-chg');
-        chgEl.textContent = sign + d.change + ' (' + sign + d.changePct + '%)';
-        chgEl.style.color = parseFloat(d.change) >= 0 ? '#2D7A3A' : '#B03020';
-        if (d.high && d.low) {
-          document.getElementById('cmarket-rng').textContent = 'Today: ' + d.low + ' – ' + d.high;
-        }
-        if (d.time) {
-          var t = new Date(d.time);
-          document.getElementById('cmarket-time').textContent = 'Updated: ' + t.toLocaleString('en-AU', { timeZone: 'Australia/Sydney' });
-        }
-      })
-      .catch(function(err){
-        document.getElementById('cmarket-val').textContent = '—';
-        document.getElementById('cmarket-time').innerHTML = 'Could not load price.<br><a href="https://finance.yahoo.com/quote/KC=F" target="_blank" style="color:#B07A10;font-weight:600;">View on Yahoo Finance ↗</a>';
-      });
+    Promise.all([
+      fetch('/api/cmarket').then(function(r){ return r.json(); }),
+      fetch('/api/cmarket?history=1').then(function(r){ return r.json(); })
+    ]).then(function(results){
+      var d = results[0], h = results[1];
+      if (d.error) throw new Error(d.error);
+      document.getElementById('cmarket-val').textContent = d.price;
+      var sign = parseFloat(d.change) >= 0 ? '+' : '';
+      var chgEl = document.getElementById('cmarket-chg');
+      chgEl.textContent = sign + d.change + ' (' + sign + d.changePct + '%)';
+      chgEl.style.color = parseFloat(d.change) >= 0 ? '#2D7A3A' : '#B03020';
+      if (d.high && d.low) document.getElementById('cmarket-rng').textContent = 'Today: ' + d.low + ' – ' + d.high;
+      if (d.time) {
+        var t = new Date(d.time);
+        document.getElementById('cmarket-time').textContent = 'Updated: ' + t.toLocaleString('en-AU', { timeZone: 'Australia/Sydney' });
+      }
+      if (h.history && h.history.length > 1) {
+        var pts = h.history;
+        var canvas = document.getElementById('cmarket-canvas');
+        var ctx = canvas.getContext('2d');
+        var W = canvas.width, H = canvas.height;
+        var pad = { t: 6, r: 6, b: 6, l: 6 };
+        var prices = pts.map(function(p){ return p.c; });
+        var minP = Math.min.apply(null, prices);
+        var maxP = Math.max.apply(null, prices);
+        var range = maxP - minP || 1;
+        function xOf(i){ return pad.l + (i / (pts.length - 1)) * (W - pad.l - pad.r); }
+        function yOf(v){ return pad.t + (1 - (v - minP) / range) * (H - pad.t - pad.b); }
+        ctx.beginPath();
+        ctx.moveTo(xOf(0), H - pad.b);
+        pts.forEach(function(p, i){ ctx.lineTo(xOf(i), yOf(p.c)); });
+        ctx.lineTo(xOf(pts.length - 1), H - pad.b);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(196,149,106,0.15)';
+        ctx.fill();
+        ctx.beginPath();
+        pts.forEach(function(p, i){ i === 0 ? ctx.moveTo(xOf(i), yOf(p.c)) : ctx.lineTo(xOf(i), yOf(p.c)); });
+        ctx.strokeStyle = '#C4956A';
+        ctx.lineWidth = 2;
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+        var fmt = { month: 'short', day: 'numeric' };
+        document.getElementById('cmarket-date-from').textContent = new Date(pts[0].t).toLocaleDateString('en-AU', fmt);
+        document.getElementById('cmarket-date-to').textContent = new Date(pts[pts.length-1].t).toLocaleDateString('en-AU', fmt);
+      }
+    }).catch(function(){
+      document.getElementById('cmarket-val').textContent = '—';
+      document.getElementById('cmarket-time').innerHTML = 'Could not load price. <a href="https://finance.yahoo.com/quote/KC=F" target="_blank" style="color:#B07A10;font-weight:600;">View on Yahoo Finance ↗</a>';
+    });
   }
 
   document.getElementById('greenbean-back-btn').addEventListener('click', function(){
