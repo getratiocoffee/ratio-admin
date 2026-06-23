@@ -567,6 +567,8 @@
   .sn-temp-btn.cold.active { background: #2471A3; color: #fff; }
   .sn-temp-panel { display: none; }
   .sn-temp-panel.active { display: block; }
+  .sn-temp-panel.active.temp-hot { background: #FFF0EE; border-radius: 12px; padding: 10px; }
+  .sn-temp-panel.active.temp-cold { background: #EEF4FF; border-radius: 12px; padding: 10px; }
 
   /* Sensory cupping form */
   /* Sensory dimension tabs */
@@ -1273,21 +1275,18 @@
                 <label class="sn-cata-label">Select up to 5:</label>
                 <div class="sn-cata-chips" id="sn-fragrance-cata-hot">
                   <button type="button" class="sn-chip" data-val="FLORAL">Floral</button>
+                  <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="FRUITY_BERRY">Berry</button>
                   <button type="button" class="sn-chip" data-val="FRUITY_DRIED">Dried Fruit</button>
-                  <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus Fruit</button>
+                  <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="SOUR_FERMENTED">Sour</button>
                   <button type="button" class="sn-chip" data-val="SOUR_FERMENTED2">Fermented</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="GREEN_VEG">Green/Vegetative</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
-                  <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="NUTTY">Nutty</button>
-                  <button type="button" class="sn-chip" data-val="COCOA">Cocoa</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
+                  <button type="button" class="sn-chip" data-val="COCOA">Chocolate</button>
                   <button type="button" class="sn-chip" data-val="SPICY">Spicy</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="SWEET_VANILLA">Vanilla</button>
@@ -1313,21 +1312,18 @@
                 <label class="sn-cata-label">Select up to 5:</label>
                 <div class="sn-cata-chips" id="sn-fragrance-cata-cold">
                   <button type="button" class="sn-chip" data-val="FLORAL">Floral</button>
+                  <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="FRUITY_BERRY">Berry</button>
                   <button type="button" class="sn-chip" data-val="FRUITY_DRIED">Dried Fruit</button>
-                  <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus Fruit</button>
+                  <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="SOUR_FERMENTED">Sour</button>
                   <button type="button" class="sn-chip" data-val="SOUR_FERMENTED2">Fermented</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="GREEN_VEG">Green/Vegetative</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
-                  <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="NUTTY">Nutty</button>
-                  <button type="button" class="sn-chip" data-val="COCOA">Cocoa</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
+                  <button type="button" class="sn-chip" data-val="COCOA">Chocolate</button>
                   <button type="button" class="sn-chip" data-val="SPICY">Spicy</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="SWEET_VANILLA">Vanilla</button>
@@ -1357,21 +1353,18 @@
                 <label class="sn-cata-label">Select up to 5:</label>
                 <div class="sn-cata-chips" id="sn-aroma-cata-hot">
                   <button type="button" class="sn-chip" data-val="FLORAL">Floral</button>
+                  <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="FRUITY_BERRY">Berry</button>
                   <button type="button" class="sn-chip" data-val="FRUITY_DRIED">Dried Fruit</button>
-                  <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus Fruit</button>
+                  <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="SOUR_FERMENTED">Sour</button>
                   <button type="button" class="sn-chip" data-val="SOUR_FERMENTED2">Fermented</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="GREEN_VEG">Green/Vegetative</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
-                  <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="NUTTY">Nutty</button>
-                  <button type="button" class="sn-chip" data-val="COCOA">Cocoa</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
+                  <button type="button" class="sn-chip" data-val="COCOA">Chocolate</button>
                   <button type="button" class="sn-chip" data-val="SPICY">Spicy</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="SWEET_VANILLA">Vanilla</button>
@@ -1397,21 +1390,18 @@
                 <label class="sn-cata-label">Select up to 5:</label>
                 <div class="sn-cata-chips" id="sn-aroma-cata-cold">
                   <button type="button" class="sn-chip" data-val="FLORAL">Floral</button>
+                  <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="FRUITY_BERRY">Berry</button>
                   <button type="button" class="sn-chip" data-val="FRUITY_DRIED">Dried Fruit</button>
-                  <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus Fruit</button>
+                  <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="SOUR_FERMENTED">Sour</button>
                   <button type="button" class="sn-chip" data-val="SOUR_FERMENTED2">Fermented</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="GREEN_VEG">Green/Vegetative</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
-                  <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="NUTTY">Nutty</button>
-                  <button type="button" class="sn-chip" data-val="COCOA">Cocoa</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
+                  <button type="button" class="sn-chip" data-val="COCOA">Chocolate</button>
                   <button type="button" class="sn-chip" data-val="SPICY">Spicy</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="SWEET_VANILLA">Vanilla</button>
@@ -1441,21 +1431,18 @@
                 <label class="sn-cata-label">Select up to 5:</label>
                 <div class="sn-cata-chips" id="sn-flavor-cata-hot">
                   <button type="button" class="sn-chip" data-val="FLORAL">Floral</button>
+                  <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="FRUITY_BERRY">Berry</button>
                   <button type="button" class="sn-chip" data-val="FRUITY_DRIED">Dried Fruit</button>
-                  <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus Fruit</button>
+                  <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="SOUR_FERMENTED">Sour</button>
                   <button type="button" class="sn-chip" data-val="SOUR_FERMENTED2">Fermented</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="GREEN_VEG">Green/Vegetative</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
-                  <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="NUTTY">Nutty</button>
-                  <button type="button" class="sn-chip" data-val="COCOA">Cocoa</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
+                  <button type="button" class="sn-chip" data-val="COCOA">Chocolate</button>
                   <button type="button" class="sn-chip" data-val="SPICY">Spicy</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="SWEET_VANILLA">Vanilla</button>
@@ -1491,21 +1478,18 @@
                 <label class="sn-cata-label">Select up to 5:</label>
                 <div class="sn-cata-chips" id="sn-flavor-cata-cold">
                   <button type="button" class="sn-chip" data-val="FLORAL">Floral</button>
+                  <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="FRUITY_BERRY">Berry</button>
                   <button type="button" class="sn-chip" data-val="FRUITY_DRIED">Dried Fruit</button>
-                  <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus Fruit</button>
+                  <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="SOUR_FERMENTED">Sour</button>
                   <button type="button" class="sn-chip" data-val="SOUR_FERMENTED2">Fermented</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="GREEN_VEG">Green/Vegetative</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
-                  <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="NUTTY">Nutty</button>
-                  <button type="button" class="sn-chip" data-val="COCOA">Cocoa</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
+                  <button type="button" class="sn-chip" data-val="COCOA">Chocolate</button>
                   <button type="button" class="sn-chip" data-val="SPICY">Spicy</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="SWEET_VANILLA">Vanilla</button>
@@ -1545,21 +1529,18 @@
                 <label class="sn-cata-label">Select up to 5:</label>
                 <div class="sn-cata-chips" id="sn-aftertaste-cata-hot">
                   <button type="button" class="sn-chip" data-val="FLORAL">Floral</button>
+                  <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="FRUITY_BERRY">Berry</button>
                   <button type="button" class="sn-chip" data-val="FRUITY_DRIED">Dried Fruit</button>
-                  <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus Fruit</button>
+                  <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="SOUR_FERMENTED">Sour</button>
                   <button type="button" class="sn-chip" data-val="SOUR_FERMENTED2">Fermented</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="GREEN_VEG">Green/Vegetative</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
-                  <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="NUTTY">Nutty</button>
-                  <button type="button" class="sn-chip" data-val="COCOA">Cocoa</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
+                  <button type="button" class="sn-chip" data-val="COCOA">Chocolate</button>
                   <button type="button" class="sn-chip" data-val="SPICY">Spicy</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="SWEET_VANILLA">Vanilla</button>
@@ -1595,21 +1576,18 @@
                 <label class="sn-cata-label">Select up to 5:</label>
                 <div class="sn-cata-chips" id="sn-aftertaste-cata-cold">
                   <button type="button" class="sn-chip" data-val="FLORAL">Floral</button>
+                  <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="FRUITY_BERRY">Berry</button>
                   <button type="button" class="sn-chip" data-val="FRUITY_DRIED">Dried Fruit</button>
-                  <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus Fruit</button>
+                  <button type="button" class="sn-chip" data-val="FRUITY_CITRUS">Citrus</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="SOUR_FERMENTED">Sour</button>
                   <button type="button" class="sn-chip" data-val="SOUR_FERMENTED2">Fermented</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="GREEN_VEG">Green/Vegetative</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
-                  <button type="button" class="sn-chip" data-val="ROASTED">Roasted</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="NUTTY">Nutty</button>
-                  <button type="button" class="sn-chip" data-val="COCOA">Cocoa</button>
-                  <div style="width:100%;height:0;flex-basis:100%;"></div>
+                  <button type="button" class="sn-chip" data-val="COCOA">Chocolate</button>
                   <button type="button" class="sn-chip" data-val="SPICY">Spicy</button>
                   <div style="width:100%;height:0;flex-basis:100%;"></div>
                   <button type="button" class="sn-chip" data-val="SWEET_VANILLA">Vanilla</button>
@@ -1815,19 +1793,14 @@
           </div>
 
         </div><!-- /sensory-form-scroll -->
-
-        <!-- BOTTOM: Hot/Cold + Tab bar + Save -->
+        <!-- BOTTOM: Tab bar + Hot/Cold + Save -->
         <div style="flex-shrink:0; border-top:1px solid #DCD2C2; background:#FAF6F0;">
-          <!-- Hot/Cold + Save row -->
-          <div style="display:flex; align-items:center; gap:12px; padding:10px 16px 6px;">
-            <div id="sn-global-temp-toggle" style="display:flex;">
-              <button type="button" class="sn-temp-btn hot active" id="sn-global-hot">Hot</button>
-              <button type="button" class="sn-temp-btn cold" id="sn-global-cold">Cold</button>
-            </div>
-            <button class="btn-save" id="sn-save-btn" style="flex:1; padding:13px 0; border-radius:14px; font-size:15px;">Save Session</button>
-          </div>
           <!-- Tab bar -->
-          <div style="display:flex; align-items:center; border-top:1px solid #EDE8E2; padding:0 0 0 8px; position:relative;">
+          <div style="display:flex; align-items:center; border-bottom:1px solid #EDE8E2; padding:0; position:relative;">
+            <!-- Left arrow hint -->
+            <div id="sn-tab-scroll-hint-left" style="position:absolute; left:0; top:0; bottom:0; width:44px; pointer-events:none; background:linear-gradient(to left, transparent, #FAF6F0 70%); display:none; align-items:center; justify-content:flex-start; padding-left:6px; z-index:1;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B0A491" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </div>
             <div style="flex:1; overflow-x:auto; display:flex; gap:0; scrollbar-width:none;" id="sn-tab-bar">
               <button type="button" class="sn-dim-tab active" data-dim="fragrance">Fragrance</button>
               <button type="button" class="sn-dim-tab" data-dim="aroma">Aroma</button>
@@ -1838,9 +1811,18 @@
               <button type="button" class="sn-dim-tab" data-dim="mouthfeel">Mouthfeel</button>
               <button type="button" class="sn-dim-tab" data-dim="overall">Notes</button>
             </div>
+            <!-- Right arrow hint -->
             <div id="sn-tab-scroll-hint" style="position:absolute; right:0; top:0; bottom:0; width:44px; pointer-events:none; background:linear-gradient(to right, transparent, #FAF6F0 70%); display:flex; align-items:center; justify-content:flex-end; padding-right:6px;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B0A491" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
+          </div>
+          <!-- Hot/Cold + Save -->
+          <div style="display:flex; align-items:center; gap:12px; padding:10px 16px 16px;">
+            <div id="sn-global-temp-toggle" style="display:flex;">
+              <button type="button" class="sn-temp-btn hot active" id="sn-global-hot">Hot</button>
+              <button type="button" class="sn-temp-btn cold" id="sn-global-cold">Cold</button>
+            </div>
+            <button class="btn-save" id="sn-save-btn" style="flex:1; padding:13px 0; border-radius:14px; font-size:15px;">Save Session</button>
           </div>
         </div>
       </div><!-- /sensory-form-panel -->
@@ -5635,26 +5617,20 @@
     snCurrentTemp = temp;
     document.getElementById('sn-global-hot').classList.toggle('active', temp === 'hot');
     document.getElementById('sn-global-cold').classList.toggle('active', temp === 'cold');
-    // Update all dim panels to show correct temp
     SN_DIMS.forEach(function(dim){
       var hot = document.getElementById('sn-' + dim + '-panel-hot');
       var cold = document.getElementById('sn-' + dim + '-panel-cold');
-      if (hot) hot.classList.toggle('active', temp === 'hot');
-      if (cold) cold.classList.toggle('active', temp === 'cold');
-    });
-    // Tint header area to match Hot/Cold
-    var headerEl = document.getElementById('sn-header-collapsed');
-    var headerExp = document.getElementById('sn-header-expanded');
-    var headerWrap = headerEl && headerEl.parentElement;
-    if (headerWrap) {
-      if (temp === 'hot') {
-        headerWrap.style.background = '#FFF0EE';
-        headerWrap.style.borderBottomColor = '#F5B8B0';
-      } else {
-        headerWrap.style.background = '#EEF4FF';
-        headerWrap.style.borderBottomColor = '#A8C4E8';
+      if (hot) {
+        hot.classList.toggle('active', temp === 'hot');
+        hot.classList.toggle('temp-hot', temp === 'hot');
+        hot.classList.remove('temp-cold');
       }
-    }
+      if (cold) {
+        cold.classList.toggle('active', temp === 'cold');
+        cold.classList.toggle('temp-cold', temp === 'cold');
+        cold.classList.remove('temp-hot');
+      }
+    });
   }
 
   document.querySelectorAll('.sn-dim-tab').forEach(function(tab){
@@ -5663,13 +5639,16 @@
   document.getElementById('sn-global-hot').addEventListener('click', function(){ snSwitchTemp('hot'); });
   document.getElementById('sn-global-cold').addEventListener('click', function(){ snSwitchTemp('cold'); });
 
-  // Hide scroll hint when tab bar is scrolled to end
+  // Hide/show scroll hints when tab bar scrolls
   var tabBar = document.getElementById('sn-tab-bar');
   var tabHint = document.getElementById('sn-tab-scroll-hint');
-  if (tabBar && tabHint) {
+  var tabHintLeft = document.getElementById('sn-tab-scroll-hint-left');
+  if (tabBar) {
     tabBar.addEventListener('scroll', function(){
       var atEnd = tabBar.scrollLeft + tabBar.clientWidth >= tabBar.scrollWidth - 4;
-      tabHint.style.display = atEnd ? 'none' : 'flex';
+      var atStart = tabBar.scrollLeft <= 4;
+      if (tabHint) tabHint.style.display = atEnd ? 'none' : 'flex';
+      if (tabHintLeft) tabHintLeft.style.display = atStart ? 'none' : 'flex';
     });
   }
 
@@ -5831,9 +5810,6 @@
     snSwitchTemp('hot');
     snSetHeaderOpen(false);
     snUpdateHeaderDisplay();
-    // Reset header colour
-    var headerWrap = document.getElementById('sn-header-collapsed') && document.getElementById('sn-header-collapsed').parentElement;
-    if (headerWrap) { headerWrap.style.background = ''; headerWrap.style.borderBottomColor = ''; }
     snEditId = null;
   }
 
