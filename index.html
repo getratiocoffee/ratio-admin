@@ -181,6 +181,7 @@
   .ts-na-arrow.collapsed .ts-na-chevron { transform: rotate(180deg); }
   .glass-footer .ts-foot-back { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
   .glass-footer .ts-foot-add { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
+  .glass-footer .ts-foot-name { position: absolute; left: calc(75% - 9px); top: 50%; transform: translate(-50%, -50%); flex: none; }
 
   /* Timesheet in-page tabs (no screen switch) */
   #ts-tab-host { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
@@ -1212,8 +1213,7 @@
           <div class="back-btn ts-foot-back" id="timesheet-back-btn" aria-label="Back">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           </div>
-          <span class="frame-label" aria-hidden="true"></span>
-          <span class="frame-label" id="ts-page-name">Timesheet</span>
+          <span class="frame-label ts-foot-name" id="ts-page-name">Timesheet</span>
           <button class="glass-toggle" id="ts-refresh-btn" role="switch" aria-checked="true" aria-label="Lock / refresh">
             <span class="glass-toggle-knob"></span>
           </button>
