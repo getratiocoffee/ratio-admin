@@ -61,7 +61,7 @@
     flex: 1; display: flex; flex-direction: column; justify-content: flex-end;
     padding: 12px 14px max(24px, env(safe-area-inset-bottom));
   }
-  .glass-swap-row { display: flex; justify-content: center; margin-bottom: 12px; flex-shrink: 0; }
+  .glass-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-shrink: 0; }
   .glass-swap-btn {
     display: inline-flex; align-items: center; gap: 7px;
     padding: 8px 15px; border-radius: 16px; cursor: pointer; font-family: inherit;
@@ -77,8 +77,9 @@
   .glass-row { display: flex; gap: 12px; align-items: flex-start; }
   .frame-col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
   .frame-label {
+    flex: 1 1 0; min-width: 0;
     font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
-    color: #8A7F6F; text-align: center; margin-bottom: 7px;
+    color: #8A7F6F; text-align: center;
   }
   .glass-frame {
     width: 100%;
@@ -968,14 +969,16 @@
       </div>
 
       <div class="glass-wrap">
-        <div class="glass-swap-row">
+        <div class="glass-header">
+          <span class="frame-label" id="label-left">Retail</span>
           <button class="glass-swap-btn" id="glass-swap-btn" aria-label="Swap sides">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
             Swap sides
           </button>
+          <span class="frame-label" id="label-right">Roastery</span>
         </div>
         <div class="glass-row" id="glass-row">
-          <div class="frame-col" data-frame="retail"><div class="frame-label">Retail</div><div class="glass-frame"><div class="glass-grid" id="grid-retail">
+          <div class="frame-col" data-frame="retail"><div class="glass-frame"><div class="glass-grid" id="grid-retail">
         <button class="app-grid-item" id="menu-open-greenbean-btn">
           <span class="app-grid-icon" style="background:#D6EBDB;">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1031,7 +1034,7 @@
           <span class="app-grid-label">Roasting</span>
         </button>
           </div></div></div>
-          <div class="frame-col" data-frame="roastery"><div class="frame-label">Roastery</div><div class="glass-frame"><div class="glass-grid" id="grid-roastery">
+          <div class="frame-col" data-frame="roastery"><div class="glass-frame"><div class="glass-grid" id="grid-roastery">
         <button class="app-grid-item" id="menu-open-handover-btn">
           <span class="app-grid-icon" style="background:#E0EEF8;">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A5C8A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -6894,6 +6897,17 @@
         .map(function(c){ return c.getAttribute('data-frame'); });
     }
 
+    var DISPLAY = { retail: 'Retail', roastery: 'Roastery' };
+    var labelLeft = document.getElementById('label-left');
+    var labelRight = document.getElementById('label-right');
+    function updateLabels(){
+      var ord = currentOrder();
+      if (ord.length === 2) {
+        if (labelLeft) labelLeft.textContent = DISPLAY[ord[0]] || ord[0];
+        if (labelRight) labelRight.textContent = DISPLAY[ord[1]] || ord[1];
+      }
+    }
+
     function saveLayout(){
       try {
         localStorage.setItem(LAYOUT_KEY, JSON.stringify({
@@ -6904,20 +6918,22 @@
     function applyLayout(){
       var saved = null;
       try { saved = JSON.parse(localStorage.getItem(LAYOUT_KEY) || 'null'); } catch(e) {}
-      if (!saved) return;
-      if (Array.isArray(saved.retail)) saved.retail.forEach(function(id){ var el = document.getElementById(id); if (el) retailGrid.appendChild(el); });
-      if (Array.isArray(saved.roastery)) saved.roastery.forEach(function(id){ var el = document.getElementById(id); if (el) roasteryGrid.appendChild(el); });
-      // Restore which labeled frame sits on the left
-      if (Array.isArray(saved.order) && saved.order.length === 2) {
-        saved.order.forEach(function(name){ var c = colOf(name); if (c) glassRow.appendChild(c); });
+      if (saved) {
+        if (Array.isArray(saved.retail)) saved.retail.forEach(function(id){ var el = document.getElementById(id); if (el) retailGrid.appendChild(el); });
+        if (Array.isArray(saved.roastery)) saved.roastery.forEach(function(id){ var el = document.getElementById(id); if (el) roasteryGrid.appendChild(el); });
+        if (Array.isArray(saved.order) && saved.order.length === 2) {
+          saved.order.forEach(function(name){ var c = colOf(name); if (c) glassRow.appendChild(c); });
+        }
       }
+      updateLabels();
     }
     applyLayout();
 
-    // ----- Swap the two whole frames (labels travel with their icons) -----
+    // ----- Swap the two whole frames (labels follow their group) -----
     function swapFrames(){
       var cols = Array.prototype.slice.call(glassRow.querySelectorAll('.frame-col'));
       if (cols.length === 2) glassRow.insertBefore(cols[1], cols[0]); // put second before first
+      updateLabels();
       saveLayout();
       if (navigator.vibrate) { try { navigator.vibrate(15); } catch(e) {} }
     }
