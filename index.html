@@ -2006,7 +2006,6 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
         <h1>Green Bean</h1>
-        <span style="margin-left:auto; font-size:13px; font-weight:600; color:#8A7F6F;"><span id="bean-count">0</span> beans</span>
       </div>
 
       <!-- Pizza chart -->
@@ -2791,6 +2790,7 @@
   function render(){
     var listEl = document.getElementById('bean-list');
     var countEl = document.getElementById('bean-count');
+    if (countEl) countEl.textContent = beans.length;
     var incompleteBadge = document.getElementById('header-incomplete-badge');
     var incompleteCountEl = document.getElementById('incomplete-count');
 
@@ -2811,8 +2811,6 @@
       var matchesSearch = !q || b.name.toLowerCase().indexOf(q) !== -1 || (b.country||'').toLowerCase().indexOf(q) !== -1 || (b.region||'').toLowerCase().indexOf(q) !== -1;
       return matchesFilter && matchesIncomplete && matchesSearch;
     });
-
-    countEl.textContent = beans.length;
 
     var totalKg = beans.reduce(function(sum, b){ return sum + (parseFloat(b.quantity) || 0); }, 0);
     var totalValue = beans.reduce(function(sum, b){ return sum + (parseFloat(b.quantity) || 0) * (parseFloat(b.costPerKg) || 0); }, 0);
@@ -2896,7 +2894,7 @@
         + '</div>';
     }).join('')
     + '<div style="border-top:1px solid #DCD2C2;margin-top:8px;padding-top:8px;">'
-    + '<div style="font-size:14px;color:#8A7F6F;">' + totalBeans + ' beans, ' + fmtKg(totalKg) + ' in total</div>'
+    + '<div style="font-size:14px;color:#2E2925;font-weight:700;">' + totalBeans + ' beans,&nbsp;&nbsp;' + fmtKg(totalKg) + ' in total</div>'
     + '</div>';
 
     wrapper.style.display = 'block';
