@@ -56,15 +56,43 @@
     flex: 1; padding: 8px 20px max(20px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 14px; justify-content: flex-end;
   }
 
-  /* iOS-style app grid (Dashboard only) */
-  .app-grid-body {
-    flex: 1; padding: 16px 16px max(24px, env(safe-area-inset-bottom));
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 8px; align-content: end;
+  /* iOS-style glass dashboard (two frames) */
+  .glass-wrap {
+    flex: 1; display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 12px 14px max(24px, env(safe-area-inset-bottom));
+  }
+  .glass-swap-row { display: flex; justify-content: center; margin-bottom: 12px; flex-shrink: 0; }
+  .glass-swap-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 15px; border-radius: 16px; cursor: pointer; font-family: inherit;
+    font-size: 13px; font-weight: 600; color: #463E3A;
+    background: rgba(255,255,255,0.55);
+    -webkit-backdrop-filter: blur(8px) saturate(150%); backdrop-filter: blur(8px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.7);
+    box-shadow: 0 2px 8px rgba(70,62,58,0.10);
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.12s ease;
+  }
+  .glass-swap-btn:active { transform: scale(0.95); }
+  .glass-row { display: flex; gap: 12px; align-items: stretch; }
+  .glass-frame {
+    flex: 1 1 0; min-width: 0;
+    border-radius: 26px; padding: 16px 8px;
+    background: linear-gradient(155deg, rgba(255,255,255,0.66), rgba(255,255,255,0.30));
+    -webkit-backdrop-filter: blur(14px) saturate(170%); backdrop-filter: blur(14px) saturate(170%);
+    border: 1px solid rgba(255,255,255,0.65);
+    box-shadow: 0 6px 22px rgba(70,62,58,0.12), inset 0 1px 0 rgba(255,255,255,0.85), inset 0 -10px 20px rgba(255,255,255,0.16);
+  }
+  .glass-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 4px;
+    min-height: 152px; align-content: center;
   }
   .app-grid-item {
     display: flex; flex-direction: column; align-items: center; gap: 6px;
     background: none; border: none; cursor: pointer; font-family: inherit; padding: 0;
     -webkit-tap-highlight-color: transparent;
+    touch-action: none; transition: transform 0.12s ease;
+    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
   }
   .app-grid-item:active .app-grid-icon { opacity: 0.7; transform: scale(0.93); }
   .app-grid-icon {
@@ -76,9 +104,8 @@
   .app-grid-label {
     font-size: 11px; font-weight: 600; color: #2E2925; text-align: center; line-height: 1.3;
   }
-  /* --- Draggable dashboard icons --- */
-  .app-grid-item { touch-action: none; transition: transform 0.12s ease; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
-  .app-grid-body.grid-editing .app-grid-item:not(.grid-dragging-src) {
+  /* --- Draggable icons --- */
+  .glass-row.grid-editing .app-grid-item:not(.grid-dragging-src) {
     animation: gridWiggle 0.28s ease-in-out infinite alternate;
   }
   @keyframes gridWiggle {
@@ -935,7 +962,15 @@
         <svg class="pom-svg" width="72" height="82" viewBox="-50 -80 100 100" style="flex-shrink:0; overflow:visible;" aria-hidden="true" data-type="beans"></svg>
       </div>
 
-      <div class="app-grid-body">
+      <div class="glass-wrap">
+        <div class="glass-swap-row">
+          <button class="glass-swap-btn" id="glass-swap-btn" aria-label="Swap sides">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            Swap sides
+          </button>
+        </div>
+        <div class="glass-row" id="glass-row">
+          <div class="glass-frame"><div class="glass-grid" data-side="left" id="glass-left">
         <button class="app-grid-item" id="menu-open-greenbean-btn">
           <span class="app-grid-icon" style="background:#D6EBDB;">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -990,7 +1025,8 @@
           </span>
           <span class="app-grid-label">Roasting</span>
         </button>
-
+          </div></div>
+          <div class="glass-frame"><div class="glass-grid" data-side="right" id="glass-right">
         <button class="app-grid-item" id="menu-open-handover-btn">
           <span class="app-grid-icon" style="background:#E0EEF8;">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A5C8A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1033,6 +1069,8 @@
           </span>
           <span class="app-grid-label">Setting</span>
         </button>
+          </div></div>
+        </div>
       </div>
     </div>
 
@@ -6833,45 +6871,72 @@
     });
   });
 
-  // ---------- Draggable dashboard icons (long-press to reorder) ----------
-  (function setupDraggableGrid(){
-    var ICON_ORDER_KEY = 'ratio-dashboard-icon-order';
-    var grid = document.querySelector('.app-grid-body');
-    if (!grid) return;
+  // ---------- Draggable dashboard icons across two glass frames ----------
+  (function setupDraggableFrames(){
+    var LAYOUT_KEY = 'ratio-dashboard-layout-v2';
+    var glassRow = document.getElementById('glass-row');
+    var leftGrid = document.getElementById('glass-left');
+    var rightGrid = document.getElementById('glass-right');
+    if (!glassRow || !leftGrid || !rightGrid) return;
 
-    function getItems(){
+    function itemsIn(grid){
       return Array.prototype.slice.call(grid.querySelectorAll('.app-grid-item'));
     }
-    function saveOrder(){
+    function idsIn(grid){ return itemsIn(grid).map(function(b){ return b.id; }); }
+
+    function saveLayout(){
       try {
-        var ids = getItems().map(function(b){ return b.id; });
-        localStorage.setItem(ICON_ORDER_KEY, JSON.stringify(ids));
+        localStorage.setItem(LAYOUT_KEY, JSON.stringify({ left: idsIn(leftGrid), right: idsIn(rightGrid) }));
       } catch(e) {}
     }
-    function applySavedOrder(){
+    function applyLayout(){
       var saved = null;
-      try { saved = JSON.parse(localStorage.getItem(ICON_ORDER_KEY) || 'null'); } catch(e) {}
-      if (!saved || !Array.isArray(saved)) return;
-      saved.forEach(function(id){
-        var el = document.getElementById(id);
-        if (el && el.parentNode === grid) grid.appendChild(el); // re-append in saved order
-      });
+      try { saved = JSON.parse(localStorage.getItem(LAYOUT_KEY) || 'null'); } catch(e) {}
+      if (!saved || !Array.isArray(saved.left) || !Array.isArray(saved.right)) return;
+      saved.left.forEach(function(id){ var el = document.getElementById(id); if (el) leftGrid.appendChild(el); });
+      saved.right.forEach(function(id){ var el = document.getElementById(id); if (el) rightGrid.appendChild(el); });
     }
-    applySavedOrder();
+    applyLayout();
 
+    // ----- Swap the two frames as whole groups -----
+    function swapFrames(){
+      var l = itemsIn(leftGrid), r = itemsIn(rightGrid);
+      l.forEach(function(el){ rightGrid.appendChild(el); });
+      r.forEach(function(el){ leftGrid.appendChild(el); });
+      saveLayout();
+      if (navigator.vibrate) { try { navigator.vibrate(15); } catch(e) {} }
+    }
+    var swapBtn = document.getElementById('glass-swap-btn');
+    if (swapBtn) swapBtn.addEventListener('click', swapFrames);
+
+    // ----- Drag to reorder / move between frames -----
     var dragEl = null, ghost = null, pressTimer = null, dragging = false;
-    var startX = 0, startY = 0, offsetX = 0, offsetY = 0, activeId = null;
-    var LONG_PRESS = 300, DRAG_START = 8;
-    var justDragged = false;
+    var startX = 0, startY = 0, offsetX = 0, offsetY = 0;
+    var LONG_PRESS = 300, DRAG_START = 8, justDragged = false;
 
     function itemUnderPoint(x, y){
-      var el = document.elementFromPoint(x, y); // ghost is pointer-events:none, so it's ignored
+      var el = document.elementFromPoint(x, y); // ghost is pointer-events:none
       return el ? el.closest('.app-grid-item') : null;
+    }
+    function gridUnderPoint(x, y){
+      var el = document.elementFromPoint(x, y);
+      if (!el) return null;
+      var fr = el.closest('.glass-frame');
+      if (fr) return fr.querySelector('.glass-grid');
+      return el.closest('.glass-grid');
+    }
+    function placeNear(grid, over, x, y){
+      var r = over.getBoundingClientRect();
+      var after;
+      if (y > r.bottom) after = true;
+      else if (y < r.top) after = false;
+      else after = (x > r.left + r.width / 2);
+      grid.insertBefore(dragEl, after ? over.nextSibling : over);
     }
 
     function beginDrag(){
       dragging = true;
-      grid.classList.add('grid-editing');
+      glassRow.classList.add('grid-editing');
       var rect = dragEl.getBoundingClientRect();
       offsetX = startX - rect.left;
       offsetY = startY - rect.top;
@@ -6879,8 +6944,8 @@
       ghost.classList.add('grid-ghost');
       ghost.removeAttribute('id');
       ghost.style.width = rect.width + 'px';
-      ghost.style.left = (rect.left) + 'px';
-      ghost.style.top = (rect.top) + 'px';
+      ghost.style.left = rect.left + 'px';
+      ghost.style.top = rect.top + 'px';
       document.body.appendChild(ghost);
       dragEl.classList.add('grid-dragging-src');
       if (navigator.vibrate) { try { navigator.vibrate(12); } catch(e) {} }
@@ -6891,20 +6956,19 @@
         var dx = Math.abs(e.clientX - startX), dy = Math.abs(e.clientY - startY);
         if (dx <= DRAG_START && dy <= DRAG_START) return;
         clearTimeout(pressTimer);
-        beginDrag(); // movement detected -> start dragging immediately
+        beginDrag();
       }
       if (!dragging) return;
       e.preventDefault();
       ghost.style.left = (e.clientX - offsetX) + 'px';
       ghost.style.top = (e.clientY - offsetY) + 'px';
+      var grid = gridUnderPoint(e.clientX, e.clientY);
+      if (!grid) return; // pointer outside both frames -> keep current position
       var over = itemUnderPoint(e.clientX, e.clientY);
       if (over && over !== dragEl && over.parentNode === grid) {
-        var items = getItems();
-        if (items.indexOf(dragEl) < items.indexOf(over)) {
-          grid.insertBefore(dragEl, over.nextSibling);
-        } else {
-          grid.insertBefore(dragEl, over);
-        }
+        placeNear(grid, over, e.clientX, e.clientY);
+      } else if (dragEl.parentNode !== grid) {
+        grid.appendChild(dragEl); // entered an empty area of the other frame
       }
     }
 
@@ -6917,21 +6981,20 @@
         dragging = false;
         justDragged = true;
         setTimeout(function(){ justDragged = false; }, 350);
-        grid.classList.remove('grid-editing');
+        glassRow.classList.remove('grid-editing');
         if (dragEl) dragEl.classList.remove('grid-dragging-src');
         if (ghost) { ghost.parentNode && ghost.parentNode.removeChild(ghost); ghost = null; }
-        saveOrder();
+        saveLayout();
       }
       dragEl = null;
     }
     function onPointerUp(){ endDrag(); }
 
-    grid.addEventListener('pointerdown', function(e){
+    glassRow.addEventListener('pointerdown', function(e){
       if (e.pointerType === 'mouse' && e.button !== 0) return;
       var item = e.target.closest('.app-grid-item');
       if (!item) return;
       dragEl = item;
-      activeId = item.id;
       startX = e.clientX; startY = e.clientY;
       dragging = false;
       clearTimeout(pressTimer);
@@ -6942,7 +7005,6 @@
     });
 
     // Swallow the click that follows a drag so it doesn't open the screen.
-    // Capture phase on document runs before the buttons' own click handlers.
     document.addEventListener('click', function(e){
       if (justDragged && e.target.closest && e.target.closest('.app-grid-item')) {
         e.stopImmediatePropagation();
@@ -6951,6 +7013,7 @@
       }
     }, true);
   })();
+
 
   // ---------- Init ----------
   showScreen('screen-gate');
