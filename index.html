@@ -172,6 +172,13 @@
   /* Timesheet 1x4 icon row inside a glass frame */
   .ts-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 4px; align-content: center; }
 
+  /* Timesheet in-page tabs (no screen switch) */
+  #ts-tab-host { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+  #ts-tab-host .ts-panel { flex: 1; min-height: 0; }
+  .ts-empty { flex: 1; display: flex; align-items: center; justify-content: center; color: #B0A491; font-size: 14px; padding: 20px; text-align: center; }
+  #ts-bottom-bar { flex: 0 0 auto; }
+  .app-grid-item.ts-tab-active .app-grid-icon { outline: 2.5px solid #463E3A; outline-offset: 2px; }
+
   /* ---- Green Bean analysis (multi-dimension breakdown) ---- */
   .gb-seg { display: flex; gap: 6px; flex-wrap: wrap; }
   .gb-seg button {
@@ -1147,7 +1154,10 @@
         <div class="back-btn" id="timesheet-back-btn" aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
-        <h1>Staff Timesheet</h1>
+        <h1 id="ts-topbar-title">Staff Timesheet</h1>
+        <button class="icon-btn" id="ts-tab-action-btn" aria-label="Add" style="margin-left:auto; display:none;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
       </div>
 
       <!-- N/A status banner -->
@@ -1159,7 +1169,9 @@
         <div style="font-size:15px;font-weight:600;color:#3D2875;">✓ All staff available today</div>
       </div>
 
-      <div class="menu-body">
+      <div id="ts-tab-host"></div>
+
+      <div class="menu-body" id="ts-bottom-bar">
         <div class="glass-frame">
           <div class="ts-grid">
             <button class="app-grid-item" id="ts-open-current-btn">
@@ -1206,6 +1218,7 @@
         </div>
         <h1>Request N/A</h1>
       </div>
+      <div id="ts-na-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
       <!-- Current N/A list at the top -->
       <div class="form-scroll" style="flex:0 1 auto; min-height:0;">
         <div id="na-existing-list"></div>
@@ -1231,6 +1244,7 @@
       <div class="form-bottom-bar">
         <button class="btn-save" id="na-save-btn" disabled>Save N/A request</button>
       </div>
+      </div>
     </div>
 
     <!-- ===== CURRENT TIMESHEET SCREEN ===== -->
@@ -1244,7 +1258,7 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
         </button>
       </div>
-<div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; overflow:hidden; min-height:0;">
+<div id="ts-current-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; overflow:hidden; min-height:0;">
         <div style="overflow-y:auto; overscroll-behavior:contain; padding:16px 20px max(20px, env(safe-area-inset-bottom)); flex-shrink:0; max-height:100%;">
           <p class="field-hint" id="ts-current-range" style="margin-bottom:14px;"></p>
           <div id="ts-current-list"></div>
@@ -1261,7 +1275,7 @@
         </div>
         <h1>Previous Timesheets</h1>
       </div>
-<div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; overflow:hidden; min-height:0;">
+<div id="ts-previous-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; overflow:hidden; min-height:0;">
         <div style="overflow-y:auto; overscroll-behavior:contain; padding:16px 20px max(20px, env(safe-area-inset-bottom)); flex-shrink:0; max-height:100%;">
           <div id="ts-previous-list"></div>
         </div>
@@ -1302,6 +1316,7 @@
         </button>
       </div>
 
+      <div id="ts-contacts-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
       <!-- Add staff inline form (hidden by default) -->
       <div id="staff-add-form" style="display:none; padding: 0 20px 4px; flex-shrink:0;">
         <div class="field-group">
@@ -1327,6 +1342,7 @@
         <div style="overflow-y:auto; overscroll-behavior:contain; padding:16px 20px max(20px, env(safe-area-inset-bottom)); flex-shrink:0; max-height:100%;">
           <div id="staff-contacts-list"></div>
         </div>
+      </div>
       </div>
     </div>
 
@@ -4983,6 +4999,7 @@
   document.getElementById('menu-open-timesheet-btn').addEventListener('click', function(){
     renderNaBanner();
     showScreen('screen-timesheet');
+    showTsTab('current');
   });
   document.getElementById('timesheet-back-btn').addEventListener('click', function(){
     showScreen('screen-menu');
@@ -5342,6 +5359,55 @@
     document.getElementById('staff-email-input').value = '';
   });
 
+  // ---------- Timesheet in-page tabs (open content on this page, no screen switch) ----------
+  var TS_TABS = {
+    current:  { body: 'ts-current-body',  icon: 'ts-open-current-btn',  title: 'Current Timesheet',  render: function(){ renderCurrentTimesheet(); }, action: openAddTimesheetScreen },
+    previous: { body: 'ts-previous-body', icon: 'ts-open-previous-btn', title: 'Previous Timesheets', render: function(){ renderPreviousTimesheets(); } },
+    na:       { body: 'ts-na-body',       icon: 'ts-open-na-btn',       title: 'Request N/A',         render: null /* openNaScreen populates then calls showTsTab */ },
+    contacts: { body: 'ts-contacts-body', icon: 'ts-open-contacts-btn', title: 'Staff Contacts',      render: function(){ renderStaffContacts(); }, action: toggleStaffAddForm }
+  };
+  var tsTabsRelocated = false;
+  var tsActiveTab = null;
+  function relocateTsBodies(){
+    if (tsTabsRelocated) return;
+    var host = document.getElementById('ts-tab-host');
+    if (!host) return;
+    Object.keys(TS_TABS).forEach(function(k){
+      var b = document.getElementById(TS_TABS[k].body);
+      if (b) { b.style.display = 'none'; host.appendChild(b); }
+    });
+    tsTabsRelocated = true;
+  }
+  function toggleStaffAddForm(){
+    var form = document.getElementById('staff-add-form');
+    if (!form) return;
+    var vis = form.style.display !== 'none';
+    form.style.display = vis ? 'none' : 'block';
+    if (!vis) { var n = document.getElementById('staff-name-input'); if (n) n.focus(); }
+  }
+  function showTsTab(name){
+    relocateTsBodies();
+    var cfg = TS_TABS[name];
+    if (!cfg) return;
+    var emptyEl = document.getElementById('ts-tab-empty');
+    if (emptyEl) emptyEl.style.display = 'none';
+    Object.keys(TS_TABS).forEach(function(k){
+      var b = document.getElementById(TS_TABS[k].body);
+      if (b) b.style.display = (k === name) ? 'flex' : 'none';
+      var ic = document.getElementById(TS_TABS[k].icon);
+      if (ic) ic.classList.toggle('ts-tab-active', k === name);
+    });
+    var titleEl = document.getElementById('ts-topbar-title');
+    if (titleEl) titleEl.textContent = cfg.title;
+    var act = document.getElementById('ts-tab-action-btn');
+    if (act) {
+      if (cfg.action) { act.style.display = ''; act.onclick = cfg.action; }
+      else { act.style.display = 'none'; act.onclick = null; }
+    }
+    tsActiveTab = name;
+    if (cfg.render) { try { cfg.render(); } catch(e) { logError('ts-tab:' + name, e && (e.message || e)); } }
+  }
+
   document.getElementById('staff-add-open-btn').addEventListener('click', function(){
     var form = document.getElementById('staff-add-form');
     var isVisible = form.style.display !== 'none';
@@ -5350,8 +5416,7 @@
   });
 
   document.getElementById('ts-open-contacts-btn').addEventListener('click', function(){
-    renderStaffContacts();
-    showScreen('screen-staff-contacts');
+    showTsTab('contacts');
   });
   document.getElementById('staff-contacts-back-btn').addEventListener('click', function(){
     showScreen('screen-timesheet');
@@ -5529,8 +5594,7 @@
   }
 
   document.getElementById('ts-open-current-btn').addEventListener('click', function(){
-    renderCurrentTimesheet();
-    showScreen('screen-ts-current');
+    showTsTab('current');
   });
   document.getElementById('ts-current-back-btn').addEventListener('click', function(){
     showScreen('screen-timesheet');
@@ -5656,8 +5720,8 @@
 
   document.getElementById('ts-open-add-btn').addEventListener('click', openAddTimesheetScreen);
   document.getElementById('ts-add-back-btn').addEventListener('click', function(){
-    renderCurrentTimesheet();
-    showScreen('screen-ts-current');
+    showScreen('screen-timesheet');
+    showTsTab('current');
   });
 
   document.getElementById('ts-save-week-btn').addEventListener('click', function(){
@@ -5679,8 +5743,8 @@
     });
 
     persistTimesheets();
-    renderCurrentTimesheet();
-    showScreen('screen-ts-current');
+    showScreen('screen-timesheet');
+    showTsTab('current');
   });
 
   // ----- Previous timesheets -----
@@ -5739,8 +5803,7 @@
   }
 
   document.getElementById('ts-open-previous-btn').addEventListener('click', function(){
-    renderPreviousTimesheets();
-    showScreen('screen-ts-previous');
+    showTsTab('previous');
   });
   document.getElementById('ts-previous-back-btn').addEventListener('click', function(){
     showScreen('screen-timesheet');
@@ -5863,7 +5926,7 @@
     document.getElementById('na-period-preview').style.display = 'none';
     document.getElementById('na-save-btn').disabled = true;
     renderNaExistingList();
-    showScreen('screen-ts-na');
+    showTsTab('na');
   }
 
   document.getElementById('na-start-select').addEventListener('change', function(){
