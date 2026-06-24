@@ -1,7 +1,7 @@
 /* ===================================================================
    Ratio Admin — styles.css  (共用樣式 / 介面設定)
    index.html 與未來每一頁都 <link> 這一個檔案。改外觀都改這裡。
-   build: 2026-06-25a  (timesheet 日期條滿版上色)
+   build: 2026-06-25b  (timesheet 各分頁頂端深棕條)
    =================================================================== */
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -585,6 +585,8 @@
   .toggle-btn.active { background: #463E3A; color: #fff; border-color: #463E3A; }
   .field-hint { font-size: 12px; color: #8A7F6F; line-height: 1.5; }
   #ts-current-range { text-align: center; font-weight: 700; font-size: 14px; color: #FAF6F0; background: #463E3A; padding: 16px 16px; margin: -16px -20px 14px; border-radius: 0; letter-spacing: 0.01em; }
+  /* Shared dark header bar for the other timesheet tabs (Previous / Request N/A / Contacts) — matches #ts-current-range for visual consistency. Card overflow:hidden clips the rounded top. */
+  .ts-tab-bar { flex-shrink: 0; background: #463E3A; color: #FAF6F0; font-weight: 700; font-size: 14px; letter-spacing: 0.01em; text-align: center; padding: 16px; min-height: 50px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border-radius: 0; }
   .transfer-out-base-row {
     display: flex; justify-content: space-between; align-items: center;
     padding: 12px 14px; background: #FAF6F0; border-radius: 14px; margin-bottom: 14px;

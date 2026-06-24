@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Ratio Admin · build 2026-06-25a -->
+<!-- Ratio Admin · build 2026-06-25b -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -285,6 +285,7 @@
         <h1>Request N/A</h1>
       </div>
       <div id="ts-na-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
+        <div class="ts-tab-bar">Current N/A requests</div>
       <!-- Existing N/A list fills the screen, scrollable. Add form moved to popup. -->
       <div class="form-scroll" style="flex:1 1 auto; min-height:0;">
         <div id="na-existing-list"></div>
@@ -324,6 +325,7 @@
         <h1>Previous Timesheets</h1>
       </div>
 <div id="ts-previous-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; justify-content:flex-start; overflow:hidden; min-height:0;">
+        <div class="ts-tab-bar"></div>
         <div style="overflow-y:auto; overscroll-behavior:contain; padding:16px 20px max(20px, env(safe-area-inset-bottom)); flex-shrink:0; max-height:100%;">
           <p class="ts-prev-hint">Tap a staff to mark <b>Cash</b> &nbsp;·&nbsp; tick the box to lock that row</p>
           <div id="ts-previous-list"></div>
@@ -371,6 +373,7 @@
       </div>
 
       <div id="ts-contacts-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
+      <div class="ts-tab-bar"></div>
       <!-- Add staff inline form (hidden by default) -->
       <div id="staff-add-form" style="display:none; padding: 0 20px 4px; flex-shrink:0;">
         <div class="field-group">
@@ -5271,7 +5274,7 @@
       return r.dates && r.dates.some(function(d){ return d >= today; });
     });
     if (active.length === 0) { container.innerHTML = ''; return; }
-    var html = '<div class="section-label" style="margin:14px 0 8px;">Current N/A requests</div>';
+    var html = '';
     active.forEach(function(r){
       var futureSorted = r.dates.filter(function(d){ return d >= today; }).sort();
       if (naEditMode) {
