@@ -4189,26 +4189,41 @@
   // ----- Manage staff -----
   var expandedStaffContact = null;
 
+  var contactsEditMode = false;
+  function contactColor(name){
+    var palette = ['#C2A878', '#B08D57', '#A88BA0', '#8FA68E', '#C28E7D', '#7D9BA8', '#B5896E', '#9C8A5E'];
+    var h = 0; name = name || '';
+    for (var i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+    return palette[h % palette.length];
+  }
+  function contactInitial(name){
+    name = (name || '').trim();
+    if (!name) return '?';
+    var parts = name.split(/\s+/);
+    if (parts.length >= 2) return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+    return name.charAt(0).toUpperCase();
+  }
   function renderStaffContacts(){
     var listEl = document.getElementById('staff-contacts-list');
     if (staffList.length === 0) {
       listEl.innerHTML = '<p class="field-hint">No staff added yet. Tap the + button to add a staff member.</p>';
       return;
     }
+    var edit = contactsEditMode;
     var html = '';
     staffList.forEach(function(s){
       var isExpanded = expandedStaffContact === s.id;
-      html += '<div class="bean-card" style="margin-bottom:10px;" data-id="' + s.id + '">';
+      var hasInfo = !!(s.phone || s.email);
+      html += '<div class="bean-card contact-card" style="margin-bottom:10px;" data-id="' + s.id + '">';
       html += '  <div class="bean-card-main" data-action="toggle-contact">';
-      html += '    <div class="bean-card-main-left">';
+      html += '    <div class="contact-avatar" style="background:' + contactColor(s.name) + ';">' + esc(contactInitial(s.name)) + '</div>';
+      html += '    <div class="bean-card-main-left contact-info">';
       html += '      <div class="bean-name">' + esc(s.name) + '</div>';
-      if (s.phone) html += '      <div class="bean-process">' + esc(s.phone) + '</div>';
-      if (s.email) html += '      <div class="bean-process">' + esc(s.email) + '</div>';
-      if (!s.phone && !s.email) html += '      <div class="bean-process" style="color:#B0A491;font-style:italic;">No contact details</div>';
+      html += '      <div class="contact-sub' + (hasInfo ? '' : ' contact-sub-empty') + '">' + esc(hasInfo ? (s.phone || s.email) : 'No contact details') + '</div>';
       html += '    </div>';
       html += '    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:rotate(' + (isExpanded ? '180deg' : '0deg') + ');flex-shrink:0;color:#B0A491;"><polyline points="6 9 12 15 18 9"/></svg>';
       html += '  </div>';
-      if (isExpanded) {
+      if (isExpanded && edit) {
         html += '  <div class="bean-card-detail-inner">';
         html += '    <div class="field-group"><label class="field-label">Name</label>';
         html += '      <input type="text" class="field-input sc-name" value="' + esc(s.name) + '" placeholder="Name"></div>';
@@ -4220,6 +4235,18 @@
         html += '      <button class="btn-edit" data-action="save-contact" style="flex:1;">Save</button>';
         html += '      <button class="btn-delete" data-action="delete-contact" aria-label="Delete staff member"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
         html += '    </div>';
+        html += '  </div>';
+      } else if (isExpanded) {
+        html += '  <div class="bean-card-detail-inner contact-readonly">';
+        if (s.phone) {
+          html += '    <a class="contact-action-row" href="tel:' + esc(s.phone) + '"><span class="contact-action-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg></span><span class="contact-action-text">' + esc(s.phone) + '</span><span class="contact-action-cta">Call</span></a>';
+        }
+        if (s.email) {
+          html += '    <a class="contact-action-row" href="mailto:' + esc(s.email) + '"><span class="contact-action-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><span class="contact-action-text">' + esc(s.email) + '</span><span class="contact-action-cta">Email</span></a>';
+        }
+        if (!hasInfo) {
+          html += '    <div class="contact-empty-note">No contact details yet. Tap the pencil below to add them.</div>';
+        }
         html += '  </div>';
       }
       html += '</div>';
@@ -4340,10 +4367,11 @@
     var prevBody = document.getElementById('ts-previous-body');
     if (prevBody) prevBody.classList.remove('ts-edit-on');
     naEditMode = false;
+    contactsEditMode = false;
     if (editBtn) {
       editBtn.classList.remove('active');
       editBtn.setAttribute('aria-pressed', 'false');
-      editBtn.style.display = (name === 'current' || name === 'na' || name === 'previous') ? '' : 'none';
+      editBtn.style.display = (name === 'current' || name === 'na' || name === 'previous' || name === 'contacts') ? '' : 'none';
     }
     var emailBtn = document.getElementById('ts-email-btn');
     if (emailBtn) emailBtn.style.display = (name === 'previous') ? '' : 'none';
@@ -4362,6 +4390,10 @@
       var prevBody = document.getElementById('ts-previous-body');
       if (!prevBody) return;
       on = prevBody.classList.toggle('ts-edit-on');
+    } else if (tsActiveTab === 'contacts') {
+      contactsEditMode = !contactsEditMode;
+      on = contactsEditMode;
+      renderStaffContacts();
     } else {
       var curBody = document.getElementById('ts-current-body');
       if (!curBody) return;
