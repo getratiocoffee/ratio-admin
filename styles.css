@@ -177,6 +177,9 @@
   #ts-current-body .ts-shift-actions, #ts-current-body .ts-add-shift-btn { display: none; }
   #ts-current-body.ts-edit-on .ts-shift-actions { display: flex; }
   #ts-current-body.ts-edit-on .ts-add-shift-btn { display: block; }
+  #ts-previous-body .ts-shift-actions, #ts-previous-body .ts-add-shift-btn { display: none; }
+  #ts-previous-body.ts-edit-on .ts-shift-actions { display: flex; }
+  #ts-previous-body.ts-edit-on .ts-add-shift-btn { display: block; }
   /* Current: two shifts per row to save vertical space (single column in edit mode) */
   #ts-current-body .ts-day-card-body { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: start; }
   #ts-current-body .ts-day-card-body > .ts-day-empty,

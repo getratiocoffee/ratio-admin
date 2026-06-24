@@ -4314,11 +4314,13 @@
     var editBtn = document.getElementById('ts-edit-toggle');
     var curBody = document.getElementById('ts-current-body');
     if (curBody) curBody.classList.remove('ts-edit-on');
+    var prevBody = document.getElementById('ts-previous-body');
+    if (prevBody) prevBody.classList.remove('ts-edit-on');
     naEditMode = false;
     if (editBtn) {
       editBtn.classList.remove('active');
       editBtn.setAttribute('aria-pressed', 'false');
-      editBtn.style.display = (name === 'current' || name === 'na') ? '' : 'none';
+      editBtn.style.display = (name === 'current' || name === 'na' || name === 'previous') ? '' : 'none';
     }
     tsActiveTab = name;
     if (cfg.render) { try { cfg.render(); } catch(e) { logError('ts-tab:' + name, e && (e.message || e)); } }
@@ -4331,6 +4333,10 @@
       naEditMode = !naEditMode;
       on = naEditMode;
       renderNaExistingList();
+    } else if (tsActiveTab === 'previous') {
+      var prevBody = document.getElementById('ts-previous-body');
+      if (!prevBody) return;
+      on = prevBody.classList.toggle('ts-edit-on');
     } else {
       var curBody = document.getElementById('ts-current-body');
       if (!curBody) return;
