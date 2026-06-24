@@ -5912,8 +5912,29 @@
     return dates;
   }
 
-  function getSelectedNaStaffIds(){
-    return [].map.call(document.querySelectorAll('#na-staff-checks .na-staff-chip.selected'), function(b){ return b.getAttribute('data-staff-id'); });
+  function getNaSelectedDates(){
+    var start = document.getElementById('na-start-select').value;
+    var end = document.getElementById('na-end-select').value;
+    if (!start || !end || end < start) return [];
+    return getDatesBetween(start, end);
+  }
+
+  // Reflect saved N/A state for the selected dates onto the chips (pre-select staff already recorded)
+  function refreshNaChips(){
+    var dates = getNaSelectedDates();
+    [].forEach.call(document.querySelectorAll('#na-staff-checks .na-staff-chip'), function(chip){
+      var staffId = chip.getAttribute('data-staff-id');
+      var req = naRequests.find(function(r){ return r.staffId === staffId; });
+      var hasAll = dates.length > 0 && req && dates.every(function(d){ return req.dates.indexOf(d) !== -1; });
+      chip.classList.toggle('selected', !!hasAll);
+      chip.setAttribute('data-existing', hasAll ? '1' : '0');
+    });
+  }
+
+  function naChipsHaveChanges(){
+    return [].some.call(document.querySelectorAll('#na-staff-checks .na-staff-chip'), function(chip){
+      return chip.classList.contains('selected') !== (chip.getAttribute('data-existing') === '1');
+    });
   }
 
   function updateNaPreview(){
@@ -5933,7 +5954,7 @@
       ? '1 day selected.'
       : count + ' days selected (' + new Date(start + 'T00:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })
         + ' \u2013 ' + new Date(end + 'T00:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'short' }) + ').';
-    saveBtn.disabled = (getSelectedNaStaffIds().length === 0);
+    saveBtn.disabled = !naChipsHaveChanges();
   }
 
   function renderNaBanner(){
@@ -6003,10 +6024,10 @@
     document.getElementById('na-end-select').innerHTML = opts;
     var checks = document.getElementById('na-staff-checks');
     checks.innerHTML = staffList.map(function(s){
-      return '<button type="button" class="na-staff-chip" data-staff-id="' + s.id + '">' + esc(s.name) + '</button>';
+      return '<button type="button" class="na-staff-chip" data-staff-id="' + s.id + '" data-existing="0">' + esc(s.name) + '</button>';
     }).join('');
-    document.getElementById('na-period-preview').style.display = 'none';
-    document.getElementById('na-save-btn').disabled = true;
+    refreshNaChips();
+    updateNaPreview();
     renderNaExistingList();
     showTsTab('na');
   }
@@ -6018,9 +6039,10 @@
     if (endSel.value < startSel.value) {
       endSel.value = startSel.value;
     }
+    refreshNaChips();
     updateNaPreview();
   });
-  document.getElementById('na-end-select').addEventListener('change', updateNaPreview);
+  document.getElementById('na-end-select').addEventListener('change', function(){ refreshNaChips(); updateNaPreview(); });
   var naStaffChecksEl = document.getElementById('na-staff-checks');
   if (naStaffChecksEl) naStaffChecksEl.addEventListener('click', function(e){
     var chip = e.target.closest('.na-staff-chip');
@@ -6034,28 +6056,32 @@
   });
 
   document.getElementById('na-save-btn').addEventListener('click', function(){
-    var start = document.getElementById('na-start-select').value;
-    var end = document.getElementById('na-end-select').value;
-    if (!start || !end || end < start) return;
-    var staffIds = getSelectedNaStaffIds();
-    if (!staffIds.length) return;
-    var newDates = getDatesBetween(start, end);
-    staffIds.forEach(function(staffId){
+    var dates = getNaSelectedDates();
+    if (!dates.length) return;
+    [].forEach.call(document.querySelectorAll('#na-staff-checks .na-staff-chip'), function(chip){
+      var selected = chip.classList.contains('selected');
+      var existing = chip.getAttribute('data-existing') === '1';
+      if (selected === existing) return; // no change for this staff
+      var staffId = chip.getAttribute('data-staff-id');
       var staffMember = staffList.find(function(s){ return s.id === staffId; });
       if (!staffMember) return;
-      var existing = naRequests.find(function(r){ return r.staffId === staffId; });
-      if (existing) {
-        newDates.forEach(function(d){
-          if (existing.dates.indexOf(d) === -1) existing.dates.push(d);
-        });
-      } else {
-        naRequests.push({ id: uid(), staffId: staffId, staffName: staffMember.name, dates: newDates });
+      var req = naRequests.find(function(r){ return r.staffId === staffId; });
+      if (selected) {
+        if (req) {
+          dates.forEach(function(d){ if (req.dates.indexOf(d) === -1) req.dates.push(d); });
+        } else {
+          naRequests.push({ id: uid(), staffId: staffId, staffName: staffMember.name, dates: dates.slice() });
+        }
+      } else if (req) {
+        req.dates = req.dates.filter(function(d){ return dates.indexOf(d) === -1; });
+        if (req.dates.length === 0) {
+          naRequests = naRequests.filter(function(r){ return r.staffId !== staffId; });
+        }
       }
     });
     saveWithStatus(saveNaToServer(naRequests));
-    document.querySelectorAll('#na-staff-checks .na-staff-chip.selected').forEach(function(b){ b.classList.remove('selected'); });
-    document.getElementById('na-period-preview').style.display = 'none';
-    document.getElementById('na-save-btn').disabled = true;
+    refreshNaChips();
+    updateNaPreview();
     renderNaExistingList();
     renderNaBanner();
   });
