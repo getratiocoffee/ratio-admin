@@ -1070,8 +1070,8 @@
     <!-- Transfer PIN overlay -->
     <div class="radar-overlay" id="transfer-pin-overlay" style="z-index:1100;">
       <div class="radar-card" style="max-width:300px; text-align:center;">
-        <div style="font-size:17px;font-weight:700;color:#2E2925;margin-bottom:6px;">Stock Transfer</div>
-        <div style="font-size:13px;color:#8A7F6F;margin-bottom:20px;">Enter PIN to continue</div>
+        <div id="transfer-pin-title" style="font-size:17px;font-weight:700;color:#2E2925;margin-bottom:6px;">Stock Transfer</div>
+        <div id="transfer-pin-sub" style="font-size:13px;color:#8A7F6F;margin-bottom:20px;">Enter PIN to continue</div>
         <input type="password" id="transfer-pin-input" class="gate-input" placeholder="PIN" autocomplete="off" inputmode="numeric" pattern="[0-9]*" style="max-width:100%;margin-bottom:12px;">
         <div id="transfer-pin-error" style="font-size:13px;color:#A32D2D;min-height:18px;margin-bottom:12px;"></div>
         <button class="gate-btn" id="transfer-pin-submit" style="max-width:100%;">Confirm</button>
@@ -3907,10 +3907,15 @@
   // ---------- Transfer PIN ----------
   var transferUnlocked = false;
 
-  function showTransferPinOverlay(onSuccess){
+  function showTransferPinOverlay(onSuccess, opts){
+    opts = opts || {};
     var overlay = document.getElementById('transfer-pin-overlay');
     var input = document.getElementById('transfer-pin-input');
     var errorEl = document.getElementById('transfer-pin-error');
+    var titleEl = document.getElementById('transfer-pin-title');
+    var subEl = document.getElementById('transfer-pin-sub');
+    if (titleEl) titleEl.textContent = opts.title || 'Stock Transfer';
+    if (subEl) subEl.textContent = opts.subtitle || 'Enter PIN to continue';
     input.value = '';
     errorEl.textContent = '';
     overlay.classList.add('visible');
@@ -4488,7 +4493,20 @@
     } else if (tsActiveTab === 'previous') {
       var prevBody = document.getElementById('ts-previous-body');
       if (!prevBody) return;
-      on = prevBody.classList.toggle('ts-edit-on');
+      if (prevBody.classList.contains('ts-edit-on')) {
+        // Turning edit mode OFF — no password needed
+        prevBody.classList.remove('ts-edit-on');
+        tsEditToggleBtn.classList.remove('active');
+        tsEditToggleBtn.setAttribute('aria-pressed', 'false');
+      } else {
+        // Turning edit mode ON — owner PIN required (same as Stock Transfer)
+        showTransferPinOverlay(function(){
+          prevBody.classList.add('ts-edit-on');
+          tsEditToggleBtn.classList.add('active');
+          tsEditToggleBtn.setAttribute('aria-pressed', 'true');
+        }, { title: 'Owner access', subtitle: 'Enter PIN to edit timesheets' });
+      }
+      return;
     } else if (tsActiveTab === 'contacts') {
       contactsEditMode = !contactsEditMode;
       on = contactsEditMode;
