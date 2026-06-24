@@ -1529,7 +1529,7 @@
     <!-- ===== C MARKET CHART SCREEN ===== -->
     <div class="screen" id="screen-cmarket">
       <div class="form-topbar">
-        <div class="back-btn" id="cmarket-back-btn" aria-label="Back">
+        <div class="back-btn" id="cmarket-back-btn" aria-label="Back" style="display:none;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
         <h1>C Market</h1>
@@ -1568,6 +1568,50 @@
           <strong style="color:#92560C;">Note:</strong> the figures shown are sample data for layout only. Connect a live price feed before using this for buying decisions.
         </div>
 
+      </div>
+
+      <!-- FOOTER dock (Green Bean template) -->
+      <div class="menu-body sib-dock" id="cm-bottom-bar">
+        <div class="glass-frame">
+          <div class="ts-grid">
+            <button class="app-grid-item" id="cm-icon-inventory">
+              <span class="app-grid-icon" style="background:#DDEBD9;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3C7A3C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+              </span>
+              <span class="app-grid-label">Inventory</span>
+            </button>
+            <button class="app-grid-item" id="cm-icon-purchase">
+              <span class="app-grid-icon" style="background:#EFE6D2;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#92560C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="14" y2="13"/></svg>
+              </span>
+              <span class="app-grid-label">Purchase</span>
+            </button>
+            <button class="app-grid-item" id="cm-icon-transfer">
+              <span class="app-grid-icon" style="background:#DCEAF5;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A5C8A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="8 20 3 20 3 15"/><line x1="20" y1="4" x2="3" y2="21"/></svg>
+              </span>
+              <span class="app-grid-label">Stock Transfer</span>
+            </button>
+            <button class="app-grid-item ts-tab-active" id="cm-icon-cmarket">
+              <span class="app-grid-icon" style="background:#E3DCF2;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5B3FA6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+              </span>
+              <span class="app-grid-label">C Market</span>
+            </button>
+          </div>
+        </div>
+        <div class="glass-footer">
+          <div class="back-btn" id="cm-foot-back" aria-label="Back">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </div>
+          <span class="frame-label">Green Bean</span>
+          <button class="glass-toggle" id="cm-foot-toggle" role="switch" aria-checked="true" aria-label="Toggle">
+            <span class="glass-toggle-knob"></span>
+          </button>
+          <button class="icon-btn" id="cm-foot-refresh" aria-label="Refresh chart">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -1714,7 +1758,7 @@
     <!-- ===== STOCK DELIVERY SCREEN ===== -->
     <div class="screen" id="screen-delivery">
       <div class="form-topbar">
-        <div class="back-btn" id="delivery-back-btn" aria-label="Back">
+        <div class="back-btn" id="delivery-back-btn" aria-label="Back" style="display:none;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
         <h1>Purchase</h1>
@@ -1753,16 +1797,60 @@
         <button class="btn-save" id="confirm-delivery-btn" disabled>Confirm and add to stock</button>
         <p class="required-hint">Each bean's stock and cost per kg will be updated automatically.</p>
       </div>
+
+      <!-- FOOTER dock (Green Bean template) -->
+      <div class="menu-body sib-dock" id="dl-bottom-bar">
+        <div class="glass-frame">
+          <div class="ts-grid">
+            <button class="app-grid-item" id="dl-icon-inventory">
+              <span class="app-grid-icon" style="background:#DDEBD9;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3C7A3C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+              </span>
+              <span class="app-grid-label">Inventory</span>
+            </button>
+            <button class="app-grid-item ts-tab-active" id="dl-icon-purchase">
+              <span class="app-grid-icon" style="background:#EFE6D2;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#92560C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="14" y2="13"/></svg>
+              </span>
+              <span class="app-grid-label">Purchase</span>
+            </button>
+            <button class="app-grid-item" id="dl-icon-transfer">
+              <span class="app-grid-icon" style="background:#DCEAF5;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A5C8A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="8 20 3 20 3 15"/><line x1="20" y1="4" x2="3" y2="21"/></svg>
+              </span>
+              <span class="app-grid-label">Stock Transfer</span>
+            </button>
+            <button class="app-grid-item" id="dl-icon-cmarket">
+              <span class="app-grid-icon" style="background:#E3DCF2;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5B3FA6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+              </span>
+              <span class="app-grid-label">C Market</span>
+            </button>
+          </div>
+        </div>
+        <div class="glass-footer">
+          <div class="back-btn" id="dl-foot-back" aria-label="Back">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </div>
+          <span class="frame-label">Green Bean</span>
+          <button class="glass-toggle" id="dl-foot-toggle" role="switch" aria-checked="true" aria-label="Toggle">
+            <span class="glass-toggle-knob"></span>
+          </button>
+          <button class="icon-btn" id="dl-foot-add" aria-label="Add bean to delivery">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- ===== STOCK TRANSFER SCREEN ===== -->
     <div class="screen" id="screen-transfer">
       <div class="form-topbar">
-        <div class="back-btn" id="transfer-back-btn" aria-label="Back">
+        <div class="back-btn" id="transfer-back-btn" aria-label="Back" style="display:none;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
         <h1 style="flex:1;">Stock transfer</h1>
-        <button class="back-btn" id="open-transfer-history-btn" aria-label="Transfer history" title="Transfer history">
+        <button class="back-btn" id="open-transfer-history-btn" aria-label="Transfer history" title="Transfer history" style="display:none;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
         </button>
       </div>
@@ -1925,6 +2013,50 @@
       <div class="form-bottom-bar">
         <button class="btn-save" id="confirm-transfer-btn" disabled>Confirm transfer</button>
         <p class="required-hint" id="transfer-confirm-hint">This will update your stock and save a record for the invoice.</p>
+      </div>
+
+      <!-- FOOTER dock (Green Bean template) -->
+      <div class="menu-body sib-dock" id="tf-bottom-bar">
+        <div class="glass-frame">
+          <div class="ts-grid">
+            <button class="app-grid-item" id="tf-icon-inventory">
+              <span class="app-grid-icon" style="background:#DDEBD9;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3C7A3C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+              </span>
+              <span class="app-grid-label">Inventory</span>
+            </button>
+            <button class="app-grid-item" id="tf-icon-purchase">
+              <span class="app-grid-icon" style="background:#EFE6D2;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#92560C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="14" y2="13"/></svg>
+              </span>
+              <span class="app-grid-label">Purchase</span>
+            </button>
+            <button class="app-grid-item ts-tab-active" id="tf-icon-transfer">
+              <span class="app-grid-icon" style="background:#DCEAF5;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A5C8A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="8 20 3 20 3 15"/><line x1="20" y1="4" x2="3" y2="21"/></svg>
+              </span>
+              <span class="app-grid-label">Stock Transfer</span>
+            </button>
+            <button class="app-grid-item" id="tf-icon-cmarket">
+              <span class="app-grid-icon" style="background:#E3DCF2;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5B3FA6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+              </span>
+              <span class="app-grid-label">C Market</span>
+            </button>
+          </div>
+        </div>
+        <div class="glass-footer">
+          <div class="back-btn" id="tf-foot-back" aria-label="Back">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </div>
+          <span class="frame-label">Green Bean</span>
+          <button class="glass-toggle" id="tf-foot-toggle" role="switch" aria-checked="true" aria-label="Toggle">
+            <span class="glass-toggle-knob"></span>
+          </button>
+          <button class="icon-btn" id="tf-foot-history" aria-label="Transfer history">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -4012,6 +4144,55 @@
   document.getElementById('cmarket-back-btn').addEventListener('click', function(){
     showScreen('screen-greenbean');
   });
+
+  // ---------- C Market footer dock (Green Bean template) ----------
+  [['cm-icon-inventory','menu-open-inventory-btn'],
+   ['cm-icon-purchase','menu-open-purchase-btn'],
+   ['cm-icon-transfer','menu-open-transfer-btn'],
+   ['cm-icon-cmarket','menu-open-cmarket-btn']].forEach(function(p){
+    var ic = document.getElementById(p[0]);
+    var orig = document.getElementById(p[1]);
+    if (ic && orig) ic.addEventListener('click', function(){ orig.click(); });
+  });
+  var cmFootBack = document.getElementById('cm-foot-back');
+  if (cmFootBack) cmFootBack.addEventListener('click', function(){ showScreen('screen-greenbean'); });
+  var cmFootRefresh = document.getElementById('cm-foot-refresh');
+  if (cmFootRefresh) cmFootRefresh.addEventListener('click', function(){ renderCMarket(); });
+  var cmFootToggle = document.getElementById('cm-foot-toggle');
+  if (cmFootToggle) cmFootToggle.addEventListener('click', function(){ cmFootToggle.classList.toggle('off'); });
+
+  // ---------- Purchase footer dock ----------
+  [['dl-icon-inventory','menu-open-inventory-btn'],
+   ['dl-icon-purchase','menu-open-purchase-btn'],
+   ['dl-icon-transfer','menu-open-transfer-btn'],
+   ['dl-icon-cmarket','menu-open-cmarket-btn']].forEach(function(p){
+    var ic = document.getElementById(p[0]);
+    var orig = document.getElementById(p[1]);
+    if (ic && orig) ic.addEventListener('click', function(){ orig.click(); });
+  });
+  var dlFootBack = document.getElementById('dl-foot-back');
+  if (dlFootBack) dlFootBack.addEventListener('click', function(){ showScreen('screen-greenbean'); });
+  var dlFootAdd = document.getElementById('dl-foot-add');
+  if (dlFootAdd) dlFootAdd.addEventListener('click', function(){ var b=document.getElementById('add-delivery-row-btn'); if(b)b.click(); });
+  var dlFootToggle = document.getElementById('dl-foot-toggle');
+  if (dlFootToggle) dlFootToggle.addEventListener('click', function(){ dlFootToggle.classList.toggle('off'); });
+
+  // ---------- Stock Transfer footer dock ----------
+  [['tf-icon-inventory','menu-open-inventory-btn'],
+   ['tf-icon-purchase','menu-open-purchase-btn'],
+   ['tf-icon-transfer','menu-open-transfer-btn'],
+   ['tf-icon-cmarket','menu-open-cmarket-btn']].forEach(function(p){
+    var ic = document.getElementById(p[0]);
+    var orig = document.getElementById(p[1]);
+    if (ic && orig) ic.addEventListener('click', function(){ orig.click(); });
+  });
+  var tfFootBack = document.getElementById('tf-foot-back');
+  if (tfFootBack) tfFootBack.addEventListener('click', function(){ showScreen('screen-greenbean'); });
+  var tfFootHistory = document.getElementById('tf-foot-history');
+  if (tfFootHistory) tfFootHistory.addEventListener('click', function(){ var b=document.getElementById('open-transfer-history-btn'); if(b)b.click(); });
+  var tfFootToggle = document.getElementById('tf-foot-toggle');
+  if (tfFootToggle) tfFootToggle.addEventListener('click', function(){ tfFootToggle.classList.toggle('off'); });
+
   // ---------- Transfer PIN ----------
   var transferUnlocked = false;
 
