@@ -583,7 +583,7 @@
   }
   .toggle-btn.active { background: #463E3A; color: #fff; border-color: #463E3A; }
   .field-hint { font-size: 12px; color: #8A7F6F; line-height: 1.5; }
-  #ts-current-range { text-align: center; font-weight: 700; font-size: 13px; color: #463E3A; }
+  #ts-current-range { text-align: center; font-weight: 700; font-size: 14px; color: #FAF6F0; background: #463E3A; padding: 11px 16px; border-radius: 14px; letter-spacing: 0.01em; }
   .transfer-out-base-row {
     display: flex; justify-content: space-between; align-items: center;
     padding: 12px 14px; background: #FAF6F0; border-radius: 14px; margin-bottom: 14px;
