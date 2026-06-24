@@ -173,7 +173,7 @@
   .ts-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 4px; align-content: center; }
 
   /* Collapsible N/A status banner (shrinks upward) */
-  .ts-na-collapse { overflow: hidden; transition: max-height 0.25s ease; max-height: 240px; flex-shrink: 0; }
+  .ts-na-collapse { overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; transition: max-height 0.25s ease; max-height: 50vh; flex-shrink: 0; }
   .ts-na-collapse.collapsed { max-height: 0; }
   .ts-na-arrow { width: 34px; height: 34px; padding: 0; border: none; background: transparent; color: #8A7F6F; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .ts-na-arrow-row { display: flex; justify-content: center; }
