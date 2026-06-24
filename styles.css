@@ -171,7 +171,7 @@
   .glass-footer .ts-foot-email { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
   .ts-icons-collapse { overflow: hidden; transition: max-height 0.3s ease, opacity 0.2s ease, margin 0.3s ease; max-height: 340px; }
   .ts-icons-collapse.collapsed { max-height: 0; opacity: 0; margin-top: -12px; }
-  .glass-footer .ts-foot-name { position: absolute; left: calc(75% - 9px); top: 50%; transform: translate(-50%, -50%); flex: none; }
+  .glass-footer .ts-foot-name { position: absolute; left: calc(75% - 9px); top: 50%; transform: translate(-50%, -50%); flex: none; font-weight: 800; color: #5A4F47; }
   .glass-footer .ts-foot-edit { position: absolute; left: 25%; top: 50%; transform: translate(-50%, -50%); }
   .ts-foot-edit.active { background: #463E3A; color: #fff; }
   /* Current timesheet: hide edit/delete/add controls until edit mode is on */
@@ -583,6 +583,7 @@
   }
   .toggle-btn.active { background: #463E3A; color: #fff; border-color: #463E3A; }
   .field-hint { font-size: 12px; color: #8A7F6F; line-height: 1.5; }
+  #ts-current-range { text-align: center; font-weight: 700; font-size: 13px; color: #463E3A; }
   .transfer-out-base-row {
     display: flex; justify-content: space-between; align-items: center;
     padding: 12px 14px; background: #FAF6F0; border-radius: 14px; margin-bottom: 14px;
