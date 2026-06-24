@@ -1945,6 +1945,7 @@
     </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="/common.js"></script>
 <script>
 (function(){
   // ===== APP 版本 — 每次發布前改這裡,並把 version.json 改成「同一個值」 =====
@@ -1959,66 +1960,14 @@
     { id: 'seed4', name: 'Panama Boquete', country: 'Panama', region: 'Boquete', station: 'Finca La Mula', process: 'Washed', altitude: '1600m', variety: 'Geisha', harvest: '2025', quantity: '6.5', supplier: 'Mercanta', costPerKg: '32.00' }
   ];
 
-  function uid(){ return 'bean_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); }
-  function fmtKg(n){ var v = parseFloat(n); return (isNaN(v)?0:v).toFixed(1) + ' kg'; }
-  function fmtMoney(n){ var v = parseFloat(n); return '$' + (isNaN(v)?0:v).toFixed(2); }
+  // ---- 共用工具來自 common.js (window.Ratio) ----
+  var uid = Ratio.uid, fmtKg = Ratio.fmtKg, fmtMoney = Ratio.fmtMoney, esc = Ratio.esc;
+  var getSessionPassword = Ratio.getPassword, setSessionPassword = Ratio.setPassword;
+  var apiRequest = Ratio.api;
   function stockStatus(q){ var v = parseFloat(q)||0; if (v<=0) return 'out'; if (v<=LOW_STOCK_THRESHOLD) return 'low'; return 'healthy'; }
   function isIncomplete(b){ return !b.country || !b.region || !b.station || !b.process || !b.altitude || !b.variety || !b.harvest || !b.supplier || !b.costPerKg; }
-  function esc(s){
-    var div = document.createElement('div');
-    div.textContent = s == null ? '' : s;
-    return div.innerHTML;
-  }
 
-  // ---------- Storage (calls backend API, cloud-shared) ----------
-  var SESSION_PASSWORD_KEY = 'ratio-admin-session-password';
 
-  function getSessionPassword(){
-    try { return sessionStorage.getItem(SESSION_PASSWORD_KEY) || ''; }
-    catch(e) { return ''; }
-  }
-  function setSessionPassword(pw){
-    try { sessionStorage.setItem(SESSION_PASSWORD_KEY, pw); } catch(e) {}
-  }
-
-  async function apiRequest(dataset, method, body){
-    var headers = { 'x-app-password': getSessionPassword() };
-    var opts = { method: method, headers: headers };
-    if (body) {
-      headers['Content-Type'] = 'application/json';
-      opts.body = JSON.stringify(body);
-    }
-    var url = '/api/beans?dataset=' + dataset;
-    var maxAttempts = 3;
-    var lastErr = null;
-    for (var attempt = 1; attempt <= maxAttempts; attempt++) {
-      try {
-        var resp = await fetch(url, opts);
-        if (resp.status === 401) {
-          var err = new Error('unauthorized');
-          err.unauthorized = true;
-          throw err;
-        }
-        if (resp.status >= 500) {
-          throw new Error('Server error: ' + resp.status); // transient -> retry
-        }
-        if (!resp.ok) {
-          var ce = new Error('Request failed: ' + resp.status);
-          ce.clientError = true; // 4xx -> do not retry
-          throw ce;
-        }
-        return resp.json();
-      } catch (e) {
-        lastErr = e;
-        if (e && (e.unauthorized || e.clientError)) throw e; // never retry auth / client errors
-        if (attempt < maxAttempts) {
-          await new Promise(function(r){ setTimeout(r, attempt * 500); }); // backoff: 0.5s, then 1s
-          continue;
-        }
-        throw lastErr;
-      }
-    }
-  }
 
   async function loadBeansFromServer(){
     var data = await apiRequest('beans', 'GET');
