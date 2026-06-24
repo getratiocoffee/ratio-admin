@@ -597,8 +597,7 @@
   #ts-current-body.ts-edit-on .ts-shift-time { justify-content: flex-start; }
   #ts-current-body.ts-edit-on .ts-shift-dash { margin: 0 6px; }
   .na-staff-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .na-staff-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
-  .na-staff-collapse { overflow: hidden; transition: max-height 0.3s ease, opacity 0.2s ease, margin 0.3s ease; max-height: 400px; margin-bottom: 14px; }
+  .na-staff-collapse { overflow: hidden; transition: max-height 0.3s ease, opacity 0.2s ease, margin 0.3s ease; max-height: 600px; margin-bottom: 14px; }
   .na-staff-collapse.collapsed { max-height: 0; opacity: 0; margin-bottom: 0; }
   .na-staff-chip { padding: 8px 14px; border-radius: 999px; border: 1.5px solid #DCD2C2; background: #FFFFFF; color: #463E3A; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; }
   .na-staff-chip.selected { background: #463E3A; color: #FFFFFF; border-color: #463E3A; }

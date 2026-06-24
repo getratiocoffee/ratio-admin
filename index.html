@@ -256,26 +256,26 @@
       <div id="ts-na-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
       <!-- New request form at the top; staff selector can collapse upward -->
       <div style="flex-shrink:0; padding:12px 20px 0;">
-        <div class="na-staff-header">
-          <label class="field-label" style="margin-bottom:0;">Staff member (can pick multiple)</label>
-          <button class="ts-na-arrow" id="na-staff-toggle" aria-label="Hide staff list" aria-expanded="true">
+        <label class="field-label" style="margin-bottom:8px;">Staff member (can pick multiple)</label>
+        <div class="ts-na-arrow-row" style="margin-bottom:8px;">
+          <button class="ts-na-arrow" id="na-staff-toggle" aria-label="Hide staff &amp; dates" aria-expanded="true">
             <svg class="ts-na-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 15 12 9 18 15"/></svg>
           </button>
         </div>
         <div id="na-staff-collapse" class="na-staff-collapse">
           <div id="na-staff-checks" class="na-staff-chips"></div>
-        </div>
-        <div class="field-row">
-          <div class="field-group">
-            <label class="field-label">Start date</label>
-            <select class="field-input" id="na-start-select"></select>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Start date</label>
+              <select class="field-input" id="na-start-select"></select>
+            </div>
+            <div class="field-group">
+              <label class="field-label">End date</label>
+              <select class="field-input" id="na-end-select"></select>
+            </div>
           </div>
-          <div class="field-group">
-            <label class="field-label">End date</label>
-            <select class="field-input" id="na-end-select"></select>
-          </div>
+          <div id="na-period-preview" class="field-hint" style="margin-bottom:10px;display:none;"></div>
         </div>
-        <div id="na-period-preview" class="field-hint" style="margin-bottom:10px;display:none;"></div>
       </div>
       <!-- Existing N/A list fills the rest, scrollable -->
       <div class="form-scroll" style="flex:1 1 auto; min-height:0; border-top:1px solid #DCD2C2;">
