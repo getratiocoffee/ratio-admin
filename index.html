@@ -297,9 +297,12 @@
         </button>
       </div>
 <div id="ts-current-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; justify-content:flex-start; overflow:hidden; min-height:0;">
-        <div style="overflow-y:auto; overscroll-behavior:contain; padding:16px 20px max(20px, env(safe-area-inset-bottom)); flex-shrink:0; max-height:100%;">
-          <p class="field-hint" id="ts-current-range" style="margin-bottom:14px;"></p>
-          <div id="ts-current-list"></div>
+        <div style="flex-shrink:0; padding:16px 20px 14px; border-bottom:1px solid #E8E0D3; box-shadow:0 5px 12px -8px rgba(70,62,58,0.18); position:relative; z-index:2;">
+          <p class="field-hint" id="ts-current-range" style="margin-bottom:12px;"></p>
+          <div id="ts-current-totals"></div>
+        </div>
+        <div style="flex:1; overflow-y:auto; overscroll-behavior:contain; padding:14px 20px max(20px, env(safe-area-inset-bottom)); min-height:0;">
+          <div id="ts-current-days"></div>
           <p class="field-hint" style="margin-top:6px;">This week moves to Previous Timesheet once Sunday has passed.</p>
         </div>
       </div>
@@ -4383,9 +4386,10 @@
     var html = '';
     DAY_KEYS.forEach(function(dk){
       var shifts = week.days[dk] || [];
-      html += '<div class="ts-day-card" data-week-id="' + week.id + '" data-day="' + dk + '" data-date="' + dates[dk] + '">';
+      var isToday = dates[dk] === isoDate(new Date());
+      html += '<div class="ts-day-card' + (isToday ? ' ts-day-today' : '') + '" data-week-id="' + week.id + '" data-day="' + dk + '" data-date="' + dates[dk] + '">';
       html += '  <div class="ts-day-card-header">';
-      html += '    <div class="ts-day-card-label-group"><span class="ts-day-name">' + DAY_LABELS[dk] + '</span><span class="ts-day-date">' + fmtShortDate(dates[dk]) + '</span></div>';
+      html += '    <div class="ts-day-card-label-group"><span class="ts-day-name">' + DAY_LABELS[dk] + '</span><span class="ts-day-date">' + fmtShortDate(dates[dk]) + '</span>' + (isToday ? '<span class="ts-day-today-badge">Today</span>' : '') + '</div>';
       html += '  </div>';
       html += '  <div class="ts-day-card-body">';
       if (shifts.length === 0) {
@@ -4515,8 +4519,7 @@
     document.getElementById('ts-current-range').textContent =
       fmtShortDate(weekStart) + ' \u2013 ' + fmtShortDate(dates.sun) + ' (Mon\u2013Sun)';
 
-    var listEl = document.getElementById('ts-current-list');
-    listEl.innerHTML = renderWeekTotalsBar(week) + '<div id="ts-current-days"></div>';
+    document.getElementById('ts-current-totals').innerHTML = renderWeekTotalsBar(week);
     var daysEl = document.getElementById('ts-current-days');
     renderWeekDays(week, daysEl, dates);
     attachWeekDayListeners(daysEl, week, dates, renderCurrentTimesheet);
