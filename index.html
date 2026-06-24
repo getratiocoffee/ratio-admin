@@ -615,6 +615,9 @@
   #ts-current-body.ts-edit-on .ts-shift-time { justify-content: flex-start; }
   #ts-current-body.ts-edit-on .ts-shift-dash { margin: 0 6px; }
   .na-staff-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .na-staff-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  .na-staff-collapse { overflow: hidden; transition: max-height 0.3s ease, opacity 0.2s ease, margin 0.3s ease; max-height: 400px; margin-bottom: 14px; }
+  .na-staff-collapse.collapsed { max-height: 0; opacity: 0; margin-bottom: 0; }
   .na-staff-chip { padding: 8px 14px; border-radius: 999px; border: 1.5px solid #DCD2C2; background: #FFFFFF; color: #463E3A; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; }
   .na-staff-chip.selected { background: #463E3A; color: #FFFFFF; border-color: #463E3A; }
   .ts-shift-actions { display: flex; gap: 6px; flex-shrink: 0; }
@@ -1250,14 +1253,15 @@
         <h1>Request N/A</h1>
       </div>
       <div id="ts-na-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
-      <!-- Current N/A list at the top -->
-      <div class="form-scroll" style="flex:0 1 auto; min-height:0;">
-        <div id="na-existing-list"></div>
-      </div>
-      <!-- New request form pushed to bottom -->
-      <div style="flex-shrink:0; padding:12px 20px 0; border-top:1px solid #DCD2C2;">
-        <div class="field-group">
-          <label class="field-label">Staff member (can pick multiple)</label>
+      <!-- New request form at the top; staff selector can collapse upward -->
+      <div style="flex-shrink:0; padding:12px 20px 0;">
+        <div class="na-staff-header">
+          <label class="field-label" style="margin-bottom:0;">Staff member (can pick multiple)</label>
+          <button class="ts-na-arrow" id="na-staff-toggle" aria-label="Hide staff list" aria-expanded="true">
+            <svg class="ts-na-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 15 12 9 18 15"/></svg>
+          </button>
+        </div>
+        <div id="na-staff-collapse" class="na-staff-collapse">
           <div id="na-staff-checks" class="na-staff-chips"></div>
         </div>
         <div class="field-row">
@@ -1271,6 +1275,10 @@
           </div>
         </div>
         <div id="na-period-preview" class="field-hint" style="margin-bottom:10px;display:none;"></div>
+      </div>
+      <!-- Existing N/A list fills the rest, scrollable -->
+      <div class="form-scroll" style="flex:1 1 auto; min-height:0; border-top:1px solid #DCD2C2;">
+        <div id="na-existing-list"></div>
       </div>
       <div class="form-bottom-bar">
         <button class="btn-save" id="na-save-btn" disabled>Save N/A request</button>
@@ -5990,6 +5998,10 @@
     }).join('');
     refreshNaChips();
     updateNaPreview();
+    var naStaffCol = document.getElementById('na-staff-collapse');
+    var naStaffTog = document.getElementById('na-staff-toggle');
+    if (naStaffCol) naStaffCol.classList.remove('collapsed');
+    if (naStaffTog) { naStaffTog.classList.remove('collapsed'); naStaffTog.setAttribute('aria-expanded', 'true'); }
     renderNaExistingList();
     showTsTab('na');
   }
@@ -6011,6 +6023,13 @@
     if (!chip) return;
     chip.classList.toggle('selected');
     updateNaPreview();
+  });
+  var naStaffToggle = document.getElementById('na-staff-toggle');
+  var naStaffCollapse = document.getElementById('na-staff-collapse');
+  if (naStaffToggle && naStaffCollapse) naStaffToggle.addEventListener('click', function(){
+    var collapsed = naStaffCollapse.classList.toggle('collapsed');
+    naStaffToggle.classList.toggle('collapsed', collapsed);
+    naStaffToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
   });
   document.getElementById('ts-open-na-btn').addEventListener('click', openNaScreen);
   document.getElementById('ts-na-back-btn').addEventListener('click', function(){
