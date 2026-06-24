@@ -5382,7 +5382,7 @@
 
   // ---------- Timesheet in-page tabs (open content on this page, no screen switch) ----------
   var TS_TABS = {
-    current:  { body: 'ts-current-body',  icon: 'ts-open-current-btn',  title: 'Current Timesheet',  render: function(){ renderCurrentTimesheet(); }, action: openAddTimesheetScreen },
+    current:  { body: 'ts-current-body',  icon: 'ts-open-current-btn',  title: 'Current Timesheet',  render: function(){ renderCurrentTimesheet(); scrollCurrentToToday(); }, action: openAddTimesheetScreen },
     previous: { body: 'ts-previous-body', icon: 'ts-open-previous-btn', title: 'Previous Timesheets', render: function(){ renderPreviousTimesheets(); } },
     na:       { body: 'ts-na-body',       icon: 'ts-open-na-btn',       title: 'Request N/A',         render: null /* openNaScreen populates then calls showTsTab */ },
     contacts: { body: 'ts-contacts-body', icon: 'ts-open-contacts-btn', title: 'Staff Contacts',      render: function(){ renderStaffContacts(); }, action: toggleStaffAddForm }
@@ -5475,7 +5475,7 @@
     var html = '';
     DAY_KEYS.forEach(function(dk){
       var shifts = week.days[dk] || [];
-      html += '<div class="ts-day-card" data-week-id="' + week.id + '" data-day="' + dk + '">';
+      html += '<div class="ts-day-card" data-week-id="' + week.id + '" data-day="' + dk + '" data-date="' + dates[dk] + '">';
       html += '  <div class="ts-day-card-header">';
       html += '    <div class="ts-day-card-label-group"><span class="ts-day-name">' + DAY_LABELS[dk] + '</span><span class="ts-day-date">' + fmtShortDate(dates[dk]) + '</span></div>';
       html += '  </div>';
@@ -5612,6 +5612,24 @@
     var daysEl = document.getElementById('ts-current-days');
     renderWeekDays(week, daysEl, dates);
     attachWeekDayListeners(daysEl, week, dates, renderCurrentTimesheet);
+  }
+
+  function scrollCurrentToToday(){
+    requestAnimationFrame(function(){
+      var daysEl = document.getElementById('ts-current-days');
+      if (!daysEl) return;
+      var card = daysEl.querySelector('.ts-day-card[data-date="' + isoDate(new Date()) + '"]');
+      if (!card) return;
+      var sc = card.parentElement;
+      while (sc && sc !== document.body) {
+        var oy = getComputedStyle(sc).overflowY;
+        if ((oy === 'auto' || oy === 'scroll') && sc.scrollHeight > sc.clientHeight + 2) break;
+        sc = sc.parentElement;
+      }
+      if (!sc || sc === document.body) return;
+      var delta = card.getBoundingClientRect().top - sc.getBoundingClientRect().top;
+      sc.scrollTop += delta;
+    });
   }
 
   document.getElementById('ts-open-current-btn').addEventListener('click', function(){
