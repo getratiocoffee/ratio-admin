@@ -181,6 +181,9 @@
   #ts-previous-body .ts-shift-actions, #ts-previous-body .ts-add-shift-btn { display: none; }
   #ts-previous-body.ts-edit-on .ts-shift-actions { display: flex; }
   #ts-previous-body.ts-edit-on .ts-add-shift-btn { display: block; }
+  #ts-previous-body .ts-prev-hint { display: none; }
+  #ts-previous-body.ts-edit-on .ts-prev-hint { display: block; font-size: 12.5px; color: #8A7F6F; background: #F1E9DC; border: 1px solid #E8DCC8; border-radius: 10px; padding: 9px 12px; margin: 0 0 12px; text-align: center; }
+  #ts-previous-body.ts-edit-on .ts-pay-tag { box-shadow: 0 0 0 1.5px rgba(70,62,58,0.18); }
   /* Current: two shifts per row to save vertical space (single column in edit mode) */
   #ts-current-body .ts-day-card-body { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: start; }
   #ts-current-body .ts-day-card-body > .ts-day-empty,

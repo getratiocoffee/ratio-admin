@@ -321,6 +321,7 @@
       </div>
 <div id="ts-previous-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; justify-content:flex-start; overflow:hidden; min-height:0;">
         <div style="overflow-y:auto; overscroll-behavior:contain; padding:16px 20px max(20px, env(safe-area-inset-bottom)); flex-shrink:0; max-height:100%;">
+          <p class="ts-prev-hint">Tap a staff to mark <b>Cash</b> &nbsp;·&nbsp; tick the box to lock that row</p>
           <div id="ts-previous-list"></div>
         </div>
       </div>
@@ -4859,15 +4860,22 @@
     var dates = weekDates(week.weekStart);
     var range = fmtShortDate(week.weekStart) + ' \u2013 ' + fmtShortDate(dates.sun);
     var rows = staffHoursForWeek(week);
+    var hoursLine = function(wd, sa, su){
+      var parts = [];
+      if (wd > 0) parts.push('Weekday ' + fmtHours(wd));
+      if (sa > 0) parts.push('Sat ' + fmtHours(sa));
+      if (su > 0) parts.push('Sun ' + fmtHours(su));
+      return parts.length ? parts.join('  \u00b7  ') : '\u2013';
+    };
     var lines = ['Ratio Coffee Pty Ltd', 'Staff hours: ' + range, ''];
     if (rows.length === 0) lines.push('(No shifts recorded)');
     rows.forEach(function(r){
       lines.push(r.name + '  [' + (r.isCash ? 'Cash' : 'On Book') + ']');
-      lines.push('   Weekday ' + fmtHours(r.weekday) + '  \u00b7  Sat ' + fmtHours(r.sat) + '  \u00b7  Sun ' + fmtHours(r.sun));
+      lines.push('   ' + hoursLine(r.weekday, r.sat, r.sun));
     });
     var tot = computeWeekTotals(week); var grand = tot.weekday + tot.sat + tot.sun;
     lines.push('');
-    lines.push('TOTAL  Weekday ' + fmtHours(tot.weekday) + '  \u00b7  Sat ' + fmtHours(tot.sat) + '  \u00b7  Sun ' + fmtHours(tot.sun));
+    lines.push('TOTAL  ' + hoursLine(tot.weekday, tot.sat, tot.sun));
     lines.push('Grand total: ' + fmtHours(grand));
     return { subject: 'Ratio staff hours: ' + range, body: lines.join('\n') };
   }
@@ -4877,49 +4885,70 @@
     var dates = weekDates(week.weekStart);
     var range = fmtShortDate(week.weekStart) + ' \u2013 ' + fmtShortDate(dates.sun);
     var pageW = doc.internal.pageSize.getWidth();
-    var M = 48; var y = 58;
-    var colWk = 330, colSat = 412, colSun = 480, colType = pageW - M;
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(17); doc.setTextColor(46, 41, 37);
-    doc.text('Ratio Coffee Pty Ltd', M, y); y += 18;
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(120, 110, 100);
-    doc.text('Shop 2, 473 Pacific Highway Crows Nest', M, y); y += 13;
-    doc.text('0403037369   \u00b7   ratiocoffee2473@gmail.com', M, y); y += 20;
-    doc.setDrawColor(220, 210, 194); doc.setLineWidth(1); doc.line(M, y, pageW - M, y); y += 26;
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(46, 41, 37);
-    doc.text('Staff Hours', M, y);
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(120, 110, 100);
-    doc.text(range, pageW - M, y, { align: 'right' }); y += 26;
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(140, 127, 111);
-    doc.text('STAFF', M, y);
-    doc.text('WEEKDAY', colWk, y, { align: 'right' });
-    doc.text('SAT', colSat, y, { align: 'right' });
-    doc.text('SUN', colSun, y, { align: 'right' });
-    doc.text('TYPE', colType, y, { align: 'right' }); y += 8;
-    doc.setDrawColor(232, 224, 211); doc.line(M, y, pageW - M, y); y += 18;
+    var M = 48, left = M, right = pageW - M;
+    var nameX = left + 4, colWk = 326, colSat = 400, colSun = 466, colType = right - 4;
+    var cell = function(h){ return (h && h > 0) ? fmtHours(h) : '\u2013'; };
+    var y = 60;
+    // Letterhead
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(46, 41, 37);
+    doc.text('Ratio Coffee Pty Ltd', left, y); y += 15;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(132, 122, 110);
+    doc.text('Shop 2, 473 Pacific Highway, Crows Nest', left, y); y += 12;
+    doc.text('0403 037 369    \u00b7    ratiocoffee2473@gmail.com', left, y); y += 16;
+    doc.setDrawColor(70, 62, 58); doc.setLineWidth(1.2); doc.line(left, y, right, y); y += 28;
+    // Title + week range
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(46, 41, 37);
+    doc.text('Staff Hours', left, y);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10.5); doc.setTextColor(132, 122, 110);
+    doc.text(range, right, y, { align: 'right' }); y += 12;
+    // Header band
+    var headH = 22;
+    doc.setFillColor(241, 233, 220); doc.rect(left, y, right - left, headH, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(124, 110, 92);
+    var hy = y + 14;
+    doc.text('STAFF', nameX, hy);
+    doc.text('WEEKDAY', colWk, hy, { align: 'right' });
+    doc.text('SAT', colSat, hy, { align: 'right' });
+    doc.text('SUN', colSun, hy, { align: 'right' });
+    doc.text('TYPE', colType, hy, { align: 'right' });
+    y += headH;
+    // Rows
     var rows = staffHoursForWeek(week);
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(11);
-    if (rows.length === 0) { doc.setTextColor(150, 140, 130); doc.text('No shifts recorded.', M, y); y += 20; }
+    var rowH = 23;
+    if (rows.length === 0) {
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(150, 140, 130);
+      doc.text('No shifts recorded.', nameX, y + 15); y += rowH;
+    }
     rows.forEach(function(r){
-      if (y > 770) { doc.addPage(); y = 58; }
-      doc.setTextColor(46, 41, 37);
-      doc.text(r.name, M, y);
-      doc.text(fmtHours(r.weekday), colWk, y, { align: 'right' });
-      doc.text(fmtHours(r.sat), colSat, y, { align: 'right' });
-      doc.text(fmtHours(r.sun), colSun, y, { align: 'right' });
-      if (r.isCash) doc.setTextColor(150, 110, 20); else doc.setTextColor(140, 127, 111);
-      doc.text(r.isCash ? 'Cash' : 'On Book', colType, y, { align: 'right' });
-      y += 20;
+      if (y > 766) { doc.addPage(); y = 60; }
+      var ry = y + 15;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(46, 41, 37);
+      doc.text(r.name, nameX, ry);
+      doc.setTextColor(74, 66, 60);
+      doc.text(cell(r.weekday), colWk, ry, { align: 'right' });
+      doc.text(cell(r.sat), colSat, ry, { align: 'right' });
+      doc.text(cell(r.sun), colSun, ry, { align: 'right' });
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+      if (r.isCash) doc.setTextColor(150, 110, 20); else doc.setTextColor(150, 140, 128);
+      doc.text(r.isCash ? 'CASH' : 'ON BOOK', colType, ry, { align: 'right' });
+      doc.setDrawColor(236, 228, 216); doc.setLineWidth(0.7); doc.line(left, y + rowH, right, y + rowH);
+      y += rowH;
     });
-    y += 6; doc.setDrawColor(220, 210, 194); doc.setLineWidth(1); doc.line(M, y, pageW - M, y); y += 19;
+    // Total band
     var tot = computeWeekTotals(week); var grand = tot.weekday + tot.sat + tot.sun;
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(46, 41, 37);
-    doc.text('Total', M, y);
-    doc.text(fmtHours(tot.weekday), colWk, y, { align: 'right' });
-    doc.text(fmtHours(tot.sat), colSat, y, { align: 'right' });
-    doc.text(fmtHours(tot.sun), colSun, y, { align: 'right' });
-    doc.text(fmtHours(grand), colType, y, { align: 'right' });
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(160, 150, 140);
-    doc.text('Generated ' + new Date().toLocaleString(), M, 812);
+    var totH = 24;
+    doc.setFillColor(70, 62, 58); doc.rect(left, y, right - left, totH, 'F');
+    var ty = y + 16;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5); doc.setTextColor(255, 255, 255);
+    doc.text('TOTAL', nameX, ty);
+    doc.text(cell(tot.weekday), colWk, ty, { align: 'right' });
+    doc.text(cell(tot.sat), colSat, ty, { align: 'right' });
+    doc.text(cell(tot.sun), colSun, ty, { align: 'right' });
+    doc.text(cell(grand), colType, ty, { align: 'right' });
+    y += totH;
+    // Footer
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(170, 160, 150);
+    doc.text('Generated ' + new Date().toLocaleString(), left, 815);
     doc.save('Ratio_hours_' + week.weekStart + '.pdf');
   }
   function refreshEmailPreview(){
