@@ -1524,6 +1524,12 @@
           <span class="brand-name">Inventory</span>
         </div>
         <div class="header-icon-btns">
+          <button class="icon-btn" id="export-backup-header-btn" aria-label="Export backup" title="Export backup">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+          <button class="icon-btn" id="import-backup-btn" aria-label="Import backup" title="Import backup">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </button>
           <input type="file" id="import-file-input" accept="application/json" style="display:none;">
         </div>
       </div>
@@ -6710,6 +6716,71 @@
   });
   var _exportBtn = document.getElementById('export-backup-btn');
   if (_exportBtn) _exportBtn.addEventListener('click', exportBackup);
+
+  // ---------- Header backup buttons: export + import (restore) ----------
+  var _hdrExportBtn = document.getElementById('export-backup-header-btn');
+  if (_hdrExportBtn) _hdrExportBtn.addEventListener('click', exportBackup);
+
+  var _importBtn = document.getElementById('import-backup-btn');
+  var _importFileInput = document.getElementById('import-file-input');
+  if (_importBtn && _importFileInput) {
+    _importBtn.addEventListener('click', function(){
+      _importFileInput.value = '';
+      _importFileInput.click();
+    });
+    _importFileInput.addEventListener('change', function(e){
+      var file = e.target.files && e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(evt){
+        var parsed;
+        try { parsed = JSON.parse(evt.target.result); }
+        catch (err) { showToast("Couldn't read that file", true); return; }
+        var d = parsed && parsed.data;
+        if (!d || typeof d !== 'object') { showToast('Not a Ratio backup file', true); return; }
+        var when = parsed.exportedAt ? new Date(parsed.exportedAt).toLocaleString() : 'an unknown date';
+        confirmDanger(
+          'Restore backup from ' + when + '? This replaces ALL current data and cannot be undone.',
+          function(){ applyBackup(d); },
+          { title: 'Restore backup?', okText: 'Restore' }
+        );
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  function applyBackup(d){
+    if (Array.isArray(d.beans))       beans           = d.beans;
+    if (Array.isArray(d.contacts))    contacts        = d.contacts;
+    if (Array.isArray(d.transfers))   transferHistory = d.transfers;
+    if (Array.isArray(d.invoices))    invoiceLog      = d.invoices;
+    if (Array.isArray(d.staff))       staffList       = d.staff;
+    if (Array.isArray(d.timesheets))  timesheets      = d.timesheets;
+    if (Array.isArray(d.na))          naRequests      = d.na;
+    if (Array.isArray(d.sensory))     sensorySessions = d.sensory;
+    if (Array.isArray(d.roasted))     roastedBeans    = d.roasted;
+    if (d.handover && typeof d.handover === 'object') handoverData = d.handover;
+
+    showToast('Restoring backup\u2026', false);
+    Promise.all([
+      saveBeansToServer(beans),
+      saveContactsToServer(contacts),
+      saveTransfersToServer(transferHistory),
+      saveInvoiceLogToServer(invoiceLog),
+      saveStaffToServer(staffList),
+      saveTimesheetsToServer(timesheets),
+      saveNaToServer(naRequests),
+      saveSensoryToServer(sensorySessions),
+      saveRoastedToServer(roastedBeans),
+      saveHandoverToServer(handoverData)
+    ]).then(function(){
+      showToast('Backup restored', false);
+      setTimeout(function(){ location.reload(); }, 700);
+    }).catch(function(err){
+      logError('import', err && (err.message || err));
+      showToast('Restore failed \u2014 some data may not have saved', true);
+    });
+  }
 
   // ---------- Print Label ----------
   function setupCounter(inputId, countId, maxLen) {
