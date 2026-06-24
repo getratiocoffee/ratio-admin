@@ -985,6 +985,13 @@
     position: relative;
     flex: 1; padding: 0 24px; text-align: center; box-sizing: border-box;
   }
+  .gate-actions {
+    position: absolute; z-index: 5;
+    top: calc(14px + env(safe-area-inset-top));
+    right: calc(14px + env(safe-area-inset-right));
+    display: flex; gap: 8px;
+  }
+  .gate-action-btn { width: 38px; height: 38px; border-radius: 12px; }
   .gate-logo {
     position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -50%);

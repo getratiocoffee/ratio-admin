@@ -20,6 +20,16 @@
     <!-- ===== PASSWORD GATE SCREEN ===== -->
     <div class="screen active" id="screen-gate">
       <div class="gate-screen">
+        <!-- Top-right export / import (password-gated) -->
+        <div class="gate-actions">
+          <button class="icon-btn gate-action-btn" id="gate-export-btn" aria-label="Export backup" title="Export backup">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+          <button class="icon-btn gate-action-btn" id="gate-import-btn" aria-label="Import backup" title="Import backup">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </button>
+          <input type="file" id="gate-import-file-input" accept="application/json" style="display:none;">
+        </div>
         <img class="gate-logo" src="/logo.png" width="73" height="73" alt="Ratio Coffee logo">
         <div class="gate-fingerprint" id="gate-fingerprint-btn" role="button" tabindex="0" aria-label="Enter password to unlock">
           <svg width="68" height="68" viewBox="0 0 24 24" fill="none" stroke="#463E3A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -40,8 +50,8 @@
     <!-- Gate password popup (opened by tapping the fingerprint) -->
     <div class="radar-overlay" id="gate-pw-overlay" style="z-index:1200;">
       <div class="radar-card" style="max-width:300px; text-align:center;">
-        <div style="font-size:17px;font-weight:700;color:#2E2925;margin-bottom:6px;">Enter password</div>
-        <div style="font-size:13px;color:#8A7F6F;margin-bottom:20px;">Unlock to continue</div>
+        <div id="gate-pw-title" style="font-size:17px;font-weight:700;color:#2E2925;margin-bottom:6px;">Enter password</div>
+        <div id="gate-pw-sub" style="font-size:13px;color:#8A7F6F;margin-bottom:20px;">Unlock to continue</div>
         <input type="password" class="gate-input" id="gate-password-input" placeholder="Password" autocomplete="off" inputmode="numeric" pattern="[0-9]*" style="max-width:100%;margin-bottom:12px;">
         <div class="gate-error" id="gate-error" style="min-height:18px;margin-bottom:12px;"></div>
         <button class="gate-btn" id="gate-submit-btn" style="max-width:100%;">Unlock</button>
@@ -6599,6 +6609,55 @@
   var gateError = document.getElementById('gate-error');
   var gateSubmitBtn = document.getElementById('gate-submit-btn');
 
+  // ---------- Load all datasets from server (shared by unlock + gate export) ----------
+  async function loadAllData(){
+    var loaded = await loadBeansFromServer();
+    if (loaded) {
+      beans = loaded;
+    } else {
+      beans = SEED_BEANS.slice();
+      await saveBeansToServer(beans);
+    }
+    contacts = await loadContactsFromServer();
+    transferHistory = await loadTransfersFromServer();
+    invoiceLog = await loadInvoiceLogFromServer();
+    staffList = await loadStaffFromServer();
+    timesheets = await loadTimesheetsFromServer();
+    var loadedNa = await loadNaFromServer();
+    var today = isoDate(new Date());
+    naRequests = loadedNa.filter(function(r){
+      return r.dates && r.dates.some(function(d){ return d >= today; });
+    });
+    if (naRequests.length !== loadedNa.length) {
+      saveNaToServer(naRequests).catch(function(){});
+    }
+    customers = await loadCustomersFromServer();
+    sensorySessions = await loadSensoryFromServer();
+    roastedBeans = await loadRoastedFromServer();
+    handoverData = await loadHandoverFromServer();
+    if (!handoverData.tasksByDate) handoverData.tasksByDate = {};
+    if (!handoverData.checks) handoverData.checks = {};
+    if (!handoverData.templates) handoverData.templates = [];
+    // Migrate old format if needed
+    if (handoverData.tasks && handoverData.tasks.length > 0 && Object.keys(handoverData.tasksByDate).length === 0) {
+      var todayMigrate = isoDate(new Date());
+      handoverData.tasksByDate[todayMigrate] = handoverData.tasks;
+      delete handoverData.tasks;
+    }
+    // Auto-delete past days' tasks (keep today and future only)
+    var todayIsoClean = isoDate(new Date());
+    var tasksDirty = false;
+    Object.keys(handoverData.tasksByDate).forEach(function(d){
+      if (d < todayIsoClean) { delete handoverData.tasksByDate[d]; tasksDirty = true; }
+    });
+    // Clean up check records older than 30 days
+    var cutoff = isoDate(new Date(Date.now() - 30 * 86400000));
+    Object.keys(handoverData.checks).forEach(function(d){
+      if (d < cutoff) delete handoverData.checks[d];
+    });
+    if (tasksDirty) { saveHandoverToServer(handoverData).catch(function(){}); }
+  }
+
   async function attemptUnlock(password){
     var gfp = document.getElementById('gate-fingerprint-btn');
     gateError.textContent = '';
@@ -6608,51 +6667,7 @@
     setSessionPassword(password);
 
     try {
-      var loaded = await loadBeansFromServer();
-      if (loaded) {
-        beans = loaded;
-      } else {
-        beans = SEED_BEANS.slice();
-        await saveBeansToServer(beans);
-      }
-      contacts = await loadContactsFromServer();
-      transferHistory = await loadTransfersFromServer();
-      invoiceLog = await loadInvoiceLogFromServer();
-      staffList = await loadStaffFromServer();
-      timesheets = await loadTimesheetsFromServer();
-      var loadedNa = await loadNaFromServer();
-      var today = isoDate(new Date());
-      naRequests = loadedNa.filter(function(r){
-        return r.dates && r.dates.some(function(d){ return d >= today; });
-      });
-      if (naRequests.length !== loadedNa.length) {
-        saveNaToServer(naRequests).catch(function(){});
-      }
-      customers = await loadCustomersFromServer();
-      sensorySessions = await loadSensoryFromServer();
-      roastedBeans = await loadRoastedFromServer();
-      handoverData = await loadHandoverFromServer();
-      if (!handoverData.tasksByDate) handoverData.tasksByDate = {};
-      if (!handoverData.checks) handoverData.checks = {};
-      if (!handoverData.templates) handoverData.templates = [];
-      // Migrate old format if needed
-      if (handoverData.tasks && handoverData.tasks.length > 0 && Object.keys(handoverData.tasksByDate).length === 0) {
-        var todayMigrate = isoDate(new Date());
-        handoverData.tasksByDate[todayMigrate] = handoverData.tasks;
-        delete handoverData.tasks;
-      }
-      // Auto-delete past days' tasks (keep today and future only)
-      var todayIsoClean = isoDate(new Date());
-      var tasksDirty = false;
-      Object.keys(handoverData.tasksByDate).forEach(function(d){
-        if (d < todayIsoClean) { delete handoverData.tasksByDate[d]; tasksDirty = true; }
-      });
-      // Clean up check records older than 30 days
-      var cutoff = isoDate(new Date(Date.now() - 30 * 86400000));
-      Object.keys(handoverData.checks).forEach(function(d){
-        if (d < cutoff) delete handoverData.checks[d];
-      });
-      if (tasksDirty) { saveHandoverToServer(handoverData).catch(function(){}); }
+      await loadAllData();
       showScreen('screen-menu');
       render();
       var gpw = document.getElementById('gate-pw-overlay'); if (gpw) gpw.classList.remove('visible');
@@ -6672,9 +6687,12 @@
   }
 
   gateSubmitBtn.addEventListener('click', function(){
+    var pw = gateInput.value || '0000';
+    if (gatePwMode === 'export') { runGateExport(pw); return; }
+    if (gatePwMode === 'import') { runGateImport(pw); return; }
     // === DEV BYPASS (暫時) ：按 Unlock 直接用預設密碼進入。
     //     要還原密碼：刪掉下面這一行、把再下面的區塊取消註解即可。 ===
-    attemptUnlock(gateInput.value || '0000');
+    attemptUnlock(pw);
     // var pw = gateInput.value;
     // if (!pw) {
     //   gateError.textContent = 'Please enter the password.';
@@ -6685,8 +6703,24 @@
   gateInput.addEventListener('keydown', function(e){
     if (e.key === 'Enter') gateSubmitBtn.click();
   });
-  function openGatePwOverlay(){
+  var gatePwMode = 'unlock';
+  var _gateImportData = null;
+  function openGatePwOverlay(mode){
+    gatePwMode = mode || 'unlock';
     var ov = document.getElementById('gate-pw-overlay');
+    var titleEl = document.getElementById('gate-pw-title');
+    var subEl = document.getElementById('gate-pw-sub');
+    if (gatePwMode === 'export') {
+      if (subEl) subEl.textContent = 'Verify to export a backup';
+      gateSubmitBtn.textContent = 'Export';
+    } else if (gatePwMode === 'import') {
+      if (subEl) subEl.textContent = 'Verify to restore this backup';
+      gateSubmitBtn.textContent = 'Restore';
+    } else {
+      if (subEl) subEl.textContent = 'Unlock to continue';
+      gateSubmitBtn.textContent = 'Unlock';
+    }
+    if (titleEl) titleEl.textContent = 'Enter password';
     gateError.textContent = '';
     gateInput.value = '';
     ov.classList.add('visible');
@@ -6694,18 +6728,98 @@
   }
   function closeGatePwOverlay(){
     document.getElementById('gate-pw-overlay').classList.remove('visible');
+    gatePwMode = 'unlock';
+    _gateImportData = null;
   }
   var gateFingerprintBtn = document.getElementById('gate-fingerprint-btn');
   if (gateFingerprintBtn) {
-    gateFingerprintBtn.addEventListener('click', openGatePwOverlay);
+    gateFingerprintBtn.addEventListener('click', function(){ openGatePwOverlay('unlock'); });
     gateFingerprintBtn.addEventListener('keydown', function(e){
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openGatePwOverlay(); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openGatePwOverlay('unlock'); }
     });
   }
   document.getElementById('gate-pw-cancel').addEventListener('click', closeGatePwOverlay);
   document.getElementById('gate-pw-overlay').addEventListener('click', function(e){
     if (e.target.id === 'gate-pw-overlay') closeGatePwOverlay();
   });
+
+  // ---------- Gate export / import (password-gated, stays on gate) ----------
+  var gateExportBtn = document.getElementById('gate-export-btn');
+  if (gateExportBtn) gateExportBtn.addEventListener('click', function(){ openGatePwOverlay('export'); });
+
+  var gateImportBtn = document.getElementById('gate-import-btn');
+  var gateImportFileInput = document.getElementById('gate-import-file-input');
+  if (gateImportBtn && gateImportFileInput) {
+    gateImportBtn.addEventListener('click', function(){
+      gateImportFileInput.value = '';
+      gateImportFileInput.click();
+    });
+    gateImportFileInput.addEventListener('change', function(e){
+      var file = e.target.files && e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(evt){
+        var parsed;
+        try { parsed = JSON.parse(evt.target.result); }
+        catch (err) { showToast("Couldn't read that file", true); return; }
+        var d = parsed && parsed.data;
+        if (!d || typeof d !== 'object') { showToast('Not a Ratio backup file', true); return; }
+        _gateImportData = d;
+        openGatePwOverlay('import');  // ask for password before restoring
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  async function runGateExport(pw){
+    var gfp = document.getElementById('gate-fingerprint-btn');
+    gateError.textContent = '';
+    if (gfp) gfp.classList.add('busy');
+    gateSubmitBtn.disabled = true;
+    gateSubmitBtn.textContent = 'Checking\u2026';
+    setSessionPassword(pw);
+    try {
+      await loadAllData();   // verifies password (throws if wrong) + loads everything
+      exportBackup();        // downloads the .json
+      closeGatePwOverlay();
+    } catch (e) {
+      if (e && e.unauthorized) gateError.textContent = 'Incorrect password. Please try again.';
+      else gateError.textContent = "Couldn't connect. Check your internet connection and try again.";
+    } finally {
+      setSessionPassword('');  // re-lock: viewing/exporting never grants a session
+      if (gfp) gfp.classList.remove('busy');
+      gateSubmitBtn.disabled = false;
+      gateSubmitBtn.textContent = gatePwMode === 'export' ? 'Export' : 'Unlock';
+    }
+  }
+
+  async function runGateImport(pw){
+    if (!_gateImportData) { closeGatePwOverlay(); return; }
+    var gfp = document.getElementById('gate-fingerprint-btn');
+    gateError.textContent = '';
+    if (gfp) gfp.classList.add('busy');
+    gateSubmitBtn.disabled = true;
+    gateSubmitBtn.textContent = 'Checking\u2026';
+    setSessionPassword(pw);
+    try {
+      await loadBeansFromServer();  // harmless GET probe: throws unauthorized on wrong password
+      var d = _gateImportData;
+      closeGatePwOverlay();
+      confirmDanger(
+        'Restore this backup? This replaces ALL current data and cannot be undone.',
+        function(){ applyBackup(d); },   // keeps session password so it can write back, then reloads
+        { title: 'Restore backup?', okText: 'Restore' }
+      );
+    } catch (e) {
+      setSessionPassword('');
+      if (e && e.unauthorized) gateError.textContent = 'Incorrect password. Please try again.';
+      else gateError.textContent = "Couldn't connect. Check your internet connection and try again.";
+    } finally {
+      if (gfp) gfp.classList.remove('busy');
+      gateSubmitBtn.disabled = false;
+      gateSubmitBtn.textContent = gatePwMode === 'import' ? 'Restore' : 'Unlock';
+    }
+  }
 
   // ---------- Setting screen ----------
   document.getElementById('menu-open-setting-btn').addEventListener('click', function(){
