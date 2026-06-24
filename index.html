@@ -191,6 +191,12 @@
   #ts-current-body .ts-shift-actions, #ts-current-body .ts-add-shift-btn { display: none; }
   #ts-current-body.ts-edit-on .ts-shift-actions { display: flex; }
   #ts-current-body.ts-edit-on .ts-add-shift-btn { display: block; }
+  /* Current: two shifts per row to save vertical space (single column in edit mode) */
+  #ts-current-body .ts-day-card-body { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: start; }
+  #ts-current-body .ts-day-card-body > .ts-day-empty,
+  #ts-current-body .ts-day-card-body > .ts-add-shift-btn,
+  #ts-current-body .ts-day-card-body > .ts-add-shift-row { grid-column: 1 / -1; }
+  #ts-current-body.ts-edit-on .ts-day-card-body { grid-template-columns: 1fr; }
 
   /* Timesheet in-page tabs (no screen switch) */
   #ts-tab-host { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
