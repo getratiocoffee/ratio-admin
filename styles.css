@@ -1,7 +1,7 @@
 /* ===================================================================
    Ratio Admin — styles.css  (共用樣式 / 介面設定)
    index.html 與未來每一頁都 <link> 這一個檔案。改外觀都改這裡。
-   build: 2026-06-25g  (RETAIL/ROASTERY 字體調大)
+   build: 2026-06-25h  (Green Bean 改版：底部 icon 列 + timesheet 風 footer)
    =================================================================== */
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -58,6 +58,8 @@
   .glass-footer { display: flex; gap: 12px; align-items: center; margin-top: 12px; flex-shrink: 0; position: relative; min-height: 32px; }
   .glass-footer .frame-label { flex: 1 1 0; text-align: center; }
   .glass-footer .glass-toggle { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+  /* Green Bean footer: toggle stays centered; the label + cycle button group on the right so nothing overlaps the toggle. */
+  #gb-bottom-bar .glass-footer .frame-label { flex: 0 1 auto; margin-left: auto; }
   .glass-swap-btn {
     flex-shrink: 0; width: 38px; height: 38px; border-radius: 50%;
     display: inline-flex; align-items: center; justify-content: center;
