@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Ratio Admin · build 2026-06-25c -->
+<!-- Ratio Admin · build 2026-06-25e -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -52,7 +52,7 @@
       <div class="radar-card" style="max-width:300px; text-align:center;">
         <div id="gate-pw-title" style="font-size:17px;font-weight:700;color:#2E2925;margin-bottom:6px;">Enter password</div>
         <div id="gate-pw-sub" style="font-size:13px;color:#8A7F6F;margin-bottom:20px;">Unlock to continue</div>
-        <input type="password" class="gate-input" id="gate-password-input" placeholder="Password" autocomplete="off" inputmode="numeric" pattern="[0-9]*" style="max-width:100%;margin-bottom:12px;">
+        <input type="password" class="gate-input" id="gate-password-input" placeholder="Password" autocomplete="off" inputmode="text" style="max-width:100%;margin-bottom:12px;">
         <div class="gate-error" id="gate-error" style="min-height:18px;margin-bottom:12px;"></div>
         <button class="gate-btn" id="gate-submit-btn" style="max-width:100%;">Unlock</button>
         <button class="import-confirm-btn cancel" id="gate-pw-cancel" style="width:100%;margin-top:10px;">Cancel</button>
@@ -1953,30 +1953,6 @@
       </div>
     </div>
 
-  </div>
-</div>
-
-<!-- ===== TIME PICKER MODAL ===== -->
-<div class="time-picker-overlay" id="time-picker-overlay">
-  <div class="time-picker-sheet">
-    <div class="time-picker-header">
-      <span class="time-picker-title">Select time</span>
-      <button class="time-picker-done-btn" id="time-picker-done-btn" type="button">Done</button>
-    </div>
-    <div class="time-picker-body">
-      <div class="time-picker-wheel-col">
-        <div class="time-picker-wheel" id="time-picker-hour-wheel"></div>
-      </div>
-      <div class="time-picker-colon">:</div>
-      <div class="time-picker-wheel-col">
-        <div class="time-picker-wheel" id="time-picker-minute-wheel"></div>
-      </div>
-      <div class="time-picker-ampm-col">
-        <button class="time-picker-ampm-btn" id="time-picker-am-btn" type="button" data-period="AM">AM</button>
-        <button class="time-picker-ampm-btn" id="time-picker-pm-btn" type="button" data-period="PM">PM</button>
-      </div>
-    </div>
-
     <!-- ===== SETTING SCREEN ===== -->
     <div class="screen" id="screen-setting">
       <div class="form-topbar">
@@ -2046,6 +2022,29 @@
           Export backup (.json)
         </button>
 
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TIME PICKER MODAL ===== -->
+<div class="time-picker-overlay" id="time-picker-overlay">
+  <div class="time-picker-sheet">
+    <div class="time-picker-header">
+      <span class="time-picker-title">Select time</span>
+      <button class="time-picker-done-btn" id="time-picker-done-btn" type="button">Done</button>
+    </div>
+    <div class="time-picker-body">
+      <div class="time-picker-wheel-col">
+        <div class="time-picker-wheel" id="time-picker-hour-wheel"></div>
+      </div>
+      <div class="time-picker-colon">:</div>
+      <div class="time-picker-wheel-col">
+        <div class="time-picker-wheel" id="time-picker-minute-wheel"></div>
+      </div>
+      <div class="time-picker-ampm-col">
+        <button class="time-picker-ampm-btn" id="time-picker-am-btn" type="button" data-period="AM">AM</button>
+        <button class="time-picker-ampm-btn" id="time-picker-pm-btn" type="button" data-period="PM">PM</button>
       </div>
     </div>
   </div>
@@ -6731,6 +6730,8 @@
     }
     gateError.textContent = '';
     gateInput.value = '';
+    // PIN modes use the numeric keypad; unlock uses the normal (text) keyboard.
+    gateInput.setAttribute('inputmode', (gatePwMode === 'unlock') ? 'text' : 'numeric');
     ov.classList.add('visible');
     setTimeout(function(){ gateInput.focus(); }, 100);
   }
