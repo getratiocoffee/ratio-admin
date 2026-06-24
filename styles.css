@@ -990,7 +990,7 @@
     align-items: center; justify-content: center;
   }
   .gate-top img { display: block; margin-bottom: 6px; }
-  .gate-fingerprint { margin-top: 18px; opacity: 0.9; }
+  .gate-fingerprint { flex: 1; display: flex; align-items: center; justify-content: center; opacity: 0.9; }
   .gate-screen .brand-name { font-size: 20px; line-height: 1.3; }
   .gate-bottom { width: 100%; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
   
