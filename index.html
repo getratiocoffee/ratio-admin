@@ -304,24 +304,29 @@
     </div>
 
     <!-- ===== ADD NEW TIMESHEET SCREEN ===== -->
-    <div class="screen" id="screen-ts-add">
-      <div class="form-topbar">
-        <div class="back-btn" id="ts-add-back-btn" aria-label="Back">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <div class="radar-overlay" id="ts-add-overlay" style="z-index:1150;">
+      <div class="ts-add-card">
+        <div class="ts-add-card-head">
+          <div class="ts-add-card-headtext">
+            <div class="cc-eyebrow">New timesheet</div>
+            <div class="ts-add-card-title">Add hours</div>
+          </div>
+          <button class="ts-add-close" id="ts-add-back-btn" type="button" aria-label="Close">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
         </div>
-        <h1>Add New Timesheet</h1>
-      </div>
-      <div class="form-scroll">
-        <div class="ts-week-picker" id="ts-week-picker">
-          <button class="ts-week-picker-btn active" data-offset="1" type="button">Next week</button>
-          <button class="ts-week-picker-btn" data-offset="2" type="button">Week after next</button>
+        <div class="ts-add-card-body">
+          <div class="ts-week-picker" id="ts-week-picker">
+            <button class="ts-week-picker-btn active" data-offset="1" type="button">Next week</button>
+            <button class="ts-week-picker-btn" data-offset="2" type="button">Week after next</button>
+          </div>
+          <p class="field-hint" id="ts-add-range" style="margin-bottom: 14px;"></p>
+          <div id="ts-add-days"></div>
         </div>
-        <p class="field-hint" id="ts-add-range" style="margin-bottom: 14px;"></p>
-        <div id="ts-add-days"></div>
-      </div>
-      <div class="form-bottom-bar">
-        <button class="btn-save" id="ts-save-week-btn">Save timesheet</button>
-        <p class="required-hint" id="ts-save-hint">Hours will be added to this week's timesheet.</p>
+        <div class="ts-add-card-foot">
+          <button class="btn-save" id="ts-save-week-btn">Save timesheet</button>
+          <p class="required-hint" id="ts-save-hint">Hours will be added to this week's timesheet.</p>
+        </div>
       </div>
     </div>
 
@@ -2383,7 +2388,7 @@
     openRoastedScreen();
   });
   document.getElementById('banner-timesheet').addEventListener('click', function(){
-    tsAddWeekOffset = 1; openAddTimesheetScreen(); showScreen('screen-ts-add');
+    tsAddWeekOffset = 1; openAddTimesheetScreen();
   });
   document.getElementById('banner-beans').addEventListener('click', function(){
     state.showOnlyIncomplete = true; showScreen('screen-list'); render();
@@ -4005,25 +4010,29 @@
   var timePickerPeriod = 'AM';
   var WHEEL_ITEM_HEIGHT = 60;
 
-  function buildWheel(containerId, count, formatFn, startAt){
+  function buildWheel(containerId, count, formatFn, step){
+    step = step || 1;
     var el = document.getElementById(containerId);
     var html = '<div class="time-picker-wheel-frame"></div>';
     html += '<div class="time-picker-wheel-spacer" style="height:' + WHEEL_ITEM_HEIGHT + 'px;"></div>';
     for (var i = 0; i < count; i++) {
-      html += '<div class="time-picker-wheel-item" data-value="' + i + '">' + formatFn(i) + '</div>';
+      var val = i * step;
+      html += '<div class="time-picker-wheel-item" data-value="' + val + '">' + formatFn(val) + '</div>';
     }
     html += '<div class="time-picker-wheel-spacer" style="height:' + WHEEL_ITEM_HEIGHT + 'px;"></div>';
     el.innerHTML = html;
   }
 
-  function scrollWheelTo(containerId, value){
+  function scrollWheelTo(containerId, value, step){
+    step = step || 1;
     var el = document.getElementById(containerId);
-    el.scrollTop = value * WHEEL_ITEM_HEIGHT;
+    el.scrollTop = (value / step) * WHEEL_ITEM_HEIGHT;
   }
 
-  function getWheelValue(containerId){
+  function getWheelValue(containerId, step){
+    step = step || 1;
     var el = document.getElementById(containerId);
-    return Math.round(el.scrollTop / WHEEL_ITEM_HEIGHT);
+    return Math.round(el.scrollTop / WHEEL_ITEM_HEIGHT) * step;
   }
 
   function highlightWheel(containerId, value){
@@ -4034,8 +4043,8 @@
   }
 
   function initTimePickerWheels(){
-    buildWheel('time-picker-hour-wheel', 12, function(i){ return i === 0 ? 12 : i; }, 0);
-    buildWheel('time-picker-minute-wheel', 60, function(i){ return String(i).padStart(2, '0'); }, 0);
+    buildWheel('time-picker-hour-wheel', 12, function(v){ return v === 0 ? 12 : v; }, 1);
+    buildWheel('time-picker-minute-wheel', 4, function(v){ return String(v).padStart(2, '0'); }, 15);
 
     var hourEl = document.getElementById('time-picker-hour-wheel');
     var minuteEl = document.getElementById('time-picker-minute-wheel');
@@ -4044,7 +4053,7 @@
     hourEl.addEventListener('scroll', function(){
       clearTimeout(hourScrollTimeout);
       hourScrollTimeout = setTimeout(function(){
-        var v = getWheelValue('time-picker-hour-wheel');
+        var v = getWheelValue('time-picker-hour-wheel', 1);
         timePickerHour = v === 0 ? 12 : v;
         highlightWheel('time-picker-hour-wheel', v);
       }, 80);
@@ -4053,7 +4062,7 @@
     minuteEl.addEventListener('scroll', function(){
       clearTimeout(minuteScrollTimeout);
       minuteScrollTimeout = setTimeout(function(){
-        var v = getWheelValue('time-picker-minute-wheel');
+        var v = getWheelValue('time-picker-minute-wheel', 15);
         timePickerMinute = v;
         highlightWheel('time-picker-minute-wheel', v);
       }, 80);
@@ -4074,14 +4083,16 @@
     var current = inputEl.getAttribute('data-value') || '';
     var t = current ? to12Hour(current) : { hour: 9, minute: 0, period: 'AM' };
     timePickerHour = t.hour;
-    timePickerMinute = t.minute;
+    var snappedMin = Math.round(t.minute / 15) * 15;
+    if (snappedMin >= 60) snappedMin = 45;
+    timePickerMinute = snappedMin;
     setAmPmActive(t.period);
 
     var hourWheelValue = t.hour === 12 ? 0 : t.hour;
-    scrollWheelTo('time-picker-hour-wheel', hourWheelValue);
-    scrollWheelTo('time-picker-minute-wheel', t.minute);
+    scrollWheelTo('time-picker-hour-wheel', hourWheelValue, 1);
+    scrollWheelTo('time-picker-minute-wheel', snappedMin, 15);
     highlightWheel('time-picker-hour-wheel', hourWheelValue);
-    highlightWheel('time-picker-minute-wheel', t.minute);
+    highlightWheel('time-picker-minute-wheel', snappedMin);
 
     document.getElementById('time-picker-overlay').classList.add('visible');
   }
@@ -4851,7 +4862,7 @@
       btn.classList.toggle('active', parseInt(btn.getAttribute('data-offset'), 10) === 1);
     });
     refreshAddTimesheetWeek();
-    showScreen('screen-ts-add');
+    document.getElementById('ts-add-overlay').classList.add('visible');
   }
 
   document.getElementById('ts-week-picker').addEventListener('click', function(e){
@@ -4868,8 +4879,7 @@
 
   document.getElementById('ts-open-add-btn').addEventListener('click', openAddTimesheetScreen);
   document.getElementById('ts-add-back-btn').addEventListener('click', function(){
-    showScreen('screen-timesheet');
-    showTsTab('current');
+    document.getElementById('ts-add-overlay').classList.remove('visible');
   });
 
   document.getElementById('ts-save-week-btn').addEventListener('click', function(){
@@ -4891,8 +4901,7 @@
     });
 
     persistTimesheets();
-    showScreen('screen-timesheet');
-    showTsTab('current');
+    document.getElementById('ts-add-overlay').classList.remove('visible');
   });
 
   // ----- Previous timesheets -----

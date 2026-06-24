@@ -826,6 +826,25 @@
   #na-add-overlay .cc-body { max-height: calc(88vh - 96px); overflow-y: auto; overscroll-behavior: contain; }
   #na-add-overlay .na-staff-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 
+  /* --- Add-timesheet popup card --- */
+  .ts-add-card {
+    width: min(440px, 94vw); max-height: 90vh; display: flex; flex-direction: column;
+    border-radius: 22px; overflow: hidden; background: #FAF6F0;
+    box-shadow: 0 18px 50px -12px rgba(0, 0, 0, 0.45);
+  }
+  .ts-add-card-head { background: #463E3A; padding: 16px 18px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .ts-add-card-headtext { flex: 1; min-width: 0; }
+  .ts-add-card-title { font-size: 18px; font-weight: 700; color: #FAF6F0; margin-top: 2px; }
+  .ts-add-close {
+    width: 36px; height: 36px; border-radius: 50%; border: none; flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.14); color: #FAF6F0; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    -webkit-tap-highlight-color: transparent; transition: background 0.15s ease;
+  }
+  .ts-add-close:active { background: rgba(255, 255, 255, 0.3); }
+  .ts-add-card-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 16px 18px; }
+  .ts-add-card-foot { padding: 14px 18px; border-top: 1px solid #E8E0D3; background: #FAF6F0; flex-shrink: 0; }
+
   .sn-session-card {
     border: 1.5px solid #DCD2C2; border-radius: 16px; padding: 14px;
     margin-bottom: 10px; background: #FFFFFF; cursor: pointer;
@@ -1000,7 +1019,7 @@
 
   .time-picker-overlay {
     display: none; position: fixed; inset: 0; background: rgba(46, 41, 37, 0.4);
-    z-index: 1000; align-items: flex-end; justify-content: center;
+    z-index: 1400; align-items: flex-end; justify-content: center;
     touch-action: none; overscroll-behavior: contain;
   }
   .time-picker-overlay.visible { display: flex; }
