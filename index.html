@@ -612,6 +612,9 @@
   .ts-shift-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
   .ts-shift-hours { font-size: 13px; font-weight: 600; color: #463E3A; flex-shrink: 0; }
   .ts-shift-time { font-size: 13px; color: #463E3A; margin-top: 2px; }
+  .na-staff-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .na-staff-chip { padding: 8px 14px; border-radius: 999px; border: 1.5px solid #DCD2C2; background: #FFFFFF; color: #463E3A; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; }
+  .na-staff-chip.selected { background: #463E3A; color: #FFFFFF; border-color: #463E3A; }
   .ts-shift-actions { display: flex; gap: 6px; flex-shrink: 0; }
   .ts-shift-edit-btn, .ts-shift-delete-btn {
     width: 32px; height: 32px; border-radius: 10px; border: 1.5px solid #DCD2C2;
@@ -1252,8 +1255,8 @@
       <!-- New request form pushed to bottom -->
       <div style="flex-shrink:0; padding:12px 20px 0; border-top:1px solid #DCD2C2;">
         <div class="field-group">
-          <label class="field-label">Staff member</label>
-          <select class="field-input" id="na-staff-select"></select>
+          <label class="field-label">Staff member (can pick multiple)</label>
+          <div id="na-staff-checks" class="na-staff-chips"></div>
         </div>
         <div class="field-row">
           <div class="field-group">
@@ -5904,6 +5907,10 @@
     return dates;
   }
 
+  function getSelectedNaStaffIds(){
+    return [].map.call(document.querySelectorAll('#na-staff-checks .na-staff-chip.selected'), function(b){ return b.getAttribute('data-staff-id'); });
+  }
+
   function updateNaPreview(){
     var start = document.getElementById('na-start-select').value;
     var end = document.getElementById('na-end-select').value;
@@ -5921,7 +5928,7 @@
       ? '1 day selected.'
       : count + ' days selected (' + new Date(start + 'T00:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })
         + ' \u2013 ' + new Date(end + 'T00:00:00').toLocaleDateString('en-AU', { day: 'numeric', month: 'short' }) + ').';
-    saveBtn.disabled = false;
+    saveBtn.disabled = (getSelectedNaStaffIds().length === 0);
   }
 
   function renderNaBanner(){
@@ -5989,9 +5996,9 @@
     var opts = buildNaDateOptions();
     document.getElementById('na-start-select').innerHTML = opts;
     document.getElementById('na-end-select').innerHTML = opts;
-    var sel = document.getElementById('na-staff-select');
-    sel.innerHTML = staffList.map(function(s){
-      return '<option value="' + s.id + '">' + esc(s.name) + '</option>';
+    var checks = document.getElementById('na-staff-checks');
+    checks.innerHTML = staffList.map(function(s){
+      return '<button type="button" class="na-staff-chip" data-staff-id="' + s.id + '">' + esc(s.name) + '</button>';
     }).join('');
     document.getElementById('na-period-preview').style.display = 'none';
     document.getElementById('na-save-btn').disabled = true;
@@ -6009,6 +6016,13 @@
     updateNaPreview();
   });
   document.getElementById('na-end-select').addEventListener('change', updateNaPreview);
+  var naStaffChecksEl = document.getElementById('na-staff-checks');
+  if (naStaffChecksEl) naStaffChecksEl.addEventListener('click', function(e){
+    var chip = e.target.closest('.na-staff-chip');
+    if (!chip) return;
+    chip.classList.toggle('selected');
+    updateNaPreview();
+  });
   document.getElementById('ts-open-na-btn').addEventListener('click', openNaScreen);
   document.getElementById('ts-na-back-btn').addEventListener('click', function(){
     showScreen('screen-timesheet');
@@ -6018,19 +6032,23 @@
     var start = document.getElementById('na-start-select').value;
     var end = document.getElementById('na-end-select').value;
     if (!start || !end || end < start) return;
-    var staffId = document.getElementById('na-staff-select').value;
-    var staffMember = staffList.find(function(s){ return s.id === staffId; });
-    if (!staffMember) return;
+    var staffIds = getSelectedNaStaffIds();
+    if (!staffIds.length) return;
     var newDates = getDatesBetween(start, end);
-    var existing = naRequests.find(function(r){ return r.staffId === staffId; });
-    if (existing) {
-      newDates.forEach(function(d){
-        if (existing.dates.indexOf(d) === -1) existing.dates.push(d);
-      });
-    } else {
-      naRequests.push({ id: uid(), staffId: staffId, staffName: staffMember.name, dates: newDates });
-    }
+    staffIds.forEach(function(staffId){
+      var staffMember = staffList.find(function(s){ return s.id === staffId; });
+      if (!staffMember) return;
+      var existing = naRequests.find(function(r){ return r.staffId === staffId; });
+      if (existing) {
+        newDates.forEach(function(d){
+          if (existing.dates.indexOf(d) === -1) existing.dates.push(d);
+        });
+      } else {
+        naRequests.push({ id: uid(), staffId: staffId, staffName: staffMember.name, dates: newDates });
+      }
+    });
     saveWithStatus(saveNaToServer(naRequests));
+    document.querySelectorAll('#na-staff-checks .na-staff-chip.selected').forEach(function(b){ b.classList.remove('selected'); });
     document.getElementById('na-period-preview').style.display = 'none';
     document.getElementById('na-save-btn').disabled = true;
     renderNaExistingList();
