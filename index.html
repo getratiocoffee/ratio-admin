@@ -6687,12 +6687,15 @@
   }
 
   gateSubmitBtn.addEventListener('click', function(){
-    var pw = gateInput.value || '0000';
-    if (gatePwMode === 'export') { runGateExport(pw); return; }
-    if (gatePwMode === 'import') { runGateImport(pw); return; }
+    if (gatePwMode === 'export' || gatePwMode === 'import') {
+      var pin = gateInput.value.trim();
+      if (!pin) { gateError.textContent = 'Please enter the owner PIN.'; return; }
+      if (gatePwMode === 'export') runGateExport(pin); else runGateImport(pin);
+      return;
+    }
     // === DEV BYPASS (暫時) ：按 Unlock 直接用預設密碼進入。
     //     要還原密碼：刪掉下面這一行、把再下面的區塊取消註解即可。 ===
-    attemptUnlock(pw);
+    attemptUnlock(gateInput.value || '0000');
     // var pw = gateInput.value;
     // if (!pw) {
     //   gateError.textContent = 'Please enter the password.';
@@ -6711,16 +6714,18 @@
     var titleEl = document.getElementById('gate-pw-title');
     var subEl = document.getElementById('gate-pw-sub');
     if (gatePwMode === 'export') {
-      if (subEl) subEl.textContent = 'Verify to export a backup';
+      if (titleEl) titleEl.textContent = 'Owner PIN';
+      if (subEl) subEl.textContent = 'Enter the owner PIN to export a backup';
       gateSubmitBtn.textContent = 'Export';
     } else if (gatePwMode === 'import') {
-      if (subEl) subEl.textContent = 'Verify to restore this backup';
+      if (titleEl) titleEl.textContent = 'Owner PIN';
+      if (subEl) subEl.textContent = 'Enter the owner PIN to restore this backup';
       gateSubmitBtn.textContent = 'Restore';
     } else {
+      if (titleEl) titleEl.textContent = 'Enter password';
       if (subEl) subEl.textContent = 'Unlock to continue';
       gateSubmitBtn.textContent = 'Unlock';
     }
-    if (titleEl) titleEl.textContent = 'Enter password';
     gateError.textContent = '';
     gateInput.value = '';
     ov.classList.add('visible');
@@ -6771,53 +6776,108 @@
     });
   }
 
-  async function runGateExport(pw){
+  // Build the .json file from server-provided data and trigger download.
+  function downloadBackup(data){
+    try {
+      var d = new Date();
+      var pad = function(n){ return (n < 10 ? '0' : '') + n; };
+      var stamp = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+      var payload = {
+        app: 'Ratio Coffee',
+        exportedAt: d.toISOString(),
+        note: 'Local backup. Customer personal details are intentionally excluded for privacy.',
+        data: data
+      };
+      var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'ratio-backup-' + stamp + '.json';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){ try { document.body.removeChild(a); } catch(e){} URL.revokeObjectURL(url); }, 200);
+      showToast('Backup downloaded', false);
+    } catch (e) {
+      showToast("Couldn't export backup", true);
+    }
+  }
+
+  // Export: owner PIN -> /api/backup pulls all data straight from the server.
+  async function runGateExport(pin){
     var gfp = document.getElementById('gate-fingerprint-btn');
     gateError.textContent = '';
     if (gfp) gfp.classList.add('busy');
     gateSubmitBtn.disabled = true;
     gateSubmitBtn.textContent = 'Checking\u2026';
-    setSessionPassword(pw);
     try {
-      await loadAllData();   // verifies password (throws if wrong) + loads everything
-      exportBackup();        // downloads the .json
+      var res = await fetch('/api/backup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: pin, action: 'export' })
+      });
+      if (res.status === 401) { gateError.textContent = 'Incorrect PIN. Please try again.'; return; }
+      if (!res.ok) { gateError.textContent = "Couldn't export. Please try again."; return; }
+      var payload = await res.json();
+      downloadBackup(payload && payload.data ? payload.data : {});
       closeGatePwOverlay();
     } catch (e) {
-      if (e && e.unauthorized) gateError.textContent = 'Incorrect password. Please try again.';
-      else gateError.textContent = "Couldn't connect. Check your internet connection and try again.";
+      gateError.textContent = 'Connection error. Please try again.';
     } finally {
-      setSessionPassword('');  // re-lock: viewing/exporting never grants a session
       if (gfp) gfp.classList.remove('busy');
       gateSubmitBtn.disabled = false;
       gateSubmitBtn.textContent = gatePwMode === 'export' ? 'Export' : 'Unlock';
     }
   }
 
-  async function runGateImport(pw){
+  // Import: verify owner PIN first, confirm, then /api/backup writes all data back.
+  async function runGateImport(pin){
     if (!_gateImportData) { closeGatePwOverlay(); return; }
     var gfp = document.getElementById('gate-fingerprint-btn');
     gateError.textContent = '';
     if (gfp) gfp.classList.add('busy');
     gateSubmitBtn.disabled = true;
     gateSubmitBtn.textContent = 'Checking\u2026';
-    setSessionPassword(pw);
+    var d = _gateImportData;
+    var pinVal = pin;
     try {
-      await loadBeansFromServer();  // harmless GET probe: throws unauthorized on wrong password
-      var d = _gateImportData;
+      // Cheap PIN check before showing the destructive confirm dialog.
+      var vres = await fetch('/api/transfer-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: pinVal })
+      });
+      if (vres.status === 401) { gateError.textContent = 'Incorrect PIN. Please try again.'; return; }
+      if (!vres.ok) { gateError.textContent = 'Connection error. Please try again.'; return; }
       closeGatePwOverlay();
       confirmDanger(
         'Restore this backup? This replaces ALL current data and cannot be undone.',
-        function(){ applyBackup(d); },   // keeps session password so it can write back, then reloads
+        function(){ doGateImport(d, pinVal); },
         { title: 'Restore backup?', okText: 'Restore' }
       );
     } catch (e) {
-      setSessionPassword('');
-      if (e && e.unauthorized) gateError.textContent = 'Incorrect password. Please try again.';
-      else gateError.textContent = "Couldn't connect. Check your internet connection and try again.";
+      gateError.textContent = 'Connection error. Please try again.';
     } finally {
       if (gfp) gfp.classList.remove('busy');
       gateSubmitBtn.disabled = false;
       gateSubmitBtn.textContent = gatePwMode === 'import' ? 'Restore' : 'Unlock';
+    }
+  }
+
+  // Push the restored data back to the server via the PIN-authorised backup route.
+  async function doGateImport(data, pin){
+    showToast('Restoring backup\u2026', false);
+    try {
+      var res = await fetch('/api/backup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: pin, action: 'import', data: data })
+      });
+      if (!res.ok) throw new Error('import failed ' + res.status);
+      showToast('Backup restored', false);
+      setTimeout(function(){ location.reload(); }, 700);
+    } catch (e) {
+      logError('gate-import', e && (e.message || e));
+      showToast('Restore failed \u2014 please try again', true);
     }
   }
 
