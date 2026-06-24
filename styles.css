@@ -1,7 +1,7 @@
 /* ===================================================================
    Ratio Admin — styles.css  (共用樣式 / 介面設定)
    index.html 與未來每一頁都 <link> 這一個檔案。改外觀都改這裡。
-   build: 2026-06-25f  (所有密碼/PIN 框統一數字鍵盤)
+   build: 2026-06-25g  (RETAIL/ROASTERY 字體調大)
    =================================================================== */
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -95,7 +95,7 @@
   .frame-col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
   .frame-label {
     min-width: 0;
-    font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+    font-size: 14px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
     color: #8A7F6F; white-space: nowrap;
   }
   .glass-frame {
