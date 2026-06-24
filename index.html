@@ -1127,6 +1127,37 @@
       </div>
     </div>
 
+    <!-- Add contact "name card" popup -->
+    <div class="radar-overlay" id="contact-add-overlay" style="z-index:1200;">
+      <div class="cc-card">
+        <div class="cc-header">
+          <div class="cc-avatar" id="cc-avatar">?</div>
+          <div class="cc-headtext">
+            <div class="cc-eyebrow">New contact</div>
+            <div class="cc-name-preview placeholder" id="cc-name-preview">Add a staff member</div>
+          </div>
+        </div>
+        <div class="cc-body">
+          <div class="field-group">
+            <label class="field-label">Name <span style="color:#A32D2D;">*</span></label>
+            <input type="text" class="field-input" id="cc-name" placeholder="e.g. Jordan Pak" autocomplete="off">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Contact number</label>
+            <input type="tel" class="field-input" id="cc-phone" placeholder="e.g. 0412 345 678" inputmode="tel">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Email</label>
+            <input type="email" class="field-input" id="cc-email" placeholder="e.g. jordan@example.com" inputmode="email">
+          </div>
+          <div class="cc-actions">
+            <button class="cc-add-btn" id="cc-add-btn" type="button">Add contact</button>
+            <button class="cc-cancel-btn" id="cc-cancel-btn" type="button">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Radar chart overlay -->
     <div class="radar-overlay" id="radar-overlay">
       <div class="radar-card">
@@ -4320,12 +4351,59 @@
     document.getElementById('staff-email-input').value = '';
   });
 
+  // ---------- Add contact "name card" popup ----------
+  function ccUpdatePreview(){
+    var v = (document.getElementById('cc-name').value || '').trim();
+    var av = document.getElementById('cc-avatar');
+    var np = document.getElementById('cc-name-preview');
+    if (v) {
+      av.textContent = contactInitial(v);
+      av.style.background = contactColor(v);
+      np.textContent = v;
+      np.classList.remove('placeholder');
+    } else {
+      av.textContent = '?';
+      av.style.background = '#6B5E54';
+      np.textContent = 'Add a staff member';
+      np.classList.add('placeholder');
+    }
+  }
+  function openContactAddCard(){
+    document.getElementById('cc-name').value = '';
+    document.getElementById('cc-phone').value = '';
+    document.getElementById('cc-email').value = '';
+    ccUpdatePreview();
+    document.getElementById('contact-add-overlay').classList.add('visible');
+    setTimeout(function(){ var n = document.getElementById('cc-name'); if (n) n.focus(); }, 60);
+  }
+  function closeContactAddCard(){
+    document.getElementById('contact-add-overlay').classList.remove('visible');
+  }
+  document.getElementById('cc-name').addEventListener('input', ccUpdatePreview);
+  document.getElementById('cc-add-btn').addEventListener('click', function(){
+    var name = document.getElementById('cc-name').value.trim();
+    if (!name) { document.getElementById('cc-name').focus(); return; }
+    staffList.push({
+      id: uid(),
+      name: name,
+      phone: document.getElementById('cc-phone').value.trim(),
+      email: document.getElementById('cc-email').value.trim()
+    });
+    persistStaff();
+    closeContactAddCard();
+    renderStaffContacts();
+  });
+  document.getElementById('cc-cancel-btn').addEventListener('click', closeContactAddCard);
+  document.getElementById('contact-add-overlay').addEventListener('click', function(e){
+    if (e.target === this) closeContactAddCard();
+  });
+
   // ---------- Timesheet in-page tabs (open content on this page, no screen switch) ----------
   var TS_TABS = {
     current:  { body: 'ts-current-body',  icon: 'ts-open-current-btn',  title: 'Current Timesheet',  render: function(){ renderCurrentTimesheet(); scrollCurrentToToday(); }, action: openAddTimesheetScreen },
     previous: { body: 'ts-previous-body', icon: 'ts-open-previous-btn', title: 'Previous Timesheets', render: function(){ renderPreviousTimesheets(); } },
     na:       { body: 'ts-na-body',       icon: 'ts-open-na-btn',       title: 'Request N/A',         render: null /* openNaScreen populates then calls showTsTab */ },
-    contacts: { body: 'ts-contacts-body', icon: 'ts-open-contacts-btn', title: 'Staff Contacts',      render: function(){ renderStaffContacts(); }, action: toggleStaffAddForm }
+    contacts: { body: 'ts-contacts-body', icon: 'ts-open-contacts-btn', title: 'Staff Contacts',      render: function(){ renderStaffContacts(); }, action: openContactAddCard }
   };
   var tsTabsRelocated = false;
   var tsActiveTab = null;
@@ -4404,10 +4482,7 @@
   });
 
   document.getElementById('staff-add-open-btn').addEventListener('click', function(){
-    var form = document.getElementById('staff-add-form');
-    var isVisible = form.style.display !== 'none';
-    form.style.display = isVisible ? 'none' : 'block';
-    if (!isVisible) document.getElementById('staff-name-input').focus();
+    openContactAddCard();
   });
 
   document.getElementById('ts-open-contacts-btn').addEventListener('click', function(){

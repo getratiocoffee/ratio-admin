@@ -786,6 +786,28 @@
     font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 16px;
   }
 
+  .cc-card {
+    width: min(360px, 92vw); max-height: 88vh; overflow: hidden;
+    border-radius: 22px; background: #463E3A;
+    box-shadow: 0 18px 50px -12px rgba(0,0,0,0.45);
+  }
+  .cc-header { display: flex; align-items: center; gap: 14px; padding: 22px 22px 18px; }
+  .cc-avatar {
+    width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: #6B5E54; color: #FFFFFF; font-weight: 700; font-size: 19px;
+    letter-spacing: 0.02em; transition: background 0.25s ease;
+  }
+  .cc-headtext { min-width: 0; }
+  .cc-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #B9A88F; }
+  .cc-name-preview { font-size: 18px; font-weight: 700; color: #FAF6F0; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cc-name-preview.placeholder { color: #8A7E72; font-weight: 600; }
+  .cc-body { background: #FAF6F0; border-radius: 18px 18px 22px 22px; padding: 18px; }
+  .cc-actions { display: flex; gap: 10px; margin-top: 2px; }
+  .cc-add-btn { flex: 1; padding: 14px 0; border-radius: 14px; border: none; background: #463E3A; color: #FFFFFF; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; }
+  .cc-add-btn:active { background: #2E2925; }
+  .cc-cancel-btn { flex: 0.5; padding: 14px 0; border-radius: 14px; border: 1px solid #DCD2C2; background: transparent; color: #8A7F6F; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; }
+
   .sn-session-card {
     border: 1.5px solid #DCD2C2; border-radius: 16px; padding: 14px;
     margin-bottom: 10px; background: #FFFFFF; cursor: pointer;
