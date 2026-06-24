@@ -316,10 +316,13 @@
         </div>
         <h1>Previous Timesheets</h1>
       </div>
-<div id="ts-previous-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; justify-content:flex-start; overflow:hidden; min-height:0;">
+<div id="ts-previous-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; justify-content:flex-start; overflow:hidden; min-height:0; position:relative;">
         <div style="overflow-y:auto; overscroll-behavior:contain; padding:16px 20px max(20px, env(safe-area-inset-bottom)); flex-shrink:0; max-height:100%;">
           <div id="ts-previous-list"></div>
         </div>
+        <button id="ts-email-fab" aria-label="Email staff hours" style="position:absolute; right:18px; bottom:18px; z-index:6; width:54px; height:54px; border-radius:50%; border:none; background:#463E3A; color:#fff; box-shadow:0 6px 16px -4px rgba(70,62,58,0.45); display:flex; align-items:center; justify-content:center; cursor:pointer;">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        </button>
       </div>
     </div>
 
@@ -1101,6 +1104,24 @@
         <div id="confirm-message" style="font-size:13px;color:#8A7F6F;margin-bottom:20px;">This cannot be undone.</div>
         <button class="import-confirm-btn confirm" id="confirm-ok-btn" style="width:100%;background:#A32D2D;">Delete</button>
         <button class="import-confirm-btn cancel" id="confirm-cancel-btn" style="width:100%;margin-top:10px;">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Email staff hours dialog -->
+    <div class="radar-overlay" id="email-overlay" style="z-index:1200;">
+      <div class="radar-card" style="max-width:340px;">
+        <div style="font-size:17px;font-weight:700;color:#2E2925;margin-bottom:14px;">Email staff hours</div>
+        <div class="field-group">
+          <label class="field-label">Week</label>
+          <select class="field-input" id="email-week-select"></select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Send to</label>
+          <input type="email" class="field-input" id="email-recipient" value="lashandmi@gmail.com" inputmode="email" autocomplete="off" spellcheck="false">
+        </div>
+        <div id="email-preview" style="font-size:12px;color:#6B5E54;line-height:1.55;background:#F1E9DC;border-radius:12px;padding:12px 14px;margin-bottom:16px;white-space:pre-wrap;max-height:170px;overflow-y:auto;"></div>
+        <button class="import-confirm-btn confirm" id="email-send-btn" style="width:100%;">Open in email app</button>
+        <button class="import-confirm-btn cancel" id="email-cancel-btn" style="width:100%;margin-top:10px;">Cancel</button>
       </div>
     </div>
 
@@ -4764,6 +4785,79 @@
   document.getElementById('ts-previous-back-btn').addEventListener('click', function(){
     showScreen('screen-timesheet');
   });
+
+  // ----- Email staff hours (from Previous) -----
+  var emailRecipient = 'lashandmi@gmail.com';
+  function emailPastWeeks(){
+    return timesheets.filter(function(w){ return isWeekPast(w.weekStart); })
+      .sort(function(a, b){ return new Date(b.weekStart) - new Date(a.weekStart); });
+  }
+  function buildHoursEmail(week){
+    var dates = weekDates(week.weekStart);
+    var range = fmtShortDate(week.weekStart) + ' \u2013 ' + fmtShortDate(dates.sun);
+    var perStaff = {};
+    DAY_KEYS.forEach(function(dk){
+      (week.days[dk] || []).forEach(function(s){
+        var h = workedHours(s.start, s.end, dk);
+        if (h == null) return;
+        var name = s.staffName || 'Unknown';
+        perStaff[name] = (perStaff[name] || 0) + h;
+      });
+    });
+    var totals = computeWeekTotals(week);
+    var grand = totals.weekday + totals.sat + totals.sun;
+    var lines = ['Ratio Coffee \u2014 Staff hours', 'Week: ' + range, ''];
+    var names = Object.keys(perStaff).sort();
+    if (names.length === 0) lines.push('(No shifts recorded)');
+    names.forEach(function(n){ lines.push(n + ': ' + fmtHours(perStaff[n])); });
+    lines.push('');
+    lines.push('Weekday: ' + fmtHours(totals.weekday));
+    lines.push('Saturday: ' + fmtHours(totals.sat));
+    lines.push('Sunday: ' + fmtHours(totals.sun));
+    lines.push('Total: ' + fmtHours(grand));
+    return { subject: 'Ratio staff hours: ' + range, body: lines.join('\n') };
+  }
+  function refreshEmailPreview(){
+    var ws = document.getElementById('email-week-select').value;
+    var week = timesheets.find(function(w){ return w.weekStart === ws; });
+    document.getElementById('email-preview').textContent = week ? buildHoursEmail(week).body : 'No completed weeks yet.';
+  }
+  function openEmailDialog(){
+    var weeks = emailPastWeeks();
+    document.getElementById('email-week-select').innerHTML = weeks.map(function(w){
+      var d = weekDates(w.weekStart);
+      return '<option value="' + w.weekStart + '">' + fmtShortDate(w.weekStart) + ' \u2013 ' + fmtShortDate(d.sun) + '</option>';
+    }).join('');
+    document.getElementById('email-recipient').value = emailRecipient;
+    var sendBtn = document.getElementById('email-send-btn');
+    sendBtn.disabled = weeks.length === 0;
+    sendBtn.style.opacity = weeks.length === 0 ? '0.5' : '';
+    refreshEmailPreview();
+    document.getElementById('email-overlay').classList.add('visible');
+  }
+  function closeEmailDialog(){ document.getElementById('email-overlay').classList.remove('visible'); }
+  function sendHoursEmail(){
+    var ws = document.getElementById('email-week-select').value;
+    var week = timesheets.find(function(w){ return w.weekStart === ws; });
+    if (!week) return;
+    var to = (document.getElementById('email-recipient').value || '').trim() || 'lashandmi@gmail.com';
+    emailRecipient = to;
+    var mail = buildHoursEmail(week);
+    closeEmailDialog();
+    window.location.href = 'mailto:' + to + '?subject=' + encodeURIComponent(mail.subject) + '&body=' + encodeURIComponent(mail.body);
+  }
+  (function(){
+    var fab = document.getElementById('ts-email-fab');
+    if (fab) fab.addEventListener('click', openEmailDialog);
+    var weekSel = document.getElementById('email-week-select');
+    if (weekSel) weekSel.addEventListener('change', refreshEmailPreview);
+    var sendBtn = document.getElementById('email-send-btn');
+    if (sendBtn) sendBtn.addEventListener('click', sendHoursEmail);
+    var cancelBtn = document.getElementById('email-cancel-btn');
+    if (cancelBtn) cancelBtn.addEventListener('click', closeEmailDialog);
+    var ov = document.getElementById('email-overlay');
+    if (ov) ov.addEventListener('click', function(e){ if (e.target === ov) closeEmailDialog(); });
+  })();
 
   // ---------- Request N/A ----------
 
