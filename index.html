@@ -2946,6 +2946,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 (function(){
+  // ===== APP 版本 — 每次發布前改這裡,並把 version.json 改成「同一個值」 =====
+  var APP_VERSION = '2026.06.24';
   var STORAGE_KEY = 'ratio-admin-inventory-v1';
   var LOW_STOCK_THRESHOLD = 10;
 
@@ -7660,6 +7662,45 @@
     }, true);
   })();
 
+
+  // ---------- Auto-update: poll deployed version.json, prompt to reload when it changes ----------
+  function showUpdateBanner(){
+    if (document.getElementById('app-update-banner')) return;
+    var bar = document.createElement('div');
+    bar.id = 'app-update-banner';
+    bar.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));z-index:3000;display:flex;align-items:center;gap:12px;padding:11px 12px 11px 16px;border-radius:16px;background:#463E3A;color:#fff;font-family:inherit;font-size:14px;font-weight:600;box-shadow:0 6px 22px rgba(46,41,37,0.32);max-width:92vw;';
+    var label = document.createElement('span');
+    label.textContent = '\u6709\u65b0\u7248\u672c\u53ef\u7528';
+    var btn = document.createElement('button');
+    btn.textContent = '\u66f4\u65b0';
+    btn.style.cssText = 'border:none;background:#A08858;color:#fff;font-family:inherit;font-size:14px;font-weight:700;padding:8px 18px;border-radius:11px;cursor:pointer;';
+    btn.addEventListener('click', function(){ location.reload(); });
+    var close = document.createElement('button');
+    close.setAttribute('aria-label', 'Dismiss');
+    close.textContent = '\u00d7';
+    close.style.cssText = 'border:none;background:transparent;color:rgba(255,255,255,0.7);font-size:22px;line-height:1;cursor:pointer;padding:0 4px;';
+    close.addEventListener('click', function(){ bar.remove(); });
+    bar.appendChild(label); bar.appendChild(btn); bar.appendChild(close);
+    document.body.appendChild(bar);
+  }
+  var _updateFound = false;
+  async function checkForUpdate(){
+    if (_updateFound) return;
+    try {
+      var res = await fetch('version.json?cb=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) return;
+      var data = await res.json();
+      if (data && data.version && String(data.version) !== APP_VERSION) {
+        _updateFound = true;
+        showUpdateBanner();
+      }
+    } catch (e) { /* offline or version.json missing — ignore, retry next interval */ }
+  }
+  setTimeout(checkForUpdate, 30 * 1000);          // first check ~30s after load
+  setInterval(checkForUpdate, 10 * 60 * 1000);    // then every 10 minutes
+  document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState === 'visible') checkForUpdate();  // re-check when app is reopened
+  });
 
   // ---------- Init ----------
   showScreen('screen-gate');
