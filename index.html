@@ -6243,12 +6243,15 @@
   }
 
   gateSubmitBtn.addEventListener('click', function(){
-    var pw = gateInput.value;
-    if (!pw) {
-      gateError.textContent = 'Please enter the password.';
-      return;
-    }
-    attemptUnlock(pw);
+    // === DEV BYPASS (暫時) ：按 Unlock 直接用預設密碼進入。
+    //     要還原密碼：刪掉下面這一行、把再下面的區塊取消註解即可。 ===
+    attemptUnlock(gateInput.value || '0000');
+    // var pw = gateInput.value;
+    // if (!pw) {
+    //   gateError.textContent = 'Please enter the password.';
+    //   return;
+    // }
+    // attemptUnlock(pw);
   });
   gateInput.addEventListener('keydown', function(e){
     if (e.key === 'Enter') gateSubmitBtn.click();
