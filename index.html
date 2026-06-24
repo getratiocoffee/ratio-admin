@@ -4847,10 +4847,13 @@
           + '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + chips + '</div>'
           + '</div>';
       } else {
-        var futureLabels = futureSorted.map(function(d){ return new Date(d + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' }); });
+        var pills = futureSorted.map(function(d){
+          var lbl = new Date(d + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+          return '<span style="display:inline-block;padding:5px 11px;border-radius:999px;background:#F1E9DC;color:#6B5E54;font-size:12.5px;font-weight:600;">' + esc(lbl) + '</span>';
+        }).join('');
         html += '<div class="delivery-bean-row" style="margin-bottom:8px;">'
-          + '<div style="font-size:14px;font-weight:600;color:#2E2925;">' + esc(r.staffName) + '</div>'
-          + '<div style="font-size:12px;color:#8A7F6F;margin-top:2px;">' + futureLabels.join(' \u00b7 ') + '</div>'
+          + '<div style="font-size:14px;font-weight:700;color:#2E2925;margin-bottom:8px;">' + esc(r.staffName) + '</div>'
+          + '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + pills + '</div>'
           + '</div>';
       }
     });
