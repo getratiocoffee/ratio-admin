@@ -1,7 +1,7 @@
 /* ===================================================================
    Ratio Admin — styles.css  (共用樣式 / 介面設定)
    index.html 與未來每一頁都 <link> 這一個檔案。改外觀都改這裡。
-   build: 2026-06-25e  (修復 Tools/Setting 被誤包進 time-picker 的結構 bug)
+   build: 2026-06-25f  (所有密碼/PIN 框統一數字鍵盤)
    =================================================================== */
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
