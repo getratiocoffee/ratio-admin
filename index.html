@@ -4897,8 +4897,8 @@
     updateNaPreview();
     var naStaffCol = document.getElementById('na-staff-collapse');
     var naStaffTog = document.getElementById('na-staff-toggle');
-    if (naStaffCol) naStaffCol.classList.remove('collapsed');
-    if (naStaffTog) { naStaffTog.classList.remove('collapsed'); naStaffTog.setAttribute('aria-expanded', 'true'); }
+    if (naStaffCol) naStaffCol.classList.add('collapsed');
+    if (naStaffTog) { naStaffTog.classList.add('collapsed'); naStaffTog.setAttribute('aria-expanded', 'false'); }
     renderNaExistingList();
     showTsTab('na');
   }
