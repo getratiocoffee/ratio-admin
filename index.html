@@ -4838,13 +4838,12 @@
     active.forEach(function(r){
       var futureSorted = r.dates.filter(function(d){ return d >= today; }).sort();
       if (naEditMode) {
-        var delBtn = '<button class="btn-delete" data-action="delete-na" data-id="' + r.id + '" aria-label="Remove all" style="width:36px;height:36px;border-radius:11px;border:1.5px solid #DCD2C2;background:#fff;color:#A32D2D;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
         var chips = futureSorted.map(function(d){
           var lbl = new Date(d + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
           return '<button type="button" class="na-day-chip" data-action="remove-day" data-id="' + r.id + '" data-date="' + d + '" style="display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1.5px solid #DCD2C2;background:#FFFFFF;color:#463E3A;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">' + esc(lbl) + '<span style="color:#A32D2D;font-size:16px;line-height:1;">\u00d7</span></button>';
         }).join('');
         html += '<div class="delivery-bean-row" style="margin-bottom:8px;display:flex;flex-direction:column;align-items:stretch;gap:10px;">'
-          + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;"><div style="font-size:14px;font-weight:600;color:#2E2925;">' + esc(r.staffName) + '</div>' + delBtn + '</div>'
+          + '<div style="font-size:14px;font-weight:600;color:#2E2925;">' + esc(r.staffName) + '</div>'
           + '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + chips + '</div>'
           + '</div>';
       } else {
@@ -4859,18 +4858,6 @@
       }
     });
     container.innerHTML = html;
-    container.querySelectorAll('[data-action="delete-na"]').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        var id = btn.getAttribute('data-id');
-        confirmDanger('Remove this unavailability request?', function(){
-          naRequests = naRequests.filter(function(r){ return r.id !== id; });
-          saveWithStatus(saveNaToServer(naRequests));
-          refreshNaChips();
-          updateNaPreview();
-          renderNaExistingList();
-        }, { okText: 'Remove' });
-      });
-    });
     container.querySelectorAll('[data-action="remove-day"]').forEach(function(btn){
       btn.addEventListener('click', function(){
         var id = btn.getAttribute('data-id');
