@@ -822,6 +822,9 @@
   .cc-add-btn { flex: 1; padding: 14px 0; border-radius: 14px; border: none; background: #463E3A; color: #FFFFFF; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; }
   .cc-add-btn:active { background: #2E2925; }
   .cc-cancel-btn { flex: 0.5; padding: 14px 0; border-radius: 14px; border: 1px solid #DCD2C2; background: transparent; color: #8A7F6F; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; }
+  .cc-add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  #na-add-overlay .cc-body { max-height: calc(88vh - 96px); overflow-y: auto; overscroll-behavior: contain; }
+  #na-add-overlay .na-staff-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 
   .sn-session-card {
     border: 1.5px solid #DCD2C2; border-radius: 16px; padding: 14px;
