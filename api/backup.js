@@ -12,8 +12,8 @@ async function getRedisClient() {
   return client;
 }
 
-// Datasets included in a backup. Customer personal details ('customer-details')
-// are intentionally excluded for privacy — matching the in-app export.
+// Datasets included in a backup. 'customer-details' is intentionally excluded for
+// privacy (matches the in-app export). Keys mirror beans.js ALLOWED_KEYS.
 const BACKUP_KEYS = {
   beans: 'green-bean-inventory',
   contacts: 'roaster-contacts',
@@ -26,9 +26,6 @@ const BACKUP_KEYS = {
   roasted: 'roasted-beans',
   handover: 'handover-data',
 };
-
-// Datasets stored as plain objects (everything else is an array).
-const OBJECT_KEYS = { handover: true };
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -59,10 +56,14 @@ export default async function handler(req, res) {
       const data = {};
       for (const [name, key] of Object.entries(BACKUP_KEYS)) {
         const raw = await client.get(key);
-        if (OBJECT_KEYS[name]) {
-          data[name] = raw ? JSON.parse(raw) : {};
+        const parsed = raw ? JSON.parse(raw) : null;
+        if (name === 'handover') {
+          // handover-data is stored array-wrapped as [obj]; export the unwrapped
+          // object so the file matches the in-app exportBackup format exactly.
+          data[name] = Array.isArray(parsed) ? (parsed[0] || {})
+            : (parsed && typeof parsed === 'object' ? parsed : {});
         } else {
-          data[name] = raw ? JSON.parse(raw) : [];
+          data[name] = Array.isArray(parsed) ? parsed : [];
         }
       }
       res.status(200).json({ ok: true, data });
@@ -77,10 +78,13 @@ export default async function handler(req, res) {
         return;
       }
       for (const [name, key] of Object.entries(BACKUP_KEYS)) {
-        if (!(name in data)) continue; // only restore datasets included in the file
+        if (!(name in data)) continue; // only restore datasets present in the file
         const val = data[name];
-        if (OBJECT_KEYS[name]) {
-          if (val && typeof val === 'object') await client.set(key, JSON.stringify(val));
+        if (name === 'handover') {
+          // Accept either an object (in-app format) or an already-wrapped [obj];
+          // always store as [obj] to match how the app saves handover.
+          let obj = Array.isArray(val) ? (val[0] || {}) : val;
+          if (obj && typeof obj === 'object') await client.set(key, JSON.stringify([obj]));
         } else if (Array.isArray(val)) {
           await client.set(key, JSON.stringify(val));
         }
