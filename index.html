@@ -20,28 +20,34 @@
     <!-- ===== PASSWORD GATE SCREEN ===== -->
     <div class="screen active" id="screen-gate">
       <div class="gate-screen">
-        <div class="gate-top">
+        <div class="gate-center">
           <img src="/logo.png" width="73" height="73" alt="Ratio Coffee logo">
-          <div class="brand-name" style="text-align:center;">Ratio</div>
+          <div class="gate-fingerprint" id="gate-fingerprint-btn" role="button" tabindex="0" aria-label="Enter password to unlock">
+            <svg width="68" height="68" viewBox="0 0 24 24" fill="none" stroke="#463E3A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4"/>
+              <path d="M5 19.5C5.5 18 6 15 6 12c0-.7.12-1.37.34-2"/>
+              <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/>
+              <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/>
+              <path d="M8.65 22c.21-.66.45-1.32.57-2"/>
+              <path d="M14 13.12c0 2.38 0 6.38-1 8.88"/>
+              <path d="M2 16h.01"/>
+              <path d="M21.8 16c.2-2 .131-5.354 0-6"/>
+              <path d="M9 6.8a6 6 0 0 1 9 5.2c0 .47 0 1.17-.02 2"/>
+            </svg>
+          </div>
         </div>
-        <div class="gate-fingerprint" id="gate-fingerprint-btn" role="button" tabindex="0" aria-label="Unlock with password">
-          <svg width="68" height="68" viewBox="0 0 24 24" fill="none" stroke="#463E3A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4"/>
-            <path d="M5 19.5C5.5 18 6 15 6 12c0-.7.12-1.37.34-2"/>
-            <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/>
-            <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/>
-            <path d="M8.65 22c.21-.66.45-1.32.57-2"/>
-            <path d="M14 13.12c0 2.38 0 6.38-1 8.88"/>
-            <path d="M2 16h.01"/>
-            <path d="M21.8 16c.2-2 .131-5.354 0-6"/>
-            <path d="M9 6.8a6 6 0 0 1 9 5.2c0 .47 0 1.17-.02 2"/>
-          </svg>
-        </div>
-        <div class="gate-bottom">
-          <input type="password" class="gate-input" id="gate-password-input" placeholder="Enter Password" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
-          <div class="gate-error" id="gate-error"></div>
-          <button class="gate-btn" id="gate-submit-btn" style="display:none;">Unlock</button>
-        </div>
+      </div>
+    </div>
+
+    <!-- Gate password popup (opened by tapping the fingerprint) -->
+    <div class="radar-overlay" id="gate-pw-overlay" style="z-index:1200;">
+      <div class="radar-card" style="max-width:300px; text-align:center;">
+        <div style="font-size:17px;font-weight:700;color:#2E2925;margin-bottom:6px;">Enter password</div>
+        <div style="font-size:13px;color:#8A7F6F;margin-bottom:20px;">Unlock to continue</div>
+        <input type="password" class="gate-input" id="gate-password-input" placeholder="Password" autocomplete="off" inputmode="numeric" pattern="[0-9]*" style="max-width:100%;margin-bottom:12px;">
+        <div class="gate-error" id="gate-error" style="min-height:18px;margin-bottom:12px;"></div>
+        <button class="gate-btn" id="gate-submit-btn" style="max-width:100%;">Unlock</button>
+        <button class="import-confirm-btn cancel" id="gate-pw-cancel" style="width:100%;margin-top:10px;">Cancel</button>
       </div>
     </div>
 
@@ -6645,6 +6651,7 @@
       if (tasksDirty) { saveHandoverToServer(handoverData).catch(function(){}); }
       showScreen('screen-menu');
       render();
+      var gpw = document.getElementById('gate-pw-overlay'); if (gpw) gpw.classList.remove('visible');
     } catch(e) {
       if (e && e.unauthorized) {
         gateError.textContent = 'Incorrect password. Please try again.';
@@ -6674,13 +6681,27 @@
   gateInput.addEventListener('keydown', function(e){
     if (e.key === 'Enter') gateSubmitBtn.click();
   });
+  function openGatePwOverlay(){
+    var ov = document.getElementById('gate-pw-overlay');
+    gateError.textContent = '';
+    gateInput.value = '';
+    ov.classList.add('visible');
+    setTimeout(function(){ gateInput.focus(); }, 100);
+  }
+  function closeGatePwOverlay(){
+    document.getElementById('gate-pw-overlay').classList.remove('visible');
+  }
   var gateFingerprintBtn = document.getElementById('gate-fingerprint-btn');
   if (gateFingerprintBtn) {
-    gateFingerprintBtn.addEventListener('click', function(){ gateSubmitBtn.click(); });
+    gateFingerprintBtn.addEventListener('click', openGatePwOverlay);
     gateFingerprintBtn.addEventListener('keydown', function(e){
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); gateSubmitBtn.click(); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openGatePwOverlay(); }
     });
   }
+  document.getElementById('gate-pw-cancel').addEventListener('click', closeGatePwOverlay);
+  document.getElementById('gate-pw-overlay').addEventListener('click', function(e){
+    if (e.target.id === 'gate-pw-overlay') closeGatePwOverlay();
+  });
 
   // ---------- Setting screen ----------
   document.getElementById('menu-open-setting-btn').addEventListener('click', function(){
