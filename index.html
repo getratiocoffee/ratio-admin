@@ -612,6 +612,11 @@
   .ts-shift-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
   .ts-shift-hours { font-size: 13px; font-weight: 600; color: #463E3A; flex-shrink: 0; }
   .ts-shift-time { font-size: 13px; color: #463E3A; margin-top: 2px; }
+  .ts-shift-dash { margin: 0 5px; color: #A39A8A; }
+  #ts-current-body .ts-shift-time { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; white-space: nowrap; font-size: 16px; font-weight: 600; margin-top: 5px; }
+  #ts-current-body .ts-shift-dash { margin: 0; }
+  #ts-current-body.ts-edit-on .ts-shift-time { justify-content: flex-start; }
+  #ts-current-body.ts-edit-on .ts-shift-dash { margin: 0 6px; }
   .na-staff-chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .na-staff-chip { padding: 8px 14px; border-radius: 999px; border: 1.5px solid #DCD2C2; background: #FFFFFF; color: #463E3A; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; }
   .na-staff-chip.selected { background: #463E3A; color: #FFFFFF; border-color: #463E3A; }
@@ -5534,7 +5539,7 @@
         } else {
           var hrs = workedHours(shift.start, shift.end, dk);
           html += '    <div class="ts-shift-row" data-shift-idx="' + idx + '">';
-          html += '      <div class="ts-shift-main"><div class="ts-shift-top"><span class="ts-shift-name">' + esc(shift.staffName) + '</span><span class="ts-shift-hours">' + fmtHours(hrs) + '</span></div><div class="ts-shift-time">' + (fmtTime12(shift.start) || shift.start) + ' \u2013 ' + (fmtTime12(shift.end) || shift.end) + '</div></div>';
+          html += '      <div class="ts-shift-main"><div class="ts-shift-top"><span class="ts-shift-name">' + esc(shift.staffName) + '</span><span class="ts-shift-hours">' + fmtHours(hrs) + '</span></div><div class="ts-shift-time"><span>' + (fmtTime12(shift.start) || shift.start) + '</span><span class="ts-shift-dash">\u2013</span><span>' + (fmtTime12(shift.end) || shift.end) + '</span></div></div>';
           html += '      <div class="ts-shift-actions">';
           html += '        <button class="ts-shift-edit-btn" data-action="edit-shift" aria-label="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>';
           html += '        <button class="ts-shift-delete-btn" data-action="delete-shift" aria-label="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
