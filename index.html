@@ -172,16 +172,13 @@
   /* Timesheet 1x4 icon row inside a glass frame */
   .ts-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 4px; align-content: center; }
 
-  /* Collapsible N/A status banner (shrinks upward) */
-  .ts-na-collapse { overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; transition: max-height 0.25s ease; max-height: 50vh; flex-shrink: 0; }
-  .ts-na-collapse.collapsed { max-height: 0; }
+  /* Timesheet function-key collapse arrow (above the icon frame) */
   .ts-na-arrow { width: 34px; height: 34px; padding: 0; border: none; background: transparent; color: #8A7F6F; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .ts-na-arrow-row { display: flex; justify-content: center; }
   .ts-na-chevron { transition: transform 0.25s ease; }
   .ts-na-arrow.collapsed .ts-na-chevron { transform: rotate(180deg); }
   .glass-footer .ts-foot-back { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
   .glass-footer .ts-foot-add { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
-  .glass-footer .ts-foot-arrow { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
   .ts-icons-collapse { overflow: hidden; transition: max-height 0.3s ease, opacity 0.2s ease, margin 0.3s ease; max-height: 340px; }
   .ts-icons-collapse.collapsed { max-height: 0; opacity: 0; margin-top: -12px; }
   .glass-footer .ts-foot-name { position: absolute; left: calc(75% - 9px); top: 50%; transform: translate(-50%, -50%); flex: none; }
@@ -5031,7 +5028,6 @@
     showTransferPinOverlay(function(){ openTransferScreen(); });
   });
   document.getElementById('menu-open-timesheet-btn').addEventListener('click', function(){
-    renderNaBanner();
     showScreen('screen-timesheet');
     showTsTab('current');
   });
@@ -5431,16 +5427,12 @@
     relocateTsBodies();
     var cfg = TS_TABS[name];
     if (!cfg) return;
-    var emptyEl = document.getElementById('ts-tab-empty');
-    if (emptyEl) emptyEl.style.display = 'none';
     Object.keys(TS_TABS).forEach(function(k){
       var b = document.getElementById(TS_TABS[k].body);
       if (b) b.style.display = (k === name) ? 'flex' : 'none';
       var ic = document.getElementById(TS_TABS[k].icon);
       if (ic) ic.classList.toggle('ts-tab-active', k === name);
     });
-    var titleEl = document.getElementById('ts-topbar-title');
-    if (titleEl) titleEl.textContent = cfg.title;
     var act = document.getElementById('ts-tab-action-btn');
     if (act) {
       if (cfg.action) { act.style.display = ''; act.onclick = cfg.action; }
@@ -5957,35 +5949,6 @@
     saveBtn.disabled = !naChipsHaveChanges();
   }
 
-  function renderNaBanner(){
-    var banner = document.getElementById('na-banner');
-    var allOk = document.getElementById('na-all-ok-banner');
-    if (!banner || !allOk) return;
-    var today = isoDate(new Date());
-    var active = naRequests.filter(function(r){
-      return r.dates && r.dates.some(function(d){ return d >= today; });
-    });
-    if (staffList.length === 0) {
-      banner.style.display = 'none';
-      allOk.style.display = 'none';
-      return;
-    }
-    if (active.length > 0) {
-      var lines = active.map(function(r){
-        var futureDates = r.dates.filter(function(d){ return d >= today; })
-          .sort()
-          .map(function(d){ return new Date(d + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' }); });
-        return r.staffName + ': ' + futureDates.join(', ');
-      });
-      document.getElementById('na-banner-content').innerHTML = lines.map(function(l){ return esc(l); }).join('<br>');
-      banner.style.display = 'block';
-      allOk.style.display = 'none';
-    } else {
-      banner.style.display = 'none';
-      allOk.style.display = 'block';
-    }
-  }
-
   function renderNaExistingList(){
     var container = document.getElementById('na-existing-list');
     var today = isoDate(new Date());
@@ -6012,7 +5975,6 @@
           naRequests = naRequests.filter(function(r){ return r.id !== id; });
           saveWithStatus(saveNaToServer(naRequests));
           renderNaExistingList();
-          renderNaBanner();
         }, { okText: 'Remove' });
       });
     });
@@ -6083,7 +6045,6 @@
     refreshNaChips();
     updateNaPreview();
     renderNaExistingList();
-    renderNaBanner();
   });
 
   // ---------- Handover ----------
