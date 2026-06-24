@@ -2076,6 +2076,7 @@
   var staffList = [];
   var timesheets = [];
   var naRequests = [];
+  var naEditMode = false;
   var customers = [];
   var sensorySessions = [];
   var roastedBeans = [];
@@ -4309,10 +4310,11 @@
     var editBtn = document.getElementById('ts-edit-toggle');
     var curBody = document.getElementById('ts-current-body');
     if (curBody) curBody.classList.remove('ts-edit-on');
+    naEditMode = false;
     if (editBtn) {
       editBtn.classList.remove('active');
       editBtn.setAttribute('aria-pressed', 'false');
-      editBtn.style.display = (name === 'current') ? '' : 'none';
+      editBtn.style.display = (name === 'current' || name === 'na') ? '' : 'none';
     }
     tsActiveTab = name;
     if (cfg.render) { try { cfg.render(); } catch(e) { logError('ts-tab:' + name, e && (e.message || e)); } }
@@ -4320,9 +4322,16 @@
 
   var tsEditToggleBtn = document.getElementById('ts-edit-toggle');
   if (tsEditToggleBtn) tsEditToggleBtn.addEventListener('click', function(){
-    var curBody = document.getElementById('ts-current-body');
-    if (!curBody) return;
-    var on = curBody.classList.toggle('ts-edit-on');
+    var on;
+    if (tsActiveTab === 'na') {
+      naEditMode = !naEditMode;
+      on = naEditMode;
+      renderNaExistingList();
+    } else {
+      var curBody = document.getElementById('ts-current-body');
+      if (!curBody) return;
+      on = curBody.classList.toggle('ts-edit-on');
+    }
     tsEditToggleBtn.classList.toggle('active', on);
     tsEditToggleBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
@@ -4826,14 +4835,24 @@
     if (active.length === 0) { container.innerHTML = ''; return; }
     var html = '<div class="section-label" style="margin:14px 0 8px;">Current N/A requests</div>';
     active.forEach(function(r){
-      var futureDates = r.dates.filter(function(d){ return d >= today; })
-        .sort()
-        .map(function(d){ return new Date(d + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' }); });
-      html += '<div class="delivery-bean-row" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;">';
-      html += '  <div><div style="font-size:14px;font-weight:600;color:#2E2925;">' + esc(r.staffName) + '</div>';
-      html += '  <div style="font-size:12px;color:#8A7F6F;margin-top:2px;">' + futureDates.join(' \u00b7 ') + '</div></div>';
-      html += '  <button class="btn-delete" data-action="delete-na" data-id="' + r.id + '" aria-label="Remove" style="width:36px;height:36px;border-radius:11px;border:1.5px solid #DCD2C2;background:#fff;color:#A32D2D;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
-      html += '</div>';
+      var futureSorted = r.dates.filter(function(d){ return d >= today; }).sort();
+      if (naEditMode) {
+        var delBtn = '<button class="btn-delete" data-action="delete-na" data-id="' + r.id + '" aria-label="Remove all" style="width:36px;height:36px;border-radius:11px;border:1.5px solid #DCD2C2;background:#fff;color:#A32D2D;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+        var chips = futureSorted.map(function(d){
+          var lbl = new Date(d + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+          return '<button type="button" class="na-day-chip" data-action="remove-day" data-id="' + r.id + '" data-date="' + d + '" style="display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1.5px solid #DCD2C2;background:#FFFFFF;color:#463E3A;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">' + esc(lbl) + '<span style="color:#A32D2D;font-size:16px;line-height:1;">\u00d7</span></button>';
+        }).join('');
+        html += '<div class="delivery-bean-row" style="margin-bottom:8px;display:flex;flex-direction:column;align-items:stretch;gap:10px;">'
+          + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;"><div style="font-size:14px;font-weight:600;color:#2E2925;">' + esc(r.staffName) + '</div>' + delBtn + '</div>'
+          + '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + chips + '</div>'
+          + '</div>';
+      } else {
+        var futureLabels = futureSorted.map(function(d){ return new Date(d + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' }); });
+        html += '<div class="delivery-bean-row" style="margin-bottom:8px;">'
+          + '<div style="font-size:14px;font-weight:600;color:#2E2925;">' + esc(r.staffName) + '</div>'
+          + '<div style="font-size:12px;color:#8A7F6F;margin-top:2px;">' + futureLabels.join(' \u00b7 ') + '</div>'
+          + '</div>';
+      }
     });
     container.innerHTML = html;
     container.querySelectorAll('[data-action="delete-na"]').forEach(function(btn){
@@ -4842,8 +4861,26 @@
         confirmDanger('Remove this unavailability request?', function(){
           naRequests = naRequests.filter(function(r){ return r.id !== id; });
           saveWithStatus(saveNaToServer(naRequests));
+          refreshNaChips();
+          updateNaPreview();
           renderNaExistingList();
         }, { okText: 'Remove' });
+      });
+    });
+    container.querySelectorAll('[data-action="remove-day"]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-id');
+        var date = btn.getAttribute('data-date');
+        var req = naRequests.find(function(r){ return r.id === id; });
+        if (!req) return;
+        req.dates = req.dates.filter(function(d){ return d !== date; });
+        if (req.dates.length === 0) {
+          naRequests = naRequests.filter(function(r){ return r.id !== id; });
+        }
+        saveWithStatus(saveNaToServer(naRequests));
+        refreshNaChips();
+        updateNaPreview();
+        renderNaExistingList();
       });
     });
   }
