@@ -241,6 +241,9 @@
           <button class="icon-btn ts-foot-add" id="ts-tab-action-btn" aria-label="Add" style="display:none;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
           </button>
+          <button class="icon-btn ts-foot-email" id="ts-email-btn" aria-label="Email staff hours" style="display:none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -316,13 +319,10 @@
         </div>
         <h1>Previous Timesheets</h1>
       </div>
-<div id="ts-previous-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; justify-content:flex-start; overflow:hidden; min-height:0; position:relative;">
+<div id="ts-previous-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; justify-content:flex-start; overflow:hidden; min-height:0;">
         <div style="overflow-y:auto; overscroll-behavior:contain; padding:16px 20px max(20px, env(safe-area-inset-bottom)); flex-shrink:0; max-height:100%;">
           <div id="ts-previous-list"></div>
         </div>
-        <button id="ts-email-fab" aria-label="Email staff hours" style="position:absolute; right:18px; bottom:18px; z-index:6; width:54px; height:54px; border-radius:50%; border:none; background:#463E3A; color:#fff; box-shadow:0 6px 16px -4px rgba(70,62,58,0.45); display:flex; align-items:center; justify-content:center; cursor:pointer;">
-          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
-        </button>
       </div>
     </div>
 
@@ -1120,8 +1120,9 @@
           <input type="email" class="field-input" id="email-recipient" value="lashandmi@gmail.com" inputmode="email" autocomplete="off" spellcheck="false">
         </div>
         <div id="email-preview" style="font-size:12px;color:#6B5E54;line-height:1.55;background:#F1E9DC;border-radius:12px;padding:12px 14px;margin-bottom:16px;white-space:pre-wrap;max-height:170px;overflow-y:auto;"></div>
-        <button class="import-confirm-btn confirm" id="email-send-btn" style="width:100%;">Open in email app</button>
-        <button class="import-confirm-btn cancel" id="email-cancel-btn" style="width:100%;margin-top:10px;">Cancel</button>
+        <button class="import-confirm-btn confirm" id="email-pdf-btn" style="width:100%;">Download PDF</button>
+        <button class="import-confirm-btn cancel" id="email-mail-btn" style="width:100%;margin-top:10px;">Open email app</button>
+        <button id="email-cancel-btn" style="width:100%;margin-top:10px;border:none;background:transparent;color:#8A7F6F;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;padding:6px 0;">Cancel</button>
       </div>
     </div>
 
@@ -4343,6 +4344,8 @@
       editBtn.setAttribute('aria-pressed', 'false');
       editBtn.style.display = (name === 'current' || name === 'na' || name === 'previous') ? '' : 'none';
     }
+    var emailBtn = document.getElementById('ts-email-btn');
+    if (emailBtn) emailBtn.style.display = (name === 'previous') ? '' : 'none';
     tsActiveTab = name;
     if (cfg.render) { try { cfg.render(); } catch(e) { logError('ts-tab:' + name, e && (e.message || e)); } }
   }
@@ -4409,7 +4412,10 @@
   // ----- Shared: render a week's days (editable), used by Current and Previous -----
   var tsEditingShift = null; // { weekId, dayKey, shiftIndex } or null
 
-  function renderWeekDays(week, containerEl, dates){
+  function renderWeekDays(week, containerEl, dates, opts){
+    var prev = !!(opts && opts.previous);
+    var cashSet = week.cashStaff || [];
+    var lockSet = week.lockedStaff || [];
     var html = '';
     DAY_KEYS.forEach(function(dk){
       var shifts = week.days[dk] || [];
@@ -4439,11 +4445,22 @@
           html += '    </div>';
         } else {
           var hrs = workedHours(shift.start, shift.end, dk);
-          html += '    <div class="ts-shift-row" data-shift-idx="' + idx + '">';
-          html += '      <div class="ts-shift-main"><div class="ts-shift-top"><span class="ts-shift-name">' + esc(shift.staffName) + '</span><span class="ts-shift-hours">' + fmtHours(hrs) + '</span></div><div class="ts-shift-time"><span>' + (fmtTime12(shift.start) || shift.start) + '</span><span class="ts-shift-dash">\u2013</span><span>' + (fmtTime12(shift.end) || shift.end) + '</span></div></div>';
+          var isCash = prev && cashSet.indexOf(shift.staffId) !== -1;
+          var isLocked = prev && lockSet.indexOf(shift.staffId) !== -1;
+          var rowCls = 'ts-shift-row' + (isCash ? ' ts-shift-cash' : '') + (isLocked ? ' ts-shift-locked' : '');
+          var nameHtml = '<span class="ts-shift-name">' + esc(shift.staffName) + '</span>';
+          if (prev) nameHtml = '<span class="ts-shift-namewrap">' + nameHtml + '<span class="ts-pay-tag ' + (isCash ? 'cash' : 'onbook') + '">' + (isCash ? 'Cash' : 'On Book') + '</span></span>';
+          var mainAttr = prev ? ' data-action="toggle-cash" data-staff-id="' + esc(shift.staffId) + '"' : '';
+          html += '    <div class="' + rowCls + '" data-shift-idx="' + idx + '">';
+          html += '      <div class="ts-shift-main"' + mainAttr + '><div class="ts-shift-top">' + nameHtml + '<span class="ts-shift-hours">' + fmtHours(hrs) + '</span></div><div class="ts-shift-time"><span>' + (fmtTime12(shift.start) || shift.start) + '</span><span class="ts-shift-dash">\u2013</span><span>' + (fmtTime12(shift.end) || shift.end) + '</span></div></div>';
           html += '      <div class="ts-shift-actions">';
-          html += '        <button class="ts-shift-edit-btn" data-action="edit-shift" aria-label="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>';
-          html += '        <button class="ts-shift-delete-btn" data-action="delete-shift" aria-label="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+          if (prev && isCash) {
+            html += '        <label class="ts-lock-check"><input type="checkbox" data-action="toggle-lock" data-staff-id="' + esc(shift.staffId) + '"' + (isLocked ? ' checked' : '') + '></label>';
+          }
+          if (!isLocked) {
+            html += '        <button class="ts-shift-edit-btn" data-action="edit-shift" aria-label="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>';
+            html += '        <button class="ts-shift-delete-btn" data-action="delete-shift" aria-label="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+          }
           html += '      </div>';
           html += '    </div>';
         }
@@ -4533,6 +4550,35 @@
         if (!isNaN(idx) && week.days[dk] && week.days[dk][idx]) {
           week.days[dk][idx][field] = val;
         }
+      });
+    });
+    // Previous-mode: toggle Cash highlight (per staff, edit mode only) + lock checkbox
+    containerEl.querySelectorAll('[data-action="toggle-cash"]').forEach(function(el){
+      el.addEventListener('click', function(){
+        var prevBody = document.getElementById('ts-previous-body');
+        if (!prevBody || !prevBody.classList.contains('ts-edit-on')) return;
+        var sid = el.getAttribute('data-staff-id');
+        if (!week.cashStaff) week.cashStaff = [];
+        var i = week.cashStaff.indexOf(sid);
+        if (i === -1) { week.cashStaff.push(sid); }
+        else {
+          week.cashStaff.splice(i, 1);
+          if (week.lockedStaff) { var li = week.lockedStaff.indexOf(sid); if (li !== -1) week.lockedStaff.splice(li, 1); }
+        }
+        persistTimesheets();
+        onChange();
+      });
+    });
+    containerEl.querySelectorAll('[data-action="toggle-lock"]').forEach(function(el){
+      el.addEventListener('change', function(ev){
+        ev.stopPropagation();
+        var sid = el.getAttribute('data-staff-id');
+        if (!week.lockedStaff) week.lockedStaff = [];
+        var i = week.lockedStaff.indexOf(sid);
+        if (el.checked) { if (i === -1) week.lockedStaff.push(sid); }
+        else { if (i !== -1) week.lockedStaff.splice(i, 1); }
+        persistTimesheets();
+        onChange();
       });
     });
   }
@@ -4774,7 +4820,7 @@
       var dates = weekDates(week.weekStart);
       bodyEl.innerHTML = renderWeekTotalsBar(week) + '<div id="ts-previous-days-' + week.id + '"></div>';
       var daysEl = document.getElementById('ts-previous-days-' + week.id);
-      renderWeekDays(week, daysEl, dates);
+      renderWeekDays(week, daysEl, dates, { previous: true });
       attachWeekDayListeners(daysEl, week, dates, renderPreviousTimesheets);
     });
   }
@@ -4792,35 +4838,98 @@
     return timesheets.filter(function(w){ return isWeekPast(w.weekStart); })
       .sort(function(a, b){ return new Date(b.weekStart) - new Date(a.weekStart); });
   }
-  function buildHoursEmail(week){
-    var dates = weekDates(week.weekStart);
-    var range = fmtShortDate(week.weekStart) + ' \u2013 ' + fmtShortDate(dates.sun);
-    var perStaff = {};
+  function staffHoursForWeek(week){
+    var map = {};
     DAY_KEYS.forEach(function(dk){
       (week.days[dk] || []).forEach(function(s){
         var h = workedHours(s.start, s.end, dk);
         if (h == null) return;
-        var name = s.staffName || 'Unknown';
-        perStaff[name] = (perStaff[name] || 0) + h;
+        if (!map[s.staffId]) map[s.staffId] = { staffId: s.staffId, name: s.staffName || 'Unknown', weekday: 0, sat: 0, sun: 0 };
+        if (dk === 'sat') map[s.staffId].sat += h;
+        else if (dk === 'sun') map[s.staffId].sun += h;
+        else map[s.staffId].weekday += h;
       });
     });
-    var totals = computeWeekTotals(week);
-    var grand = totals.weekday + totals.sat + totals.sun;
-    var lines = ['Ratio Coffee \u2014 Staff hours', 'Week: ' + range, ''];
-    var names = Object.keys(perStaff).sort();
-    if (names.length === 0) lines.push('(No shifts recorded)');
-    names.forEach(function(n){ lines.push(n + ': ' + fmtHours(perStaff[n])); });
+    var cash = week.cashStaff || [];
+    return Object.keys(map).map(function(id){
+      var r = map[id]; r.total = r.weekday + r.sat + r.sun; r.isCash = cash.indexOf(id) !== -1; return r;
+    }).sort(function(a, b){ return a.name.localeCompare(b.name); });
+  }
+  function buildHoursEmail(week){
+    var dates = weekDates(week.weekStart);
+    var range = fmtShortDate(week.weekStart) + ' \u2013 ' + fmtShortDate(dates.sun);
+    var rows = staffHoursForWeek(week);
+    var lines = ['Ratio Coffee Pty Ltd', 'Staff hours: ' + range, ''];
+    if (rows.length === 0) lines.push('(No shifts recorded)');
+    rows.forEach(function(r){
+      lines.push(r.name + '  [' + (r.isCash ? 'Cash' : 'On Book') + ']');
+      lines.push('   Weekday ' + fmtHours(r.weekday) + '  \u00b7  Sat ' + fmtHours(r.sat) + '  \u00b7  Sun ' + fmtHours(r.sun));
+    });
+    var tot = computeWeekTotals(week); var grand = tot.weekday + tot.sat + tot.sun;
     lines.push('');
-    lines.push('Weekday: ' + fmtHours(totals.weekday));
-    lines.push('Saturday: ' + fmtHours(totals.sat));
-    lines.push('Sunday: ' + fmtHours(totals.sun));
-    lines.push('Total: ' + fmtHours(grand));
+    lines.push('TOTAL  Weekday ' + fmtHours(tot.weekday) + '  \u00b7  Sat ' + fmtHours(tot.sat) + '  \u00b7  Sun ' + fmtHours(tot.sun));
+    lines.push('Grand total: ' + fmtHours(grand));
     return { subject: 'Ratio staff hours: ' + range, body: lines.join('\n') };
+  }
+  function generateHoursPDF(week){
+    if (!(window.jspdf && window.jspdf.jsPDF)) { alert('PDF tool not loaded \u2014 please refresh and try again.'); return; }
+    var doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4' });
+    var dates = weekDates(week.weekStart);
+    var range = fmtShortDate(week.weekStart) + ' \u2013 ' + fmtShortDate(dates.sun);
+    var pageW = doc.internal.pageSize.getWidth();
+    var M = 48; var y = 58;
+    var colWk = 330, colSat = 412, colSun = 480, colType = pageW - M;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(17); doc.setTextColor(46, 41, 37);
+    doc.text('Ratio Coffee Pty Ltd', M, y); y += 18;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(120, 110, 100);
+    doc.text('Shop 2, 473 Pacific Highway Crows Nest', M, y); y += 13;
+    doc.text('0403037369   \u00b7   ratiocoffee2473@gmail.com', M, y); y += 20;
+    doc.setDrawColor(220, 210, 194); doc.setLineWidth(1); doc.line(M, y, pageW - M, y); y += 26;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(46, 41, 37);
+    doc.text('Staff Hours', M, y);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(120, 110, 100);
+    doc.text(range, pageW - M, y, { align: 'right' }); y += 26;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(140, 127, 111);
+    doc.text('STAFF', M, y);
+    doc.text('WEEKDAY', colWk, y, { align: 'right' });
+    doc.text('SAT', colSat, y, { align: 'right' });
+    doc.text('SUN', colSun, y, { align: 'right' });
+    doc.text('TYPE', colType, y, { align: 'right' }); y += 8;
+    doc.setDrawColor(232, 224, 211); doc.line(M, y, pageW - M, y); y += 18;
+    var rows = staffHoursForWeek(week);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(11);
+    if (rows.length === 0) { doc.setTextColor(150, 140, 130); doc.text('No shifts recorded.', M, y); y += 20; }
+    rows.forEach(function(r){
+      if (y > 770) { doc.addPage(); y = 58; }
+      doc.setTextColor(46, 41, 37);
+      doc.text(r.name, M, y);
+      doc.text(fmtHours(r.weekday), colWk, y, { align: 'right' });
+      doc.text(fmtHours(r.sat), colSat, y, { align: 'right' });
+      doc.text(fmtHours(r.sun), colSun, y, { align: 'right' });
+      if (r.isCash) doc.setTextColor(150, 110, 20); else doc.setTextColor(140, 127, 111);
+      doc.text(r.isCash ? 'Cash' : 'On Book', colType, y, { align: 'right' });
+      y += 20;
+    });
+    y += 6; doc.setDrawColor(220, 210, 194); doc.setLineWidth(1); doc.line(M, y, pageW - M, y); y += 19;
+    var tot = computeWeekTotals(week); var grand = tot.weekday + tot.sat + tot.sun;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(46, 41, 37);
+    doc.text('Total', M, y);
+    doc.text(fmtHours(tot.weekday), colWk, y, { align: 'right' });
+    doc.text(fmtHours(tot.sat), colSat, y, { align: 'right' });
+    doc.text(fmtHours(tot.sun), colSun, y, { align: 'right' });
+    doc.text(fmtHours(grand), colType, y, { align: 'right' });
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(160, 150, 140);
+    doc.text('Generated ' + new Date().toLocaleString(), M, 812);
+    doc.save('Ratio_hours_' + week.weekStart + '.pdf');
   }
   function refreshEmailPreview(){
     var ws = document.getElementById('email-week-select').value;
     var week = timesheets.find(function(w){ return w.weekStart === ws; });
     document.getElementById('email-preview').textContent = week ? buildHoursEmail(week).body : 'No completed weeks yet.';
+  }
+  function currentEmailWeek(){
+    var ws = document.getElementById('email-week-select').value;
+    return timesheets.find(function(w){ return w.weekStart === ws; });
   }
   function openEmailDialog(){
     var weeks = emailPastWeeks();
@@ -4829,30 +4938,35 @@
       return '<option value="' + w.weekStart + '">' + fmtShortDate(w.weekStart) + ' \u2013 ' + fmtShortDate(d.sun) + '</option>';
     }).join('');
     document.getElementById('email-recipient').value = emailRecipient;
-    var sendBtn = document.getElementById('email-send-btn');
-    sendBtn.disabled = weeks.length === 0;
-    sendBtn.style.opacity = weeks.length === 0 ? '0.5' : '';
+    var none = weeks.length === 0;
+    ['email-pdf-btn', 'email-mail-btn'].forEach(function(id){
+      var b = document.getElementById(id); if (b) { b.disabled = none; b.style.opacity = none ? '0.5' : ''; }
+    });
     refreshEmailPreview();
     document.getElementById('email-overlay').classList.add('visible');
   }
   function closeEmailDialog(){ document.getElementById('email-overlay').classList.remove('visible'); }
+  function downloadHoursPDF(){
+    var week = currentEmailWeek(); if (!week) return;
+    emailRecipient = (document.getElementById('email-recipient').value || '').trim() || 'lashandmi@gmail.com';
+    generateHoursPDF(week);
+  }
   function sendHoursEmail(){
-    var ws = document.getElementById('email-week-select').value;
-    var week = timesheets.find(function(w){ return w.weekStart === ws; });
-    if (!week) return;
+    var week = currentEmailWeek(); if (!week) return;
     var to = (document.getElementById('email-recipient').value || '').trim() || 'lashandmi@gmail.com';
     emailRecipient = to;
     var mail = buildHoursEmail(week);
-    closeEmailDialog();
     window.location.href = 'mailto:' + to + '?subject=' + encodeURIComponent(mail.subject) + '&body=' + encodeURIComponent(mail.body);
   }
   (function(){
-    var fab = document.getElementById('ts-email-fab');
+    var fab = document.getElementById('ts-email-btn');
     if (fab) fab.addEventListener('click', openEmailDialog);
     var weekSel = document.getElementById('email-week-select');
     if (weekSel) weekSel.addEventListener('change', refreshEmailPreview);
-    var sendBtn = document.getElementById('email-send-btn');
-    if (sendBtn) sendBtn.addEventListener('click', sendHoursEmail);
+    var pdfBtn = document.getElementById('email-pdf-btn');
+    if (pdfBtn) pdfBtn.addEventListener('click', downloadHoursPDF);
+    var mailBtn = document.getElementById('email-mail-btn');
+    if (mailBtn) mailBtn.addEventListener('click', sendHoursEmail);
     var cancelBtn = document.getElementById('email-cancel-btn');
     if (cancelBtn) cancelBtn.addEventListener('click', closeEmailDialog);
     var ov = document.getElementById('email-overlay');

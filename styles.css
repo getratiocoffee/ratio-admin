@@ -168,6 +168,7 @@
   .ts-na-arrow.collapsed .ts-na-chevron { transform: rotate(180deg); }
   .glass-footer .ts-foot-back { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
   .glass-footer .ts-foot-add { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
+  .glass-footer .ts-foot-email { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
   .ts-icons-collapse { overflow: hidden; transition: max-height 0.3s ease, opacity 0.2s ease, margin 0.3s ease; max-height: 340px; }
   .ts-icons-collapse.collapsed { max-height: 0; opacity: 0; margin-top: -12px; }
   .glass-footer .ts-foot-name { position: absolute; left: calc(75% - 9px); top: 50%; transform: translate(-50%, -50%); flex: none; }
@@ -606,7 +607,16 @@
   .na-staff-collapse.collapsed { max-height: 0; opacity: 0; margin-bottom: 0; }
   .na-staff-chip { padding: 8px 14px; border-radius: 999px; border: 1.5px solid #DCD2C2; background: #FFFFFF; color: #463E3A; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; }
   .na-staff-chip.selected { background: #463E3A; color: #FFFFFF; border-color: #463E3A; }
-  .ts-shift-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .ts-shift-actions { display: flex; gap: 6px; flex-shrink: 0; align-items: center; }
+  .ts-shift-cash { background: #FBF3DF; border-color: #E3C56F; }
+  .ts-shift-locked { opacity: 0.65; }
+  .ts-shift-namewrap { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+  .ts-pay-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.02em; padding: 1px 7px; border-radius: 999px; white-space: nowrap; }
+  .ts-pay-tag.cash { background: #E3C56F; color: #5A4717; }
+  .ts-pay-tag.onbook { background: #E8E0D3; color: #8A7F6F; }
+  .ts-lock-check { display: inline-flex; align-items: center; }
+  .ts-lock-check input { width: 20px; height: 20px; accent-color: #463E3A; cursor: pointer; margin: 0; }
+  #ts-previous-body.ts-edit-on .ts-shift-main { cursor: pointer; }
   .ts-shift-edit-btn, .ts-shift-delete-btn {
     width: 32px; height: 32px; border-radius: 10px; border: 1.5px solid #DCD2C2;
     background: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
