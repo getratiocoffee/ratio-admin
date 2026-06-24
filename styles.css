@@ -982,12 +982,15 @@
 
   /* ===== Password gate ===== */
   .gate-screen {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    display: flex; flex-direction: column; align-items: stretch;
     flex: 1; padding: 0 24px; text-align: center; box-sizing: border-box;
   }
-  .gate-center { display: flex; flex-direction: column; align-items: center; }
-  .gate-center img { display: block; }
-  .gate-fingerprint { margin-top: 30px; opacity: 0.9; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .gate-top-half, .gate-bottom-half {
+    flex: 1; width: 100%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .gate-top-half img { display: block; }
+  .gate-fingerprint { opacity: 0.9; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .gate-fingerprint svg { transition: transform 0.12s ease, opacity 0.12s ease; }
   .gate-fingerprint:active svg { transform: scale(0.88); opacity: 0.7; }
   .gate-fingerprint.busy { pointer-events: none; }
