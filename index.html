@@ -185,6 +185,12 @@
   .ts-icons-collapse { overflow: hidden; transition: max-height 0.3s ease, opacity 0.2s ease, margin 0.3s ease; max-height: 340px; }
   .ts-icons-collapse.collapsed { max-height: 0; opacity: 0; margin-top: -12px; }
   .glass-footer .ts-foot-name { position: absolute; left: calc(75% - 9px); top: 50%; transform: translate(-50%, -50%); flex: none; }
+  .glass-footer .ts-foot-edit { position: absolute; left: 25%; top: 50%; transform: translate(-50%, -50%); }
+  .ts-foot-edit.active { background: #463E3A; color: #fff; }
+  /* Current timesheet: hide edit/delete/add controls until edit mode is on */
+  #ts-current-body .ts-shift-actions, #ts-current-body .ts-add-shift-btn { display: none; }
+  #ts-current-body.ts-edit-on .ts-shift-actions { display: flex; }
+  #ts-current-body.ts-edit-on .ts-add-shift-btn { display: block; }
 
   /* Timesheet in-page tabs (no screen switch) */
   #ts-tab-host { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
@@ -1207,6 +1213,9 @@
           <div class="back-btn ts-foot-back" id="timesheet-back-btn" aria-label="Back">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           </div>
+          <button class="icon-btn ts-foot-edit" id="ts-edit-toggle" aria-label="Edit shifts" style="display:none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
+          </button>
           <span class="frame-label ts-foot-name" id="ts-page-name">Timesheet</span>
           <button class="glass-toggle" id="ts-refresh-btn" role="switch" aria-checked="true" aria-label="Lock / refresh">
             <span class="glass-toggle-knob"></span>
@@ -5420,9 +5429,26 @@
       if (cfg.action) { act.style.display = ''; act.onclick = cfg.action; }
       else { act.style.display = 'none'; act.onclick = null; }
     }
+    var editBtn = document.getElementById('ts-edit-toggle');
+    var curBody = document.getElementById('ts-current-body');
+    if (curBody) curBody.classList.remove('ts-edit-on');
+    if (editBtn) {
+      editBtn.classList.remove('active');
+      editBtn.setAttribute('aria-pressed', 'false');
+      editBtn.style.display = (name === 'current') ? '' : 'none';
+    }
     tsActiveTab = name;
     if (cfg.render) { try { cfg.render(); } catch(e) { logError('ts-tab:' + name, e && (e.message || e)); } }
   }
+
+  var tsEditToggleBtn = document.getElementById('ts-edit-toggle');
+  if (tsEditToggleBtn) tsEditToggleBtn.addEventListener('click', function(){
+    var curBody = document.getElementById('ts-current-body');
+    if (!curBody) return;
+    var on = curBody.classList.toggle('ts-edit-on');
+    tsEditToggleBtn.classList.toggle('active', on);
+    tsEditToggleBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
 
   document.getElementById('staff-add-open-btn').addEventListener('click', function(){
     var form = document.getElementById('staff-add-form');
