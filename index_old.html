@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Ratio Admin · build 2026-06-24c -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -10,977 +11,7 @@
 <meta name="theme-color" content="#EFE8DE">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" href="/logo.png">
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body {
-    width: 100%; height: 100%;
-    overflow: hidden; overscroll-behavior: none;
-  }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-    background: #EFE8DE;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: max(16px, env(safe-area-inset-top)) 10px max(16px, env(safe-area-inset-bottom));
-    overscroll-behavior: none;
-    touch-action: pan-x pan-y;
-  }
-  .phone { width: 100%; max-width: 420px; flex: 1; display: flex; flex-direction: column; min-height: 0; }
-  .card {
-    background: #FAF6F0;
-    border: 0.5px solid #DCD2C2;
-    border-radius: 28px;
-    overflow: hidden;
-    flex: 1;
-    min-height: 0;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    overscroll-behavior: contain;
-  }
-
-  .app-header {
-    padding: 18px 20px 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-  }
-  .brand { display: flex; align-items: center; gap: 10px; line-height: 1; }
-  .brand img { display: block; flex-shrink: 0; }
-  .brand-name { font-size: 18px; font-weight: 600; color: #463E3A; line-height: 1; }
-
-  .menu-body {
-    flex: 1; padding: 8px 20px max(20px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 14px; justify-content: flex-end;
-  }
-
-  /* iOS-style glass dashboard (two frames) */
-  .glass-wrap {
-    flex: 1; display: flex; flex-direction: column; justify-content: flex-end;
-    padding: 12px 14px max(24px, env(safe-area-inset-bottom));
-  }
-  .glass-header { display: flex; align-items: center; justify-content: center; margin-bottom: 10px; flex-shrink: 0; }
-  .glass-footer { display: flex; gap: 12px; align-items: center; margin-top: 12px; flex-shrink: 0; position: relative; min-height: 32px; }
-  .glass-footer .frame-label { flex: 1 1 0; text-align: center; }
-  .glass-footer .glass-toggle { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
-  .glass-swap-btn {
-    flex-shrink: 0; width: 38px; height: 38px; border-radius: 50%;
-    display: inline-flex; align-items: center; justify-content: center;
-    cursor: pointer; color: #463E3A; font-family: inherit;
-    background: rgba(255,255,255,0.55);
-    -webkit-backdrop-filter: blur(8px) saturate(150%); backdrop-filter: blur(8px) saturate(150%);
-    border: 1px solid rgba(255,255,255,0.7);
-    box-shadow: 0 2px 8px rgba(70,62,58,0.10);
-    -webkit-tap-highlight-color: transparent;
-    transition: transform 0.12s ease;
-  }
-  .glass-swap-btn:active { transform: scale(0.92); }
-  .glass-toggle {
-    flex-shrink: 0; width: 48px; height: 28px; border-radius: 14px;
-    padding: 2px; border: 1px solid rgba(255,255,255,0.55);
-    background: #34C759;
-    box-shadow: inset 0 1px 3px rgba(70,62,58,0.10);
-    display: flex; align-items: center; cursor: pointer;
-    transition: background 0.22s ease;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .glass-toggle-knob {
-    width: 22px; height: 22px; border-radius: 50%; background: #FFFFFF;
-    box-shadow: 0 1px 3px rgba(70,62,58,0.35);
-    display: flex; align-items: center; justify-content: center;
-    color: #34C759; transform: translateX(20px);
-    transition: transform 0.22s ease, color 0.22s ease;
-  }
-  .glass-toggle.off {
-    background: rgba(140,127,111,0.38);
-    -webkit-backdrop-filter: blur(8px) saturate(150%); backdrop-filter: blur(8px) saturate(150%);
-  }
-  .glass-toggle.off .glass-toggle-knob { transform: translateX(0); color: #8A7F6F; }
-  .glass-row { display: flex; gap: 12px; align-items: flex-start; }
-  .frame-col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
-  .frame-label {
-    min-width: 0;
-    font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
-    color: #8A7F6F; white-space: nowrap;
-  }
-  .glass-frame {
-    width: 100%;
-    border-radius: 26px; padding: 16px 8px;
-    background: linear-gradient(155deg, rgba(255,255,255,0.66), rgba(255,255,255,0.30));
-    -webkit-backdrop-filter: blur(14px) saturate(170%); backdrop-filter: blur(14px) saturate(170%);
-    border: 1px solid rgba(255,255,255,0.65);
-    box-shadow: 0 6px 22px rgba(70,62,58,0.12), inset 0 1px 0 rgba(255,255,255,0.85), inset 0 -10px 20px rgba(255,255,255,0.16);
-  }
-  .glass-grid {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 4px;
-    min-height: 152px; align-content: center;
-  }
-  .app-grid-item {
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
-    background: none; border: none; cursor: pointer; font-family: inherit; padding: 0;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: none; transition: transform 0.12s ease;
-    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
-  }
-  .app-grid-item:active .app-grid-icon { opacity: 0.7; transform: scale(0.93); }
-  .app-grid-icon {
-    width: 60px; height: 60px; border-radius: 15px;
-    display: flex; align-items: center; justify-content: center;
-    transition: opacity 0.1s, transform 0.1s;
-    box-shadow: 0 2px 8px rgba(70,62,58,0.10);
-  }
-  .app-grid-label {
-    font-size: 11px; font-weight: 600; color: #2E2925; text-align: center; line-height: 1.3;
-  }
-  /* --- Draggable icons --- */
-  .glass-row.grid-editing .app-grid-item:not(.grid-dragging-src) {
-    animation: gridWiggle 0.28s ease-in-out infinite alternate;
-  }
-  @keyframes gridWiggle {
-    from { transform: rotate(-1.4deg); }
-    to   { transform: rotate(1.4deg); }
-  }
-  .app-grid-item.grid-dragging-src { opacity: 0.22; }
-  .app-grid-item.grid-dragging-src:active .app-grid-icon { transform: none; opacity: 1; }
-  .grid-ghost {
-    position: fixed; z-index: 3000; margin: 0; padding: 0;
-    pointer-events: none; list-style: none;
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
-    transform: scale(1.12); opacity: 0.96;
-    filter: drop-shadow(0 10px 18px rgba(70,62,58,0.3));
-  }
-  .menu-card {
-    display: flex; align-items: center; gap: 14px;
-    padding: 18px; border-radius: 18px; border: 1.5px solid #DCD2C2;
-    background: #FFFFFF; cursor: pointer; font-family: inherit; text-align: left;
-    width: 100%;
-  }
-  .menu-card-icon {
-    width: 48px; height: 48px; border-radius: 14px; background: #EFE8DE;
-    color: #463E3A; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  }
-  .menu-card-text { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-  .menu-card-title { font-size: 16px; font-weight: 600; color: #2E2925; }
-  .menu-card-sub { font-size: 13px; color: #8A7F6F; }
-  .menu-card-chevron { flex-shrink: 0; color: #B0A491; }
-
-  /* Timesheet 1x4 icon row inside a glass frame */
-  .ts-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 4px; align-content: center; }
-
-  /* Timesheet function-key collapse arrow (above the icon frame) */
-  .ts-na-arrow { width: 34px; height: 34px; padding: 0; border: none; background: transparent; color: #8A7F6F; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-  .ts-na-arrow-row { display: flex; justify-content: center; }
-  .ts-na-chevron { transition: transform 0.25s ease; }
-  .ts-na-arrow.collapsed .ts-na-chevron { transform: rotate(180deg); }
-  .glass-footer .ts-foot-back { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
-  .glass-footer .ts-foot-add { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
-  .ts-icons-collapse { overflow: hidden; transition: max-height 0.3s ease, opacity 0.2s ease, margin 0.3s ease; max-height: 340px; }
-  .ts-icons-collapse.collapsed { max-height: 0; opacity: 0; margin-top: -12px; }
-  .glass-footer .ts-foot-name { position: absolute; left: calc(75% - 9px); top: 50%; transform: translate(-50%, -50%); flex: none; }
-  .glass-footer .ts-foot-edit { position: absolute; left: 25%; top: 50%; transform: translate(-50%, -50%); }
-  .ts-foot-edit.active { background: #463E3A; color: #fff; }
-  /* Current timesheet: hide edit/delete/add controls until edit mode is on */
-  #ts-current-body .ts-shift-actions, #ts-current-body .ts-add-shift-btn { display: none; }
-  #ts-current-body.ts-edit-on .ts-shift-actions { display: flex; }
-  #ts-current-body.ts-edit-on .ts-add-shift-btn { display: block; }
-  /* Current: two shifts per row to save vertical space (single column in edit mode) */
-  #ts-current-body .ts-day-card-body { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: start; }
-  #ts-current-body .ts-day-card-body > .ts-day-empty,
-  #ts-current-body .ts-day-card-body > .ts-add-shift-btn,
-  #ts-current-body .ts-day-card-body > .ts-add-shift-row { grid-column: 1 / -1; }
-  #ts-current-body.ts-edit-on .ts-day-card-body { grid-template-columns: 1fr; }
-
-  /* Timesheet in-page tabs (no screen switch) */
-  #ts-tab-host { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
-  #ts-tab-host .ts-panel { flex: 1; min-height: 0; }
-  #ts-bottom-bar { flex: 0 0 auto; }
-  .app-grid-item.ts-tab-active .app-grid-icon { outline: 2.5px solid #463E3A; outline-offset: 2px; }
-
-  /* ---- Green Bean analysis (multi-dimension breakdown) ---- */
-  .gb-seg { display: flex; gap: 6px; flex-wrap: wrap; }
-  .gb-seg button {
-    flex: 0 0 auto; padding: 6px 12px; border-radius: 999px;
-    border: 1.5px solid #DCD2C2; background: #FFFFFF; color: #8A7F6F;
-    font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .gb-seg button.active { background: #463E3A; border-color: #463E3A; color: #FAF6F0; }
-  .gb-seg-label { font-size: 11px; color: #A08858; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 6px 2px; }
-  .gb-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .gb-stat { background: #F5F0EA; border-radius: 12px; padding: 9px 12px; }
-  .gb-stat-label { font-size: 11px; color: #A08858; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
-  .gb-stat-value { font-size: 17px; color: #2E2925; font-weight: 700; margin-top: 2px; }
-
-  /* ---- C Market chart ---- */
-  .cm-badge { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: #92560C; background: #FEF0C7; border-radius: 8px; padding: 3px 8px; }
-  .cm-price { font-size: 34px; font-weight: 800; color: #2E2925; line-height: 1; }
-  .cm-unit { font-size: 13px; color: #8A7F6F; font-weight: 600; }
-  .cm-change-up { color: #1E6B3A; font-weight: 700; }
-  .cm-change-down { color: #A32D2D; font-weight: 700; }
-  .cm-stat { text-align: center; flex: 1; }
-  .cm-stat-label { font-size: 11px; color: #A08858; text-transform: uppercase; letter-spacing: 0.4px; }
-  .cm-stat-value { font-size: 16px; color: #2E2925; font-weight: 700; margin-top: 2px; }
-
-  .header-icon-btns { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-  .icon-btn {
-    width: 44px; height: 44px; border-radius: 14px;
-    background: #FFFFFF; border: 1.5px solid #DCD2C2;
-    display: flex; align-items: center; justify-content: center;
-    color: #463E3A; cursor: pointer;
-  }
-
-  .import-confirm-btn {
-    flex: 1; padding: 12px 0; font-size: 14px; font-weight: 600;
-    border-radius: 12px; cursor: pointer; font-family: inherit; border: none;
-  }
-  .import-confirm-btn.cancel { background: #FFFFFF; color: #633806; border: 1.5px solid #DCD2C2; }
-  .import-confirm-btn.confirm { background: #463E3A; color: #fff; }
-
-  .section-bar {
-    padding: 4px 20px 12px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 10px;
-    flex-shrink: 0;
-  }
-  
-  .header-incomplete-badge {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #633806;
-    background: #FAEEDA;
-    padding: 7px 11px;
-    border-radius: 12px;
-    cursor: pointer;
-    white-space: nowrap;
-    border: none;
-    font-family: inherit;
-    flex-shrink: 0;
-  }
-  .header-incomplete-badge.hidden { display: none; }
-
-  .search-bar { padding: 0 20px 12px; flex-shrink: 0; }
-  .search-input-wrap { position: relative; display: flex; align-items: center; }
-  .search-input-wrap svg { position: absolute; left: 14px; color: #B0A491; }
-  .search-input {
-    width: 100%;
-    padding: 12px 14px 12px 42px;
-    font-size: 16px;
-    border: 1.5px solid #DCD2C2;
-    border-radius: 14px;
-    background: #FFFFFF;
-    color: #2E2925;
-    font-family: inherit;
-    box-sizing: border-box;
-  }
-  .search-input:focus { outline: none; border-color: #463E3A; }
-  .search-input::placeholder { color: #B0A491; }
-
-  .filter-row { display: flex; gap: 8px; padding: 0 20px 14px; overflow-x: auto; flex-shrink: 0; }
-  .filter-chip {
-    flex-shrink: 0;
-    padding: 10px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    border-radius: 18px;
-    background: #FAF6F0;
-    color: #463E3A;
-    border: 1.5px solid #DCD2C2;
-    cursor: pointer;
-    font-family: inherit;
-    white-space: nowrap;
-  }
-  .filter-chip.active { background: #463E3A; color: #fff; border-color: #463E3A; }
-
-  .incomplete-filter-banner {
-    margin: 0 20px 12px;
-    padding: 10px 14px;
-    background: #FAEEDA;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-  }
-  .incomplete-filter-banner span { font-size: 13px; color: #633806; font-weight: 600; }
-  .incomplete-filter-banner button {
-    font-size: 12px; font-weight: 600; color: #633806;
-    background: #FFFFFF; border: 1.5px solid #DCD2C2; border-radius: 10px;
-    padding: 7px 12px; cursor: pointer; font-family: inherit;
-  }
-
-  .bean-list {
-    flex: 1;
-    width: 100%;
-    padding: 0 14px 14px;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    gap: 16px;
-    overflow-y: auto;
-  }
-
-  .country-group { display: flex; flex-direction: column; gap: 10px; }
-  .country-group-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #8A7F6F;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    padding: 4px 6px 0;
-  }
-
-  .bean-card {
-    width: 100%;
-    border: 1.5px solid #DCD2C2;
-    border-radius: 18px;
-    background: #FFFFFF;
-    overflow: hidden;
-  }
-  .bean-card-main {
-    padding: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    cursor: pointer;
-  }
-  .bean-card-main-left { min-width: 0; }
-  .bean-name { font-size: 16px; font-weight: 600; color: #2E2925; line-height: 1.3; }
-  .bean-process { font-size: 13px; color: #8A7F6F; margin-top: 3px; }
-
-  .incomplete-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #633806;
-    background: #FAEEDA;
-    padding: 3px 8px;
-    border-radius: 8px;
-    margin-top: 6px;
-  }
-  .incomplete-dot { width: 6px; height: 6px; border-radius: 50%; background: #EF9F27; flex-shrink: 0; }
-
-  .right-cluster { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-  .stock-pill {
-    font-size: 15px;
-    font-weight: 700;
-    padding: 6px 12px;
-    border-radius: 12px;
-    flex-shrink: 0;
-    white-space: nowrap;
-  }
-  
-  
-  
-
-  .chevron { flex-shrink: 0; color: #B0A491; transition: transform 0.15s ease; }
-  .bean-card.expanded .chevron { transform: rotate(180deg); }
-
-  .bean-card-detail { overflow: hidden; max-height: 0; transition: max-height 0.25s ease; }
-  .bean-card-detail-inner {
-    padding: 0 14px 14px;
-    border-top: 1px solid #EFE8DE;
-    margin-top: 2px;
-    padding-top: 12px;
-  }
-  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .detail-field-label { font-size: 11px; color: #B0A491; }
-  .detail-field-value { font-size: 14px; color: #2E2925; margin-top: 3px; }
-  .detail-field-value.missing { color: #C99A60; font-style: italic; }
-
-  .incomplete-note {
-    font-size: 12px;
-    color: #633806;
-    background: #FAEEDA;
-    padding: 9px 11px;
-    border-radius: 10px;
-    margin-bottom: 12px;
-    line-height: 1.5;
-  }
-  .low-tag-row {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #7A4707;
-    margin-top: 12px;
-  }
-
-  .card-actions { display: flex; gap: 10px; margin-top: 14px; }
-  .btn-edit, .btn-delete {
-    border-radius: 14px;
-    font-size: 14px;
-    font-weight: 600;
-    border: 1.5px solid #DCD2C2;
-    background: #FFFFFF;
-    cursor: pointer;
-    font-family: inherit;
-  }
-  .btn-edit { flex: 1; padding: 12px 0; color: #463E3A; }
-  .btn-delete { width: 46px; color: #A32D2D; display: flex; align-items: center; justify-content: center; }
-
-  .empty-state { text-align: center; padding: 50px 16px; color: #8A7F6F; font-size: 14px; }
-
-  .bottom-bar-wrap {
-    padding: 12px 16px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border-top: 1px solid #DCD2C2;
-    background: #FAF6F0;
-    flex-shrink: 0;
-  }
-  .bottom-bar {
-    display: flex;
-    gap: 10px;
-  }
-  .btn {
-    flex: 1;
-    padding: 15px 0;
-    border-radius: 16px;
-    font-size: 15px;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-  }
-  .btn-primary { background: #463E3A; color: #fff; }
-  
-
-  /* ===== Form screen ===== */
-  .screen { display: none; flex-direction: column; height: 100%; flex: 1; min-height: 0; overflow: hidden; }
-  .screen.active { display: flex; }
-  .form-topbar { padding: 18px 20px 12px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
-  .back-btn {
-    width: 44px; height: 44px; border-radius: 14px; background: #FFFFFF;
-    border: 1.5px solid #DCD2C2; display: flex; align-items: center; justify-content: center;
-    color: #463E3A; cursor: pointer; flex-shrink: 0;
-  }
-  .form-topbar h1 { font-size: 19px; font-weight: 600; color: #463E3A; }
-  .form-scroll { flex: 1; overflow-y: auto; padding: 6px 20px 16px; overscroll-behavior: contain; min-height: 0; }
-
-  .field-group { margin-bottom: 16px; }
-  .field-label { display: block; font-size: 14px; font-weight: 600; color: #2E2925; margin-bottom: 7px; }
-  .field-input {
-    width: 100%;
-    padding: 12px 14px;
-    font-size: 16px;
-    border: 1.5px solid #DCD2C2;
-    border-radius: 14px;
-    background: #FFFFFF;
-    color: #2E2925;
-    font-family: inherit;
-  }
-  .field-input::placeholder { color: #B0A491; }
-  .field-input:focus { outline: none; border-color: #463E3A; }
-  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-  .qty-input-wrap, .cost-input-wrap { position: relative; display: flex; align-items: center; }
-  .qty-unit { position: absolute; right: 14px; font-size: 14px; color: #8A7F6F; }
-  .qty-input-wrap .field-input { padding-right: 42px; }
-  .cost-prefix { position: absolute; left: 14px; font-size: 15px; color: #8A7F6F; }
-  .cost-input-wrap .field-input { padding-left: 28px; padding-right: 42px; }
-  .cost-suffix { position: absolute; right: 14px; font-size: 13px; color: #8A7F6F; }
-
-  .divider { height: 1px; background: #DCD2C2; margin: 6px 0 18px; }
-  .section-label {
-    font-size: 12px; font-weight: 600; color: #8A7F6F; text-transform: uppercase;
-    letter-spacing: 0.04em; margin-bottom: 12px;
-  }
-
-  .form-bottom-bar { padding: 12px 20px 20px; border-top: 1px solid #DCD2C2; background: #FAF6F0; flex-shrink: 0; }
-  .btn-save {
-    width: 100%; padding: 16px 0; border-radius: 16px; font-size: 16px; font-weight: 600;
-    border: none; cursor: pointer; font-family: inherit; background: #463E3A; color: #fff;
-  }
-  .btn-save:disabled { background: #DCD2C2; color: #B0A491; cursor: default; }
-  .required-hint { text-align: center; font-size: 12px; color: #B0A491; margin-top: 8px; }
-
-  /* ===== Delivery screen ===== */
-  .delivery-bean-row { border: 1.5px solid #DCD2C2; border-radius: 14px; padding: 14px; margin-bottom: 10px; background: #FFFFFF; }
-  .remove-row-btn {
-    width: 38px; height: 38px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-    background: transparent; border: none; color: #8A7F6F; cursor: pointer;
-  }
-  .delivery-row-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .delivery-row-fields label { font-size: 11px; color: #B0A491; display: block; margin-bottom: 6px; }
-  .delivery-row-fields input,
-  .delivery-supplier-input {
-    width: 100%; padding: 12px 14px; font-size: 16px; border: 1.5px solid #DCD2C2; border-radius: 14px;
-    background: #FFFFFF; color: #2E2925; font-family: inherit; box-sizing: border-box;
-  }
-  .delivery-row-fields input:focus,
-  .delivery-supplier-input:focus {
-    outline: none; border-color: #463E3A;
-  }
-  .delivery-row-result {
-    margin-top: 10px; padding-top: 10px; border-top: 1px solid #EFE8DE;
-    display: flex; justify-content: space-between; font-size: 13px;
-  }
-  .delivery-row-result .label { color: #8A7F6F; }
-  .delivery-row-result .value { font-weight: 600; color: #2E2925; }
-
-  .add-row-btn {
-    width: 100%; padding: 14px 0; background: #FFFFFF; color: #463E3A;
-    border: 1.5px dashed #DCD2C2; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer;
-    font-family: inherit; margin-bottom: 6px;
-  }
-
-  .delivery-summary { margin-top: 18px; padding-top: 12px; border-top: 1px solid #DCD2C2; }
-  .summary-line { display: flex; justify-content: space-between; font-size: 13px; color: #8A7F6F; margin-bottom: 6px; }
-  .summary-line.total {
-    font-size: 15px; font-weight: 600; color: #2E2925; margin-top: 4px;
-    padding-top: 8px; border-top: 1px solid #DCD2C2;
-  }
-  .summary-gst-note { font-size: 11px; color: #B0A491; }
-
-  /* ===== Stock Transfer ===== */
-  .toggle-row { display: flex; gap: 8px; }
-  .toggle-btn {
-    flex: 1; padding: 12px 0; border-radius: 14px; font-size: 14px; font-weight: 600;
-    border: 1.5px solid #DCD2C2; background: #FFFFFF; color: #463E3A; cursor: pointer; font-family: inherit;
-  }
-  .toggle-btn.active { background: #463E3A; color: #fff; border-color: #463E3A; }
-  .field-hint { font-size: 12px; color: #8A7F6F; line-height: 1.5; }
-  .transfer-out-base-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 14px; background: #FAF6F0; border-radius: 14px; margin-bottom: 14px;
-  }
-  .transfer-out-base-row .label { font-size: 13px; color: #8A7F6F; }
-  .transfer-out-base-row .value { font-size: 14px; font-weight: 600; color: #2E2925; }
-  .transfer-success-icon {
-    width: 56px; height: 56px; border-radius: 50%; background: #EAF3DE; color: #27500A;
-    display: flex; align-items: center; justify-content: center; margin: 10px auto 18px;
-  }
-  .placeholder-screen { padding-top: 30px; }
-  .placeholder-icon {
-    width: 56px; height: 56px; border-radius: 50%; background: #EFE8DE; color: #8A7F6F;
-    display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;
-  }
-
-  /* ===== Staff Timesheet ===== */
-  
-  
-  
-  
-  
-
-  /* Day-first card (used in Current / Previous) */
-  .ts-day-card {
-    border: 1.5px solid #DCD2C2; border-radius: 16px; margin-bottom: 12px; background: #FFFFFF; overflow: hidden;
-  }
-  .ts-day-card-header { padding: 14px 14px 10px; }
-  .ts-day-card-label-group { display: flex; align-items: baseline; gap: 8px; }
-  .ts-day-name { font-size: 18px; font-weight: 700; color: #2E2925; }
-  .ts-day-date { font-size: 12px; color: #B0A491; }
-  .ts-day-card-body { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 8px; }
-  .ts-day-empty { font-size: 13px; color: #B0A491; font-style: italic; padding: 4px 0 10px; }
-
-  .ts-shift-row {
-    display: flex; align-items: center; justify-content: space-between; gap: 10px;
-    padding: 10px 12px; border: 1px solid #EFE8DE; border-radius: 12px; background: #FAF6F0;
-  }
-  .ts-shift-name { font-size: 14px; font-weight: 600; color: #2E2925; }
-  .ts-shift-main { flex: 1; min-width: 0; }
-  .ts-shift-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-  .ts-shift-hours { font-size: 13px; font-weight: 600; color: #463E3A; flex-shrink: 0; }
-  .ts-shift-time { font-size: 13px; color: #463E3A; margin-top: 2px; }
-  .ts-shift-dash { margin: 0 5px; color: #A39A8A; }
-  #ts-current-body .ts-shift-time { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; white-space: nowrap; font-size: 16px; font-weight: 600; margin-top: 5px; }
-  #ts-current-body .ts-shift-dash { margin: 0; }
-  #ts-current-body.ts-edit-on .ts-shift-time { justify-content: flex-start; }
-  #ts-current-body.ts-edit-on .ts-shift-dash { margin: 0 6px; }
-  .na-staff-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .na-staff-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
-  .na-staff-collapse { overflow: hidden; transition: max-height 0.3s ease, opacity 0.2s ease, margin 0.3s ease; max-height: 400px; margin-bottom: 14px; }
-  .na-staff-collapse.collapsed { max-height: 0; opacity: 0; margin-bottom: 0; }
-  .na-staff-chip { padding: 8px 14px; border-radius: 999px; border: 1.5px solid #DCD2C2; background: #FFFFFF; color: #463E3A; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; }
-  .na-staff-chip.selected { background: #463E3A; color: #FFFFFF; border-color: #463E3A; }
-  .ts-shift-actions { display: flex; gap: 6px; flex-shrink: 0; }
-  .ts-shift-edit-btn, .ts-shift-delete-btn {
-    width: 32px; height: 32px; border-radius: 10px; border: 1.5px solid #DCD2C2;
-    background: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
-  }
-  .ts-shift-edit-btn { color: #463E3A; }
-  .ts-shift-delete-btn { color: #A32D2D; }
-
-  .ts-add-shift-btn {
-    width: 100%; padding: 10px 0; background: #FFFFFF; color: #463E3A;
-    border: 1.5px dashed #DCD2C2; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer;
-    font-family: inherit;
-  }
-
-  .ho-template-chip {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 12px; border-radius: 10px; border: 1.5px solid #DCD2C2;
-    background: #FFFFFF; color: #463E3A; font-size: 13px; font-weight: 500;
-    cursor: pointer; font-family: inherit; margin: 0 6px 8px 0;
-  }
-  .ho-template-chip.selected { background: #463E3A; color: #fff; border-color: #463E3A; }
-  .ho-apply-selected-btn {
-    width: 100%; padding: 12px 0; margin-bottom: 14px;
-    background: #463E3A; color: #fff; border: none; border-radius: 14px;
-    font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
-  }
-  .ho-apply-selected-btn:disabled { opacity: 0.4; cursor: default; }
-
-  .ho-tab {
-    flex: 1; padding: 12px 0; font-size: 14px; font-weight: 600; background: none; border: none;
-    border-bottom: 2.5px solid transparent; color: #8A7F6F; cursor: pointer; font-family: inherit;
-    margin-bottom: -1.5px;
-  }
-  .ho-tab.active { color: #463E3A; border-bottom-color: #463E3A; }
-
-  .ho-template-row {
-    border: 1.5px solid #DCD2C2; border-radius: 14px; margin-bottom: 10px; background: #FFFFFF; overflow: hidden;
-  }
-  .ho-template-row-top {
-    display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; gap: 10px;
-  }
-  .ho-template-name { font-size: 15px; font-weight: 600; color: #2E2925; flex: 1; }
-  .ho-template-actions { display: flex; gap: 6px; }
-  .ho-template-edit-form { padding: 0 14px 14px; display: none; }
-  .ho-template-edit-form.open { display: block; }
-
-  .handover-date-title {
-    font-size: 20px; font-weight: 700; color: #2E2925; margin-bottom: 2px;
-  }
-  .handover-date-sub { font-size: 13px; color: #8A7F6F; }
-  .handover-progress-bar {
-    height: 6px; border-radius: 3px; background: #EFE8DE; margin: 14px 0 18px; overflow: hidden;
-  }
-  .handover-progress-fill {
-    height: 100%; border-radius: 3px; background: #463E3A; transition: width 0.3s;
-  }
-  .handover-task-item {
-    display: flex; align-items: center; gap: 14px;
-    padding: 16px; border: 1.5px solid #DCD2C2; border-radius: 16px;
-    margin-bottom: 10px; background: #FFFFFF; cursor: pointer;
-    transition: background 0.15s;
-  }
-  .handover-task-item.done {
-    background: #EAF3DE; border-color: #A8D5A2; cursor: default;
-  }
-  .handover-task-checkbox {
-    width: 26px; height: 26px; border-radius: 50%; border: 2px solid #DCD2C2;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    color: transparent; background: #fff; transition: all 0.15s;
-  }
-  .handover-task-item.done .handover-task-checkbox {
-    background: #27500A; border-color: #27500A; color: #fff;
-  }
-  .handover-task-label {
-    font-size: 16px; font-weight: 500; color: #2E2925; flex: 1;
-  }
-  .handover-task-item.done .handover-task-label {
-    color: #4A7A2A; text-decoration: line-through;
-  }
-  .handover-all-done {
-    text-align: center; padding: 24px 0 8px;
-    font-size: 15px; font-weight: 600; color: #27500A;
-  }
-
-  /* Hot / Cold toggle */
-  .sn-temp-toggle {
-    display: flex; gap: 0; border-radius: 10px; overflow: hidden;
-    border: 1.5px solid #DCD2C2; width: fit-content; flex-shrink: 0;
-  }
-  .sn-temp-btn {
-    padding: 5px 14px; font-size: 12px; font-weight: 600; border: none;
-    background: #EDE8E2; color: #8A7F6F; cursor: pointer; font-family: inherit;
-  }
-  .sn-temp-btn.hot.active { background: #C0392B; color: #fff; }
-  .sn-temp-btn.cold.active { background: #2471A3; color: #fff; }
-  .sn-temp-panel { display: none; }
-  .sn-temp-panel.active { display: block; }
-
-  /* Sensory cupping form */
-  /* Sensory dimension tabs */
-  .sn-dim-tab {
-    padding: 10px 12px; font-size: 12px; font-weight: 600; border: none;
-    background: none; color: #8A7F6F; cursor: pointer; font-family: inherit;
-    white-space: nowrap; border-bottom: 2px solid transparent; flex-shrink: 0;
-  }
-  .sn-dim-tab.active { color: #463E3A; border-bottom-color: #463E3A; }
-  .sn-dim-panel { display: none; }
-  .sn-dim-panel.active { display: block; }
-
-  .sn-slider-row {
-    display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
-  }
-  .sn-slider { flex: 1; accent-color: #463E3A; height: 4px; }
-  .sn-slider-label { font-size: 11px; color: #8A7F6F; white-space: nowrap; }
-  .sn-slider-val {
-    min-width: 28px; text-align: center; font-size: 15px; font-weight: 700;
-    color: #463E3A; background: #EFE8DE; border-radius: 8px; padding: 2px 6px;
-  }
-  .sn-cata-group { margin-bottom: 6px; }
-  .sn-cata-label { font-size: 11px; color: #8A7F6F; display: block; margin-bottom: 6px; }
-  .sn-cata-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .sn-chip {
-    padding: 6px 11px; border-radius: 20px; border: 1.5px solid #DCD2C2;
-    background: #FAF6F0; color: #463E3A; font-size: 12px; font-weight: 500;
-    cursor: pointer; font-family: inherit; white-space: nowrap;
-  }
-  .sn-chip.selected { background: #463E3A; color: #fff; border-color: #463E3A; }
-  .sn-chip-wide { white-space: normal; text-align: left; }
-
-  /* Sensory session list */
-  /* Radar chart overlay */
-  .radar-overlay {
-    display: none; position: fixed; inset: 0; z-index: 1000;
-    background: rgba(46,41,37,0.5); align-items: center; justify-content: center;
-    touch-action: none;
-  }
-  .radar-overlay.visible { display: flex; }
-  .radar-card {
-    background: #FAF6F0; border-radius: 24px; padding: 24px 20px 20px;
-    width: min(340px, 90vw); max-height: 85vh; overflow-y: auto;
-    overscroll-behavior: contain;
-  }
-  .radar-title { font-size: 17px; font-weight: 700; color: #2E2925; margin-bottom: 4px; text-align: center; }
-  .radar-date { font-size: 12px; color: #8A7F6F; text-align: center; margin-bottom: 16px; }
-  .radar-close {
-    display: block; width: 100%; padding: 13px 0; border-radius: 14px;
-    background: #463E3A; color: #fff; border: none; font-size: 15px;
-    font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 16px;
-  }
-
-  .sn-session-card {
-    border: 1.5px solid #DCD2C2; border-radius: 16px; padding: 14px;
-    margin-bottom: 10px; background: #FFFFFF; cursor: pointer;
-  }
-  .sn-session-bean { font-size: 15px; font-weight: 700; color: #2E2925; }
-  .sn-session-date { font-size: 12px; color: #8A7F6F; margin-top: 3px; }
-  .sn-session-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
-  .sn-session-chip {
-    font-size: 11px; padding: 3px 8px; border-radius: 12px;
-    background: #EFE8DE; color: #463E3A; font-weight: 500;
-  }
-
-  
-  
-
-  .ts-week-picker {
-    display: flex; gap: 8px; margin-bottom: 14px;
-  }
-  .ts-week-picker-btn {
-    flex: 1; padding: 10px 0; border-radius: 12px; font-size: 14px; font-weight: 600;
-    border: 1.5px solid #DCD2C2; background: #FFFFFF; color: #463E3A;
-    cursor: pointer; font-family: inherit;
-  }
-  .ts-week-picker-btn.active { background: #463E3A; color: #fff; border-color: #463E3A; }
-
-  .ts-week-total-bar {
-    display: flex; gap: 10px; margin-top: 4px; margin-bottom: 14px;
-  }
-  .ts-week-total-item {
-    flex: 1; padding: 12px; background: #FFFFFF; border: 1.5px solid #DCD2C2; border-radius: 14px; text-align: center;
-  }
-  .ts-week-total-label { font-size: 11px; color: #8A7F6F; display: block; margin-bottom: 4px; }
-  .ts-week-total-value { font-size: 15px; font-weight: 700; color: #2E2925; display: block; }
-
-  /* Add New Timesheet: day block with multi-staff entry */
-  .ts-add-day-block {
-    border: 1.5px solid #DCD2C2; border-radius: 16px; margin-bottom: 14px; background: #FFFFFF; padding: 14px;
-  }
-  .ts-add-day-block-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
-  .ts-add-shift-row {
-    border: 1px solid #EFE8DE; border-radius: 12px; padding: 10px; margin-bottom: 8px; background: #FAF6F0;
-  }
-  .ts-add-shift-row-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-  .ts-add-shift-row-top select {
-    flex: 1; width: 100%; padding: 10px 12px; font-size: 15px; border: 1.5px solid #DCD2C2; border-radius: 12px;
-    background: #FFFFFF; color: #2E2925; font-family: inherit; box-sizing: border-box;
-  }
-  .ts-add-shift-time-fields { display: flex; align-items: center; gap: 6px; }
-  .ts-add-shift-time-fields input {
-    flex: 1; min-width: 0; padding: 9px 8px; font-size: 14px; border: 1.5px solid #DCD2C2; border-radius: 10px;
-    background: #FFFFFF; color: #2E2925; font-family: inherit; box-sizing: border-box;
-  }
-  .ts-add-shift-time-fields span { font-size: 12px; color: #B0A491; flex-shrink: 0; }
-
-  .ts-previous-row {
-    border: 1.5px solid #DCD2C2; border-radius: 16px; margin-bottom: 12px; background: #FFFFFF; overflow: hidden;
-  }
-  .ts-previous-header {
-    padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer;
-  }
-  .ts-previous-range { font-size: 15px; font-weight: 600; color: #2E2925; }
-  .ts-previous-meta { font-size: 12px; color: #8A7F6F; margin-top: 2px; }
-  .ts-previous-body { padding: 0 14px 14px; }
-
-  .contact-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 14px; border: 1.5px solid #DCD2C2; border-radius: 14px; margin-bottom: 10px; background: #FFFFFF;
-  }
-  .contact-row-name { font-size: 15px; font-weight: 600; color: #2E2925; }
-  .contact-row-email { font-size: 13px; color: #8A7F6F; margin-top: 2px; }
-  .contact-delete-btn {
-    width: 38px; height: 38px; border-radius: 12px; border: 1.5px solid #DCD2C2;
-    background: #FFFFFF; color: #A32D2D; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; flex-shrink: 0;
-  }
-
-  .contact-history-group {
-    border: 1.5px solid #DCD2C2; border-radius: 16px; margin-bottom: 12px; background: #FFFFFF; overflow: hidden;
-  }
-  .contact-history-header {
-    padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer;
-  }
-  .contact-history-name { font-size: 16px; font-weight: 600; color: #2E2925; }
-  .contact-history-body { padding: 0 12px 12px; }
-
-  .transfer-history-row {
-    border: 1.5px solid #DCD2C2; border-radius: 14px; padding: 14px; margin-bottom: 10px; background: #FAF6F0;
-  }
-  .transfer-history-row:last-child { margin-bottom: 0; }
-  .transfer-history-top { display: flex; align-items: flex-start; gap: 4px; }
-  .transfer-history-direction {
-    font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 8px; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.03em;
-  }
-  .transfer-history-direction.in { background: #EAF3DE; color: #27500A; }
-  .transfer-history-direction.out { background: #E6F1FB; color: #0C447C; }
-  .transfer-history-bean { font-size: 15px; font-weight: 600; color: #2E2925; margin-top: 6px; }
-  .transfer-history-meta { font-size: 12px; color: #8A7F6F; margin-top: 3px; }
-  .transfer-history-bottom {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-top: 10px; padding-top: 10px; border-top: 1px solid #EFE8DE;
-  }
-  .transfer-history-amount { font-size: 15px; font-weight: 700; color: #2E2925; }
-  .transfer-history-delete-btn {
-    width: 36px; height: 36px; border-radius: 11px; border: 1.5px solid #DCD2C2;
-    background: #FFFFFF; color: #A32D2D; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; flex-shrink: 0;
-  }
-  .transfer-history-fees { font-size: 11px; color: #B0A491; margin-top: 4px; }
-  .transfer-invoice-checkbox {
-    width: 20px; height: 20px; margin-right: 10px; margin-top: 1px; flex-shrink: 0;
-    accent-color: #463E3A; cursor: pointer;
-  }
-  .transfer-invoice-checkbox-spacer { width: 30px; flex-shrink: 0; display: inline-block; }
-
-  .invoice-action-bar {
-    position: sticky; bottom: 0;
-    display: flex; align-items: center; justify-content: space-between; gap: 10px;
-    padding: 12px 20px; background: #FAF6F0; border-top: 1.5px solid #DCD2C2; flex-shrink: 0;
-  }
-  .invoice-action-count { font-size: 13px; font-weight: 600; color: #463E3A; flex-shrink: 0; }
-  .invoice-action-buttons { display: flex; gap: 8px; }
-  .invoice-action-buttons .import-confirm-btn { padding: 11px 16px; flex: none; }
-
-  .save-status {
-    text-align: center; font-size: 12px; color: #8A7F6F; padding: 6px 20px;
-    flex-shrink: 0; transition: opacity 0.3s ease;
-  }
-
-  /* ===== Password gate ===== */
-  .gate-screen {
-    display: flex; flex-direction: column; align-items: center;
-    flex: 1; padding: 0 24px 30px; text-align: center; box-sizing: border-box;
-  }
-  .gate-top {
-    flex: 1; width: 100%; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-  }
-  .gate-top img { display: block; margin-bottom: 6px; }
-  .gate-screen .brand-name { font-size: 20px; line-height: 1.3; }
-  .gate-bottom { width: 100%; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
-  
-  
-  .gate-input {
-    width: 100%; max-width: 280px; padding: 14px 16px; font-size: 17px;
-    border: 1.5px solid #DCD2C2; border-radius: 14px; background: #FFFFFF;
-    color: #2E2925; font-family: inherit; text-align: center; letter-spacing: 2px;
-    margin-bottom: 14px;
-  }
-  .gate-input:focus { outline: none; border-color: #463E3A; }
-  .gate-error {
-    font-size: 13px; color: #A32D2D; margin-bottom: 14px; min-height: 18px;
-  }
-  .gate-btn {
-    width: 100%; max-width: 280px; padding: 14px 0; border-radius: 14px;
-    font-size: 15px; font-weight: 600; border: none; cursor: pointer;
-    font-family: inherit; background: #463E3A; color: #fff;
-  }
-
-  /* ===== Time picker modal ===== */
-  .ts-time-display-btn {
-    flex: 1; min-width: 0; padding: 9px 8px; font-size: 14px; border: 1.5px solid #DCD2C2; border-radius: 10px;
-    background: #FFFFFF; color: #2E2925; font-family: inherit; box-sizing: border-box;
-    text-align: center; cursor: pointer;
-  }
-  .ts-time-display-btn.placeholder { color: #B0A491; }
-
-  .time-picker-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(46, 41, 37, 0.4);
-    z-index: 1000; align-items: flex-end; justify-content: center;
-    touch-action: none; overscroll-behavior: contain;
-  }
-  .time-picker-overlay.visible { display: flex; }
-  .time-picker-sheet {
-    width: 100%; max-width: 420px; background: #FAF6F0; border-radius: 24px 24px 0 0;
-    padding: 0 0 max(20px, env(safe-area-inset-bottom)); box-sizing: border-box;
-  }
-  .time-picker-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 20px; border-bottom: 1px solid #DCD2C2;
-  }
-  .time-picker-title { font-size: 15px; font-weight: 600; color: #463E3A; }
-  .time-picker-done-btn {
-    font-size: 15px; font-weight: 700; color: #463E3A; background: none; border: none;
-    cursor: pointer; font-family: inherit; padding: 4px 8px;
-  }
-  .time-picker-body {
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-    padding: 20px 20px 24px;
-  }
-  .time-picker-wheel-col {
-    position: relative; width: 70px; height: 180px; overflow: hidden;
-  }
-  .time-picker-wheel-col::before, .time-picker-wheel-col::after {
-    content: ''; position: absolute; left: 0; right: 0; height: 60px; pointer-events: none; z-index: 2;
-  }
-  .time-picker-wheel-col::before { top: 0; background: linear-gradient(to bottom, #FAF6F0, rgba(250,246,240,0)); }
-  .time-picker-wheel-col::after { bottom: 0; background: linear-gradient(to top, #FAF6F0, rgba(250,246,240,0)); }
-  .time-picker-wheel {
-    position: relative; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory;
-    -webkit-overflow-scrolling: touch;
-  }
-  .time-picker-wheel::-webkit-scrollbar { display: none; }
-  .time-picker-wheel-item {
-    height: 60px; display: flex; align-items: center; justify-content: center;
-    font-size: 22px; color: #B0A491; scroll-snap-align: center; font-weight: 500;
-  }
-  .time-picker-wheel-item.selected { color: #2E2925; font-weight: 700; font-size: 26px; }
-  .time-picker-wheel-frame {
-    position: absolute; top: 60px; left: 0; right: 0; height: 60px;
-    border-top: 1.5px solid #DCD2C2; border-bottom: 1.5px solid #DCD2C2; pointer-events: none; z-index: 1;
-  }
-  .time-picker-colon { font-size: 26px; font-weight: 700; color: #2E2925; padding-bottom: 2px; }
-  .time-picker-ampm-col {
-    display: flex; flex-direction: column; gap: 8px; margin-left: 10px;
-  }
-  .time-picker-ampm-btn {
-    width: 56px; height: 44px; border-radius: 12px; border: 1.5px solid #DCD2C2;
-    background: #FFFFFF; color: #463E3A; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
-  }
-  .time-picker-ampm-btn.active { background: #463E3A; color: #fff; border-color: #463E3A; }
-</style>
+<link rel="stylesheet" href="/styles.css">
 </head>
 <body>
 <div class="phone">
@@ -989,15 +20,34 @@
     <!-- ===== PASSWORD GATE SCREEN ===== -->
     <div class="screen active" id="screen-gate">
       <div class="gate-screen">
-        <div class="gate-top">
-          <img src="/logo.png" width="56" height="56" alt="Ratio Coffee logo">
-          <div class="brand-name" style="text-align:center;">Ratio</div>
+        <div class="gate-center">
+          <img src="/logo.png" width="73" height="73" alt="Ratio Coffee logo">
+          <div class="gate-fingerprint" id="gate-fingerprint-btn" role="button" tabindex="0" aria-label="Enter password to unlock">
+            <svg width="68" height="68" viewBox="0 0 24 24" fill="none" stroke="#463E3A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4"/>
+              <path d="M5 19.5C5.5 18 6 15 6 12c0-.7.12-1.37.34-2"/>
+              <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/>
+              <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/>
+              <path d="M8.65 22c.21-.66.45-1.32.57-2"/>
+              <path d="M14 13.12c0 2.38 0 6.38-1 8.88"/>
+              <path d="M2 16h.01"/>
+              <path d="M21.8 16c.2-2 .131-5.354 0-6"/>
+              <path d="M9 6.8a6 6 0 0 1 9 5.2c0 .47 0 1.17-.02 2"/>
+            </svg>
+          </div>
         </div>
-        <div class="gate-bottom">
-          <input type="password" class="gate-input" id="gate-password-input" placeholder="Enter Password" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
-          <div class="gate-error" id="gate-error"></div>
-          <button class="gate-btn" id="gate-submit-btn">Unlock</button>
-        </div>
+      </div>
+    </div>
+
+    <!-- Gate password popup (opened by tapping the fingerprint) -->
+    <div class="radar-overlay" id="gate-pw-overlay" style="z-index:1200;">
+      <div class="radar-card" style="max-width:300px; text-align:center;">
+        <div style="font-size:17px;font-weight:700;color:#2E2925;margin-bottom:6px;">Enter password</div>
+        <div style="font-size:13px;color:#8A7F6F;margin-bottom:20px;">Unlock to continue</div>
+        <input type="password" class="gate-input" id="gate-password-input" placeholder="Password" autocomplete="off" inputmode="numeric" pattern="[0-9]*" style="max-width:100%;margin-bottom:12px;">
+        <div class="gate-error" id="gate-error" style="min-height:18px;margin-bottom:12px;"></div>
+        <button class="gate-btn" id="gate-submit-btn" style="max-width:100%;">Unlock</button>
+        <button class="import-confirm-btn cancel" id="gate-pw-cancel" style="width:100%;margin-top:10px;">Cancel</button>
       </div>
     </div>
 
@@ -1211,6 +261,9 @@
           <button class="icon-btn ts-foot-add" id="ts-tab-action-btn" aria-label="Add" style="display:none;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
           </button>
+          <button class="icon-btn ts-foot-email" id="ts-email-btn" aria-label="Email staff hours" style="display:none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -1224,35 +277,9 @@
         <h1>Request N/A</h1>
       </div>
       <div id="ts-na-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
-      <!-- New request form at the top; staff selector can collapse upward -->
-      <div style="flex-shrink:0; padding:12px 20px 0;">
-        <div class="na-staff-header">
-          <label class="field-label" style="margin-bottom:0;">Staff member (can pick multiple)</label>
-          <button class="ts-na-arrow" id="na-staff-toggle" aria-label="Hide staff list" aria-expanded="true">
-            <svg class="ts-na-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 15 12 9 18 15"/></svg>
-          </button>
-        </div>
-        <div id="na-staff-collapse" class="na-staff-collapse">
-          <div id="na-staff-checks" class="na-staff-chips"></div>
-        </div>
-        <div class="field-row">
-          <div class="field-group">
-            <label class="field-label">Start date</label>
-            <select class="field-input" id="na-start-select"></select>
-          </div>
-          <div class="field-group">
-            <label class="field-label">End date</label>
-            <select class="field-input" id="na-end-select"></select>
-          </div>
-        </div>
-        <div id="na-period-preview" class="field-hint" style="margin-bottom:10px;display:none;"></div>
-      </div>
-      <!-- Existing N/A list fills the rest, scrollable -->
-      <div class="form-scroll" style="flex:1 1 auto; min-height:0; border-top:1px solid #DCD2C2;">
+      <!-- Existing N/A list fills the screen, scrollable. Add form moved to popup. -->
+      <div class="form-scroll" style="flex:1 1 auto; min-height:0;">
         <div id="na-existing-list"></div>
-      </div>
-      <div class="form-bottom-bar">
-        <button class="btn-save" id="na-save-btn" disabled>Save N/A request</button>
       </div>
       </div>
     </div>
@@ -1269,9 +296,12 @@
         </button>
       </div>
 <div id="ts-current-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; justify-content:flex-start; overflow:hidden; min-height:0;">
-        <div style="overflow-y:auto; overscroll-behavior:contain; padding:16px 20px max(20px, env(safe-area-inset-bottom)); flex-shrink:0; max-height:100%;">
-          <p class="field-hint" id="ts-current-range" style="margin-bottom:14px;"></p>
-          <div id="ts-current-list"></div>
+        <div style="flex-shrink:0; padding:16px 20px 14px; border-bottom:1px solid #E8E0D3; box-shadow:0 5px 12px -8px rgba(70,62,58,0.18); position:relative; z-index:2;">
+          <p class="field-hint" id="ts-current-range" style="margin-bottom:12px;"></p>
+          <div id="ts-current-totals"></div>
+        </div>
+        <div style="flex:1; overflow-y:auto; overscroll-behavior:contain; padding:14px 20px max(20px, env(safe-area-inset-bottom)); min-height:0;">
+          <div id="ts-current-days"></div>
           <p class="field-hint" style="margin-top:6px;">This week moves to Previous Timesheet once Sunday has passed.</p>
         </div>
       </div>
@@ -1287,30 +317,36 @@
       </div>
 <div id="ts-previous-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; justify-content:flex-start; overflow:hidden; min-height:0;">
         <div style="overflow-y:auto; overscroll-behavior:contain; padding:16px 20px max(20px, env(safe-area-inset-bottom)); flex-shrink:0; max-height:100%;">
+          <p class="ts-prev-hint">Tap a staff to mark <b>Cash</b> &nbsp;·&nbsp; tick the box to lock that row</p>
           <div id="ts-previous-list"></div>
         </div>
       </div>
     </div>
 
     <!-- ===== ADD NEW TIMESHEET SCREEN ===== -->
-    <div class="screen" id="screen-ts-add">
-      <div class="form-topbar">
-        <div class="back-btn" id="ts-add-back-btn" aria-label="Back">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <div class="radar-overlay" id="ts-add-overlay" style="z-index:1150;">
+      <div class="ts-add-card">
+        <div class="ts-add-card-head">
+          <div class="ts-add-card-headtext">
+            <div class="cc-eyebrow">New timesheet</div>
+            <div class="ts-add-card-title">Add hours</div>
+          </div>
+          <button class="ts-add-close" id="ts-add-back-btn" type="button" aria-label="Close">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
         </div>
-        <h1>Add New Timesheet</h1>
-      </div>
-      <div class="form-scroll">
-        <div class="ts-week-picker" id="ts-week-picker">
-          <button class="ts-week-picker-btn active" data-offset="1" type="button">Next week</button>
-          <button class="ts-week-picker-btn" data-offset="2" type="button">Week after next</button>
+        <div class="ts-add-card-body">
+          <div class="ts-week-picker" id="ts-week-picker">
+            <button class="ts-week-picker-btn active" data-offset="1" type="button">Next week</button>
+            <button class="ts-week-picker-btn" data-offset="2" type="button">Week after next</button>
+          </div>
+          <p class="field-hint" id="ts-add-range" style="margin-bottom: 14px;"></p>
+          <div id="ts-add-days"></div>
         </div>
-        <p class="field-hint" id="ts-add-range" style="margin-bottom: 14px;"></p>
-        <div id="ts-add-days"></div>
-      </div>
-      <div class="form-bottom-bar">
-        <button class="btn-save" id="ts-save-week-btn">Save timesheet</button>
-        <p class="required-hint" id="ts-save-hint">Hours will be added to this week's timesheet.</p>
+        <div class="ts-add-card-foot">
+          <button class="btn-save" id="ts-save-week-btn">Save timesheet</button>
+          <p class="required-hint" id="ts-save-hint">Hours will be added to this week's timesheet.</p>
+        </div>
       </div>
     </div>
 
@@ -2054,8 +1090,8 @@
     <!-- Transfer PIN overlay -->
     <div class="radar-overlay" id="transfer-pin-overlay" style="z-index:1100;">
       <div class="radar-card" style="max-width:300px; text-align:center;">
-        <div style="font-size:17px;font-weight:700;color:#2E2925;margin-bottom:6px;">Stock Transfer</div>
-        <div style="font-size:13px;color:#8A7F6F;margin-bottom:20px;">Enter PIN to continue</div>
+        <div id="transfer-pin-title" style="font-size:17px;font-weight:700;color:#2E2925;margin-bottom:6px;">Stock Transfer</div>
+        <div id="transfer-pin-sub" style="font-size:13px;color:#8A7F6F;margin-bottom:20px;">Enter PIN to continue</div>
         <input type="password" id="transfer-pin-input" class="gate-input" placeholder="PIN" autocomplete="off" inputmode="numeric" pattern="[0-9]*" style="max-width:100%;margin-bottom:12px;">
         <div id="transfer-pin-error" style="font-size:13px;color:#A32D2D;min-height:18px;margin-bottom:12px;"></div>
         <button class="gate-btn" id="transfer-pin-submit" style="max-width:100%;">Confirm</button>
@@ -2070,6 +1106,90 @@
         <div id="confirm-message" style="font-size:13px;color:#8A7F6F;margin-bottom:20px;">This cannot be undone.</div>
         <button class="import-confirm-btn confirm" id="confirm-ok-btn" style="width:100%;background:#A32D2D;">Delete</button>
         <button class="import-confirm-btn cancel" id="confirm-cancel-btn" style="width:100%;margin-top:10px;">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Email staff hours dialog -->
+    <div class="radar-overlay" id="email-overlay" style="z-index:1200;">
+      <div class="radar-card" style="max-width:340px;">
+        <div style="font-size:17px;font-weight:700;color:#2E2925;margin-bottom:14px;">Email staff hours</div>
+        <div class="field-group">
+          <label class="field-label">Week</label>
+          <select class="field-input" id="email-week-select"></select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Send to</label>
+          <input type="email" class="field-input" id="email-recipient" value="lashandmi@gmail.com" inputmode="email" autocomplete="off" spellcheck="false">
+        </div>
+        <div id="email-preview" style="font-size:12px;color:#6B5E54;line-height:1.55;background:#F1E9DC;border-radius:12px;padding:12px 14px;margin-bottom:16px;white-space:pre-wrap;max-height:170px;overflow-y:auto;"></div>
+        <button class="import-confirm-btn confirm" id="email-pdf-btn" style="width:100%;">Download PDF</button>
+        <button class="import-confirm-btn cancel" id="email-mail-btn" style="width:100%;margin-top:10px;">Open email app</button>
+        <button id="email-cancel-btn" style="width:100%;margin-top:10px;border:none;background:transparent;color:#8A7F6F;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;padding:6px 0;">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Add contact "name card" popup -->
+    <div class="radar-overlay" id="contact-add-overlay" style="z-index:1200;">
+      <div class="cc-card">
+        <div class="cc-header">
+          <div class="cc-avatar" id="cc-avatar">?</div>
+          <div class="cc-headtext">
+            <div class="cc-eyebrow">New contact</div>
+            <div class="cc-name-preview placeholder" id="cc-name-preview">Add a staff member</div>
+          </div>
+        </div>
+        <div class="cc-body">
+          <div class="field-group">
+            <label class="field-label">Name <span style="color:#A32D2D;">*</span></label>
+            <input type="text" class="field-input" id="cc-name" placeholder="e.g. Jordan Pak" autocomplete="off">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Contact number</label>
+            <input type="tel" class="field-input" id="cc-phone" placeholder="e.g. 0412 345 678" inputmode="tel">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Email</label>
+            <input type="email" class="field-input" id="cc-email" placeholder="e.g. jordan@example.com" inputmode="email">
+          </div>
+          <div class="cc-actions">
+            <button class="cc-add-btn" id="cc-add-btn" type="button">Add contact</button>
+            <button class="cc-cancel-btn" id="cc-cancel-btn" type="button">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Request N/A "card" popup -->
+    <div class="radar-overlay" id="na-add-overlay" style="z-index:1200;">
+      <div class="cc-card">
+        <div class="cc-header">
+          <div class="cc-avatar" style="background:#7D9BA8;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </div>
+          <div class="cc-headtext">
+            <div class="cc-eyebrow">Request N/A</div>
+            <div class="cc-name-preview" id="na-card-preview">Mark staff unavailable</div>
+          </div>
+        </div>
+        <div class="cc-body">
+          <label class="field-label">Staff</label>
+          <div id="na-staff-checks" class="na-staff-chips"></div>
+          <div class="field-row" style="margin-top:14px;">
+            <div class="field-group">
+              <label class="field-label">Start date</label>
+              <select class="field-input" id="na-start-select"></select>
+            </div>
+            <div class="field-group">
+              <label class="field-label">End date</label>
+              <select class="field-input" id="na-end-select"></select>
+            </div>
+          </div>
+          <div id="na-period-preview" class="field-hint" style="margin-bottom:14px;display:none;"></div>
+          <div class="cc-actions">
+            <button class="cc-add-btn" id="na-save-btn" type="button" disabled>Save</button>
+            <button class="cc-cancel-btn" id="na-cancel-btn" type="button">Cancel</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2915,6 +2035,7 @@
     </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="/common.js"></script>
 <script>
 (function(){
   // ===== APP 版本 — 每次發布前改這裡,並把 version.json 改成「同一個值」 =====
@@ -2929,66 +2050,14 @@
     { id: 'seed4', name: 'Panama Boquete', country: 'Panama', region: 'Boquete', station: 'Finca La Mula', process: 'Washed', altitude: '1600m', variety: 'Geisha', harvest: '2025', quantity: '6.5', supplier: 'Mercanta', costPerKg: '32.00' }
   ];
 
-  function uid(){ return 'bean_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); }
-  function fmtKg(n){ var v = parseFloat(n); return (isNaN(v)?0:v).toFixed(1) + ' kg'; }
-  function fmtMoney(n){ var v = parseFloat(n); return '$' + (isNaN(v)?0:v).toFixed(2); }
+  // ---- 共用工具來自 common.js (window.Ratio) ----
+  var uid = Ratio.uid, fmtKg = Ratio.fmtKg, fmtMoney = Ratio.fmtMoney, esc = Ratio.esc;
+  var getSessionPassword = Ratio.getPassword, setSessionPassword = Ratio.setPassword;
+  var apiRequest = Ratio.api;
   function stockStatus(q){ var v = parseFloat(q)||0; if (v<=0) return 'out'; if (v<=LOW_STOCK_THRESHOLD) return 'low'; return 'healthy'; }
   function isIncomplete(b){ return !b.country || !b.region || !b.station || !b.process || !b.altitude || !b.variety || !b.harvest || !b.supplier || !b.costPerKg; }
-  function esc(s){
-    var div = document.createElement('div');
-    div.textContent = s == null ? '' : s;
-    return div.innerHTML;
-  }
 
-  // ---------- Storage (calls backend API, cloud-shared) ----------
-  var SESSION_PASSWORD_KEY = 'ratio-admin-session-password';
 
-  function getSessionPassword(){
-    try { return sessionStorage.getItem(SESSION_PASSWORD_KEY) || ''; }
-    catch(e) { return ''; }
-  }
-  function setSessionPassword(pw){
-    try { sessionStorage.setItem(SESSION_PASSWORD_KEY, pw); } catch(e) {}
-  }
-
-  async function apiRequest(dataset, method, body){
-    var headers = { 'x-app-password': getSessionPassword() };
-    var opts = { method: method, headers: headers };
-    if (body) {
-      headers['Content-Type'] = 'application/json';
-      opts.body = JSON.stringify(body);
-    }
-    var url = '/api/beans?dataset=' + dataset;
-    var maxAttempts = 3;
-    var lastErr = null;
-    for (var attempt = 1; attempt <= maxAttempts; attempt++) {
-      try {
-        var resp = await fetch(url, opts);
-        if (resp.status === 401) {
-          var err = new Error('unauthorized');
-          err.unauthorized = true;
-          throw err;
-        }
-        if (resp.status >= 500) {
-          throw new Error('Server error: ' + resp.status); // transient -> retry
-        }
-        if (!resp.ok) {
-          var ce = new Error('Request failed: ' + resp.status);
-          ce.clientError = true; // 4xx -> do not retry
-          throw ce;
-        }
-        return resp.json();
-      } catch (e) {
-        lastErr = e;
-        if (e && (e.unauthorized || e.clientError)) throw e; // never retry auth / client errors
-        if (attempt < maxAttempts) {
-          await new Promise(function(r){ setTimeout(r, attempt * 500); }); // backoff: 0.5s, then 1s
-          continue;
-        }
-        throw lastErr;
-      }
-    }
-  }
 
   async function loadBeansFromServer(){
     var data = await apiRequest('beans', 'GET');
@@ -3100,6 +2169,7 @@
   var staffList = [];
   var timesheets = [];
   var naRequests = [];
+  var naEditMode = false;
   var customers = [];
   var sensorySessions = [];
   var roastedBeans = [];
@@ -3338,7 +2408,7 @@
     openRoastedScreen();
   });
   document.getElementById('banner-timesheet').addEventListener('click', function(){
-    tsAddWeekOffset = 1; openAddTimesheetScreen(); showScreen('screen-ts-add');
+    tsAddWeekOffset = 1; openAddTimesheetScreen();
   });
   document.getElementById('banner-beans').addEventListener('click', function(){
     state.showOnlyIncomplete = true; showScreen('screen-list'); render();
@@ -4857,10 +3927,15 @@
   // ---------- Transfer PIN ----------
   var transferUnlocked = false;
 
-  function showTransferPinOverlay(onSuccess){
+  function showTransferPinOverlay(onSuccess, opts){
+    opts = opts || {};
     var overlay = document.getElementById('transfer-pin-overlay');
     var input = document.getElementById('transfer-pin-input');
     var errorEl = document.getElementById('transfer-pin-error');
+    var titleEl = document.getElementById('transfer-pin-title');
+    var subEl = document.getElementById('transfer-pin-sub');
+    if (titleEl) titleEl.textContent = opts.title || 'Stock Transfer';
+    if (subEl) subEl.textContent = opts.subtitle || 'Enter PIN to continue';
     input.value = '';
     errorEl.textContent = '';
     overlay.classList.add('visible');
@@ -4960,25 +4035,29 @@
   var timePickerPeriod = 'AM';
   var WHEEL_ITEM_HEIGHT = 60;
 
-  function buildWheel(containerId, count, formatFn, startAt){
+  function buildWheel(containerId, count, formatFn, step){
+    step = step || 1;
     var el = document.getElementById(containerId);
     var html = '<div class="time-picker-wheel-frame"></div>';
     html += '<div class="time-picker-wheel-spacer" style="height:' + WHEEL_ITEM_HEIGHT + 'px;"></div>';
     for (var i = 0; i < count; i++) {
-      html += '<div class="time-picker-wheel-item" data-value="' + i + '">' + formatFn(i) + '</div>';
+      var val = i * step;
+      html += '<div class="time-picker-wheel-item" data-value="' + val + '">' + formatFn(val) + '</div>';
     }
     html += '<div class="time-picker-wheel-spacer" style="height:' + WHEEL_ITEM_HEIGHT + 'px;"></div>';
     el.innerHTML = html;
   }
 
-  function scrollWheelTo(containerId, value){
+  function scrollWheelTo(containerId, value, step){
+    step = step || 1;
     var el = document.getElementById(containerId);
-    el.scrollTop = value * WHEEL_ITEM_HEIGHT;
+    el.scrollTop = (value / step) * WHEEL_ITEM_HEIGHT;
   }
 
-  function getWheelValue(containerId){
+  function getWheelValue(containerId, step){
+    step = step || 1;
     var el = document.getElementById(containerId);
-    return Math.round(el.scrollTop / WHEEL_ITEM_HEIGHT);
+    return Math.round(el.scrollTop / WHEEL_ITEM_HEIGHT) * step;
   }
 
   function highlightWheel(containerId, value){
@@ -4989,8 +4068,8 @@
   }
 
   function initTimePickerWheels(){
-    buildWheel('time-picker-hour-wheel', 12, function(i){ return i === 0 ? 12 : i; }, 0);
-    buildWheel('time-picker-minute-wheel', 60, function(i){ return String(i).padStart(2, '0'); }, 0);
+    buildWheel('time-picker-hour-wheel', 12, function(v){ return v === 0 ? 12 : v; }, 1);
+    buildWheel('time-picker-minute-wheel', 4, function(v){ return String(v).padStart(2, '0'); }, 15);
 
     var hourEl = document.getElementById('time-picker-hour-wheel');
     var minuteEl = document.getElementById('time-picker-minute-wheel');
@@ -4999,7 +4078,7 @@
     hourEl.addEventListener('scroll', function(){
       clearTimeout(hourScrollTimeout);
       hourScrollTimeout = setTimeout(function(){
-        var v = getWheelValue('time-picker-hour-wheel');
+        var v = getWheelValue('time-picker-hour-wheel', 1);
         timePickerHour = v === 0 ? 12 : v;
         highlightWheel('time-picker-hour-wheel', v);
       }, 80);
@@ -5008,7 +4087,7 @@
     minuteEl.addEventListener('scroll', function(){
       clearTimeout(minuteScrollTimeout);
       minuteScrollTimeout = setTimeout(function(){
-        var v = getWheelValue('time-picker-minute-wheel');
+        var v = getWheelValue('time-picker-minute-wheel', 15);
         timePickerMinute = v;
         highlightWheel('time-picker-minute-wheel', v);
       }, 80);
@@ -5029,14 +4108,16 @@
     var current = inputEl.getAttribute('data-value') || '';
     var t = current ? to12Hour(current) : { hour: 9, minute: 0, period: 'AM' };
     timePickerHour = t.hour;
-    timePickerMinute = t.minute;
+    var snappedMin = Math.round(t.minute / 15) * 15;
+    if (snappedMin >= 60) snappedMin = 45;
+    timePickerMinute = snappedMin;
     setAmPmActive(t.period);
 
     var hourWheelValue = t.hour === 12 ? 0 : t.hour;
-    scrollWheelTo('time-picker-hour-wheel', hourWheelValue);
-    scrollWheelTo('time-picker-minute-wheel', t.minute);
+    scrollWheelTo('time-picker-hour-wheel', hourWheelValue, 1);
+    scrollWheelTo('time-picker-minute-wheel', snappedMin, 15);
     highlightWheel('time-picker-hour-wheel', hourWheelValue);
-    highlightWheel('time-picker-minute-wheel', t.minute);
+    highlightWheel('time-picker-minute-wheel', snappedMin);
 
     document.getElementById('time-picker-overlay').classList.add('visible');
   }
@@ -5185,26 +4266,41 @@
   // ----- Manage staff -----
   var expandedStaffContact = null;
 
+  var contactsEditMode = false;
+  function contactColor(name){
+    var palette = ['#C2A878', '#B08D57', '#A88BA0', '#8FA68E', '#C28E7D', '#7D9BA8', '#B5896E', '#9C8A5E'];
+    var h = 0; name = name || '';
+    for (var i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+    return palette[h % palette.length];
+  }
+  function contactInitial(name){
+    name = (name || '').trim();
+    if (!name) return '?';
+    var parts = name.split(/\s+/);
+    if (parts.length >= 2) return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+    return name.charAt(0).toUpperCase();
+  }
   function renderStaffContacts(){
     var listEl = document.getElementById('staff-contacts-list');
     if (staffList.length === 0) {
       listEl.innerHTML = '<p class="field-hint">No staff added yet. Tap the + button to add a staff member.</p>';
       return;
     }
+    var edit = contactsEditMode;
     var html = '';
     staffList.forEach(function(s){
       var isExpanded = expandedStaffContact === s.id;
-      html += '<div class="bean-card" style="margin-bottom:10px;" data-id="' + s.id + '">';
+      var hasInfo = !!(s.phone || s.email);
+      html += '<div class="bean-card contact-card" style="margin-bottom:10px;" data-id="' + s.id + '">';
       html += '  <div class="bean-card-main" data-action="toggle-contact">';
-      html += '    <div class="bean-card-main-left">';
+      html += '    <div class="contact-avatar" style="background:' + contactColor(s.name) + ';">' + esc(contactInitial(s.name)) + '</div>';
+      html += '    <div class="bean-card-main-left contact-info">';
       html += '      <div class="bean-name">' + esc(s.name) + '</div>';
-      if (s.phone) html += '      <div class="bean-process">' + esc(s.phone) + '</div>';
-      if (s.email) html += '      <div class="bean-process">' + esc(s.email) + '</div>';
-      if (!s.phone && !s.email) html += '      <div class="bean-process" style="color:#B0A491;font-style:italic;">No contact details</div>';
+      html += '      <div class="contact-sub' + (hasInfo ? '' : ' contact-sub-empty') + '">' + esc(hasInfo ? (s.phone || s.email) : 'No contact details') + '</div>';
       html += '    </div>';
       html += '    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:rotate(' + (isExpanded ? '180deg' : '0deg') + ');flex-shrink:0;color:#B0A491;"><polyline points="6 9 12 15 18 9"/></svg>';
       html += '  </div>';
-      if (isExpanded) {
+      if (isExpanded && edit) {
         html += '  <div class="bean-card-detail-inner">';
         html += '    <div class="field-group"><label class="field-label">Name</label>';
         html += '      <input type="text" class="field-input sc-name" value="' + esc(s.name) + '" placeholder="Name"></div>';
@@ -5216,6 +4312,18 @@
         html += '      <button class="btn-edit" data-action="save-contact" style="flex:1;">Save</button>';
         html += '      <button class="btn-delete" data-action="delete-contact" aria-label="Delete staff member"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
         html += '    </div>';
+        html += '  </div>';
+      } else if (isExpanded) {
+        html += '  <div class="bean-card-detail-inner contact-readonly">';
+        if (s.phone) {
+          html += '    <a class="contact-action-row" href="tel:' + esc(s.phone) + '"><span class="contact-action-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg></span><span class="contact-action-text">' + esc(s.phone) + '</span><span class="contact-action-cta">Call</span></a>';
+        }
+        if (s.email) {
+          html += '    <a class="contact-action-row" href="mailto:' + esc(s.email) + '"><span class="contact-action-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><span class="contact-action-text">' + esc(s.email) + '</span><span class="contact-action-cta">Email</span></a>';
+        }
+        if (!hasInfo) {
+          html += '    <div class="contact-empty-note">No contact details yet. Tap the pencil below to add them.</div>';
+        }
         html += '  </div>';
       }
       html += '</div>';
@@ -5289,12 +4397,59 @@
     document.getElementById('staff-email-input').value = '';
   });
 
+  // ---------- Add contact "name card" popup ----------
+  function ccUpdatePreview(){
+    var v = (document.getElementById('cc-name').value || '').trim();
+    var av = document.getElementById('cc-avatar');
+    var np = document.getElementById('cc-name-preview');
+    if (v) {
+      av.textContent = contactInitial(v);
+      av.style.background = contactColor(v);
+      np.textContent = v;
+      np.classList.remove('placeholder');
+    } else {
+      av.textContent = '?';
+      av.style.background = '#6B5E54';
+      np.textContent = 'Add a staff member';
+      np.classList.add('placeholder');
+    }
+  }
+  function openContactAddCard(){
+    document.getElementById('cc-name').value = '';
+    document.getElementById('cc-phone').value = '';
+    document.getElementById('cc-email').value = '';
+    ccUpdatePreview();
+    document.getElementById('contact-add-overlay').classList.add('visible');
+    setTimeout(function(){ var n = document.getElementById('cc-name'); if (n) n.focus(); }, 60);
+  }
+  function closeContactAddCard(){
+    document.getElementById('contact-add-overlay').classList.remove('visible');
+  }
+  document.getElementById('cc-name').addEventListener('input', ccUpdatePreview);
+  document.getElementById('cc-add-btn').addEventListener('click', function(){
+    var name = document.getElementById('cc-name').value.trim();
+    if (!name) { document.getElementById('cc-name').focus(); return; }
+    staffList.push({
+      id: uid(),
+      name: name,
+      phone: document.getElementById('cc-phone').value.trim(),
+      email: document.getElementById('cc-email').value.trim()
+    });
+    persistStaff();
+    closeContactAddCard();
+    renderStaffContacts();
+  });
+  document.getElementById('cc-cancel-btn').addEventListener('click', closeContactAddCard);
+  document.getElementById('contact-add-overlay').addEventListener('click', function(e){
+    if (e.target === this) closeContactAddCard();
+  });
+
   // ---------- Timesheet in-page tabs (open content on this page, no screen switch) ----------
   var TS_TABS = {
     current:  { body: 'ts-current-body',  icon: 'ts-open-current-btn',  title: 'Current Timesheet',  render: function(){ renderCurrentTimesheet(); scrollCurrentToToday(); }, action: openAddTimesheetScreen },
     previous: { body: 'ts-previous-body', icon: 'ts-open-previous-btn', title: 'Previous Timesheets', render: function(){ renderPreviousTimesheets(); } },
-    na:       { body: 'ts-na-body',       icon: 'ts-open-na-btn',       title: 'Request N/A',         render: null /* openNaScreen populates then calls showTsTab */ },
-    contacts: { body: 'ts-contacts-body', icon: 'ts-open-contacts-btn', title: 'Staff Contacts',      render: function(){ renderStaffContacts(); }, action: toggleStaffAddForm }
+    na:       { body: 'ts-na-body',       icon: 'ts-open-na-btn',       title: 'Request N/A',         render: function(){ renderNaExistingList(); }, action: openNaAddCard },
+    contacts: { body: 'ts-contacts-body', icon: 'ts-open-contacts-btn', title: 'Staff Contacts',      render: function(){ renderStaffContacts(); }, action: openContactAddCard }
   };
   var tsTabsRelocated = false;
   var tsActiveTab = null;
@@ -5333,29 +4488,60 @@
     var editBtn = document.getElementById('ts-edit-toggle');
     var curBody = document.getElementById('ts-current-body');
     if (curBody) curBody.classList.remove('ts-edit-on');
+    var prevBody = document.getElementById('ts-previous-body');
+    if (prevBody) prevBody.classList.remove('ts-edit-on');
+    naEditMode = false;
+    contactsEditMode = false;
     if (editBtn) {
       editBtn.classList.remove('active');
       editBtn.setAttribute('aria-pressed', 'false');
-      editBtn.style.display = (name === 'current') ? '' : 'none';
+      editBtn.style.display = (name === 'current' || name === 'na' || name === 'previous' || name === 'contacts') ? '' : 'none';
     }
+    var emailBtn = document.getElementById('ts-email-btn');
+    if (emailBtn) emailBtn.style.display = (name === 'previous') ? '' : 'none';
     tsActiveTab = name;
     if (cfg.render) { try { cfg.render(); } catch(e) { logError('ts-tab:' + name, e && (e.message || e)); } }
   }
 
   var tsEditToggleBtn = document.getElementById('ts-edit-toggle');
   if (tsEditToggleBtn) tsEditToggleBtn.addEventListener('click', function(){
-    var curBody = document.getElementById('ts-current-body');
-    if (!curBody) return;
-    var on = curBody.classList.toggle('ts-edit-on');
+    var on;
+    if (tsActiveTab === 'na') {
+      naEditMode = !naEditMode;
+      on = naEditMode;
+      renderNaExistingList();
+    } else if (tsActiveTab === 'previous') {
+      var prevBody = document.getElementById('ts-previous-body');
+      if (!prevBody) return;
+      if (prevBody.classList.contains('ts-edit-on')) {
+        // Turning edit mode OFF — no password needed
+        prevBody.classList.remove('ts-edit-on');
+        tsEditToggleBtn.classList.remove('active');
+        tsEditToggleBtn.setAttribute('aria-pressed', 'false');
+      } else {
+        // Turning edit mode ON — owner PIN required (same as Stock Transfer)
+        showTransferPinOverlay(function(){
+          prevBody.classList.add('ts-edit-on');
+          tsEditToggleBtn.classList.add('active');
+          tsEditToggleBtn.setAttribute('aria-pressed', 'true');
+        }, { title: 'Owner access', subtitle: 'Enter PIN to edit timesheets' });
+      }
+      return;
+    } else if (tsActiveTab === 'contacts') {
+      contactsEditMode = !contactsEditMode;
+      on = contactsEditMode;
+      renderStaffContacts();
+    } else {
+      var curBody = document.getElementById('ts-current-body');
+      if (!curBody) return;
+      on = curBody.classList.toggle('ts-edit-on');
+    }
     tsEditToggleBtn.classList.toggle('active', on);
     tsEditToggleBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
 
   document.getElementById('staff-add-open-btn').addEventListener('click', function(){
-    var form = document.getElementById('staff-add-form');
-    var isVisible = form.style.display !== 'none';
-    form.style.display = isVisible ? 'none' : 'block';
-    if (!isVisible) document.getElementById('staff-name-input').focus();
+    openContactAddCard();
   });
 
   document.getElementById('ts-open-contacts-btn').addEventListener('click', function(){
@@ -5393,13 +4579,17 @@
   // ----- Shared: render a week's days (editable), used by Current and Previous -----
   var tsEditingShift = null; // { weekId, dayKey, shiftIndex } or null
 
-  function renderWeekDays(week, containerEl, dates){
+  function renderWeekDays(week, containerEl, dates, opts){
+    var prev = !!(opts && opts.previous);
+    var cashSet = week.cashStaff || [];
+    var lockSet = week.lockedStaff || [];
     var html = '';
     DAY_KEYS.forEach(function(dk){
       var shifts = week.days[dk] || [];
-      html += '<div class="ts-day-card" data-week-id="' + week.id + '" data-day="' + dk + '" data-date="' + dates[dk] + '">';
+      var isToday = dates[dk] === isoDate(new Date());
+      html += '<div class="ts-day-card' + (isToday ? ' ts-day-today' : '') + '" data-week-id="' + week.id + '" data-day="' + dk + '" data-date="' + dates[dk] + '">';
       html += '  <div class="ts-day-card-header">';
-      html += '    <div class="ts-day-card-label-group"><span class="ts-day-name">' + DAY_LABELS[dk] + '</span><span class="ts-day-date">' + fmtShortDate(dates[dk]) + '</span></div>';
+      html += '    <div class="ts-day-card-label-group"><span class="ts-day-name">' + DAY_LABELS[dk] + '</span><span class="ts-day-date">' + fmtShortDate(dates[dk]) + '</span>' + (isToday ? '<span class="ts-day-today-badge">Today</span>' : '') + '</div>';
       html += '  </div>';
       html += '  <div class="ts-day-card-body">';
       if (shifts.length === 0) {
@@ -5422,11 +4612,29 @@
           html += '    </div>';
         } else {
           var hrs = workedHours(shift.start, shift.end, dk);
-          html += '    <div class="ts-shift-row" data-shift-idx="' + idx + '">';
-          html += '      <div class="ts-shift-main"><div class="ts-shift-top"><span class="ts-shift-name">' + esc(shift.staffName) + '</span><span class="ts-shift-hours">' + fmtHours(hrs) + '</span></div><div class="ts-shift-time"><span>' + (fmtTime12(shift.start) || shift.start) + '</span><span class="ts-shift-dash">\u2013</span><span>' + (fmtTime12(shift.end) || shift.end) + '</span></div></div>';
+          var isCash = prev && cashSet.indexOf(shift.staffId) !== -1;
+          var isLocked = prev && lockSet.indexOf(shift.staffId) !== -1;
+          var rowCls = 'ts-shift-row' + (isCash ? ' ts-shift-cash' : '') + (isLocked ? ' ts-shift-locked' : '');
+          var mainAttr = prev ? ' data-action="toggle-cash" data-staff-id="' + esc(shift.staffId) + '"' : '';
+          var timeRange = '<span>' + (fmtTime12(shift.start) || shift.start) + '</span><span class="ts-shift-dash">\u2013</span><span>' + (fmtTime12(shift.end) || shift.end) + '</span>';
+          var mainInner;
+          if (prev) {
+            mainInner = '<div class="ts-shift-top"><span class="ts-shift-name">' + esc(shift.staffName) + '</span><span class="ts-pay-tag ' + (isCash ? 'cash' : 'onbook') + '">' + (isCash ? 'Cash' : 'On Book') + '</span></div>'
+              + '<div class="ts-shift-time ts-shift-time-prev"><span class="ts-shift-trange">' + timeRange + '</span><span class="ts-shift-hours">' + fmtHours(hrs) + '</span></div>';
+          } else {
+            mainInner = '<div class="ts-shift-top"><span class="ts-shift-name">' + esc(shift.staffName) + '</span><span class="ts-shift-hours">' + fmtHours(hrs) + '</span></div>'
+              + '<div class="ts-shift-time">' + timeRange + '</div>';
+          }
+          html += '    <div class="' + rowCls + '" data-shift-idx="' + idx + '">';
+          html += '      <div class="ts-shift-main"' + mainAttr + '>' + mainInner + '</div>';
           html += '      <div class="ts-shift-actions">';
-          html += '        <button class="ts-shift-edit-btn" data-action="edit-shift" aria-label="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>';
-          html += '        <button class="ts-shift-delete-btn" data-action="delete-shift" aria-label="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+          if (prev && isCash) {
+            html += '        <label class="ts-lock-check"><input type="checkbox" data-action="toggle-lock" data-staff-id="' + esc(shift.staffId) + '"' + (isLocked ? ' checked' : '') + '></label>';
+          }
+          if (!isLocked) {
+            html += '        <button class="ts-shift-edit-btn" data-action="edit-shift" aria-label="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>';
+            html += '        <button class="ts-shift-delete-btn" data-action="delete-shift" aria-label="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
+          }
           html += '      </div>';
           html += '    </div>';
         }
@@ -5518,6 +4726,35 @@
         }
       });
     });
+    // Previous-mode: toggle Cash highlight (per staff, edit mode only) + lock checkbox
+    containerEl.querySelectorAll('[data-action="toggle-cash"]').forEach(function(el){
+      el.addEventListener('click', function(){
+        var prevBody = document.getElementById('ts-previous-body');
+        if (!prevBody || !prevBody.classList.contains('ts-edit-on')) return;
+        var sid = el.getAttribute('data-staff-id');
+        if (!week.cashStaff) week.cashStaff = [];
+        var i = week.cashStaff.indexOf(sid);
+        if (i === -1) { week.cashStaff.push(sid); }
+        else {
+          week.cashStaff.splice(i, 1);
+          if (week.lockedStaff) { var li = week.lockedStaff.indexOf(sid); if (li !== -1) week.lockedStaff.splice(li, 1); }
+        }
+        persistTimesheets();
+        onChange();
+      });
+    });
+    containerEl.querySelectorAll('[data-action="toggle-lock"]').forEach(function(el){
+      el.addEventListener('change', function(ev){
+        ev.stopPropagation();
+        var sid = el.getAttribute('data-staff-id');
+        if (!week.lockedStaff) week.lockedStaff = [];
+        var i = week.lockedStaff.indexOf(sid);
+        if (el.checked) { if (i === -1) week.lockedStaff.push(sid); }
+        else { if (i !== -1) week.lockedStaff.splice(i, 1); }
+        persistTimesheets();
+        onChange();
+      });
+    });
   }
 
   // ----- Current timesheet -----
@@ -5529,8 +4766,7 @@
     document.getElementById('ts-current-range').textContent =
       fmtShortDate(weekStart) + ' \u2013 ' + fmtShortDate(dates.sun) + ' (Mon\u2013Sun)';
 
-    var listEl = document.getElementById('ts-current-list');
-    listEl.innerHTML = renderWeekTotalsBar(week) + '<div id="ts-current-days"></div>';
+    document.getElementById('ts-current-totals').innerHTML = renderWeekTotalsBar(week);
     var daysEl = document.getElementById('ts-current-days');
     renderWeekDays(week, daysEl, dates);
     attachWeekDayListeners(daysEl, week, dates, renderCurrentTimesheet);
@@ -5664,7 +4900,7 @@
       btn.classList.toggle('active', parseInt(btn.getAttribute('data-offset'), 10) === 1);
     });
     refreshAddTimesheetWeek();
-    showScreen('screen-ts-add');
+    document.getElementById('ts-add-overlay').classList.add('visible');
   }
 
   document.getElementById('ts-week-picker').addEventListener('click', function(e){
@@ -5681,8 +4917,7 @@
 
   document.getElementById('ts-open-add-btn').addEventListener('click', openAddTimesheetScreen);
   document.getElementById('ts-add-back-btn').addEventListener('click', function(){
-    showScreen('screen-timesheet');
-    showTsTab('current');
+    document.getElementById('ts-add-overlay').classList.remove('visible');
   });
 
   document.getElementById('ts-save-week-btn').addEventListener('click', function(){
@@ -5704,8 +4939,7 @@
     });
 
     persistTimesheets();
-    showScreen('screen-timesheet');
-    showTsTab('current');
+    document.getElementById('ts-add-overlay').classList.remove('visible');
   });
 
   // ----- Previous timesheets -----
@@ -5726,12 +4960,18 @@
       var dates = weekDates(week.weekStart);
       var expanded = !!expandedPreviousWeeks[week.id];
       var totals = computeWeekTotals(week);
+      var grand = totals.weekday + totals.sat + totals.sun;
+      var shiftCount = 0; var staffSet = {};
+      DAY_KEYS.forEach(function(dk){ (week.days[dk] || []).forEach(function(s){ shiftCount++; staffSet[s.staffId] = 1; }); });
+      var staffCount = Object.keys(staffSet).length;
 
-      html += '<div class="ts-previous-row" data-week-id="' + week.id + '">';
+      html += '<div class="ts-previous-row' + (expanded ? ' expanded' : '') + '" data-week-id="' + week.id + '">';
       html += '  <div class="ts-previous-header" data-action="toggle-previous-week">';
-      html += '    <div>';
+      html += '    <div class="ts-previous-headtext">';
       html += '      <div class="ts-previous-range">' + fmtShortDate(week.weekStart) + ' \u2013 ' + fmtShortDate(dates.sun) + '</div>';
-      html += '      <div class="ts-previous-meta">Weekday ' + fmtHours(totals.weekday) + ' \u00b7 Sat ' + fmtHours(totals.sat) + ' \u00b7 Sun ' + fmtHours(totals.sun) + '</div>';
+      if (!expanded) {
+        html += '      <div class="ts-previous-meta">' + staffCount + ' staff \u00b7 ' + shiftCount + ' shift' + (shiftCount === 1 ? '' : 's') + ' \u00b7 ' + fmtHours(grand) + '</div>';
+      }
       html += '    </div>';
       html += '    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(' + (expanded ? '180deg' : '0deg') + ');"><polyline points="6 9 12 15 18 9"/></svg>';
       html += '  </div>';
@@ -5758,7 +4998,7 @@
       var dates = weekDates(week.weekStart);
       bodyEl.innerHTML = renderWeekTotalsBar(week) + '<div id="ts-previous-days-' + week.id + '"></div>';
       var daysEl = document.getElementById('ts-previous-days-' + week.id);
-      renderWeekDays(week, daysEl, dates);
+      renderWeekDays(week, daysEl, dates, { previous: true });
       attachWeekDayListeners(daysEl, week, dates, renderPreviousTimesheets);
     });
   }
@@ -5769,6 +5009,175 @@
   document.getElementById('ts-previous-back-btn').addEventListener('click', function(){
     showScreen('screen-timesheet');
   });
+
+  // ----- Email staff hours (from Previous) -----
+  var emailRecipient = 'lashandmi@gmail.com';
+  function emailPastWeeks(){
+    return timesheets.filter(function(w){ return isWeekPast(w.weekStart); })
+      .sort(function(a, b){ return new Date(b.weekStart) - new Date(a.weekStart); });
+  }
+  function staffHoursForWeek(week){
+    var map = {};
+    DAY_KEYS.forEach(function(dk){
+      (week.days[dk] || []).forEach(function(s){
+        var h = workedHours(s.start, s.end, dk);
+        if (h == null) return;
+        if (!map[s.staffId]) map[s.staffId] = { staffId: s.staffId, name: s.staffName || 'Unknown', weekday: 0, sat: 0, sun: 0 };
+        if (dk === 'sat') map[s.staffId].sat += h;
+        else if (dk === 'sun') map[s.staffId].sun += h;
+        else map[s.staffId].weekday += h;
+      });
+    });
+    var cash = week.cashStaff || [];
+    return Object.keys(map).map(function(id){
+      var r = map[id]; r.total = r.weekday + r.sat + r.sun; r.isCash = cash.indexOf(id) !== -1; return r;
+    }).sort(function(a, b){ return a.name.localeCompare(b.name); });
+  }
+  function buildHoursEmail(week){
+    var dates = weekDates(week.weekStart);
+    var range = fmtShortDate(week.weekStart) + ' \u2013 ' + fmtShortDate(dates.sun);
+    var rows = staffHoursForWeek(week);
+    var hoursLine = function(wd, sa, su){
+      var parts = [];
+      if (wd > 0) parts.push('Weekday ' + fmtHours(wd));
+      if (sa > 0) parts.push('Sat ' + fmtHours(sa));
+      if (su > 0) parts.push('Sun ' + fmtHours(su));
+      return parts.length ? parts.join('  \u00b7  ') : '\u2013';
+    };
+    var lines = ['Ratio Coffee Pty Ltd', 'Staff hours: ' + range, ''];
+    if (rows.length === 0) lines.push('(No shifts recorded)');
+    rows.forEach(function(r){
+      lines.push(r.name + '  [' + (r.isCash ? 'Cash' : 'On Book') + ']');
+      lines.push('   ' + hoursLine(r.weekday, r.sat, r.sun));
+    });
+    var tot = computeWeekTotals(week); var grand = tot.weekday + tot.sat + tot.sun;
+    lines.push('');
+    lines.push('TOTAL  ' + hoursLine(tot.weekday, tot.sat, tot.sun));
+    lines.push('Grand total: ' + fmtHours(grand));
+    return { subject: 'Ratio staff hours: ' + range, body: lines.join('\n') };
+  }
+  function generateHoursPDF(week){
+    if (!(window.jspdf && window.jspdf.jsPDF)) { alert('PDF tool not loaded \u2014 please refresh and try again.'); return; }
+    var doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4' });
+    var dates = weekDates(week.weekStart);
+    var range = fmtShortDate(week.weekStart) + ' \u2013 ' + fmtShortDate(dates.sun);
+    var pageW = doc.internal.pageSize.getWidth();
+    var M = 48, left = M, right = pageW - M;
+    var nameX = left + 4, colWk = 326, colSat = 400, colSun = 466, colType = right - 4;
+    var cell = function(h){ return (h && h > 0) ? fmtHours(h) : '\u2013'; };
+    var y = 60;
+    // Letterhead
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(46, 41, 37);
+    doc.text('Ratio Coffee Pty Ltd', left, y); y += 15;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(132, 122, 110);
+    doc.text('Shop 2, 473 Pacific Highway, Crows Nest', left, y); y += 12;
+    doc.text('0403 037 369    \u00b7    ratiocoffee2473@gmail.com', left, y); y += 16;
+    doc.setDrawColor(70, 62, 58); doc.setLineWidth(1.2); doc.line(left, y, right, y); y += 28;
+    // Title + week range
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(46, 41, 37);
+    doc.text('Staff Hours', left, y);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10.5); doc.setTextColor(132, 122, 110);
+    doc.text(range, right, y, { align: 'right' }); y += 12;
+    // Header band
+    var headH = 22;
+    doc.setFillColor(241, 233, 220); doc.rect(left, y, right - left, headH, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(124, 110, 92);
+    var hy = y + 14;
+    doc.text('STAFF', nameX, hy);
+    doc.text('WEEKDAY', colWk, hy, { align: 'right' });
+    doc.text('SAT', colSat, hy, { align: 'right' });
+    doc.text('SUN', colSun, hy, { align: 'right' });
+    doc.text('TYPE', colType, hy, { align: 'right' });
+    y += headH;
+    // Rows
+    var rows = staffHoursForWeek(week);
+    var rowH = 23;
+    if (rows.length === 0) {
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(150, 140, 130);
+      doc.text('No shifts recorded.', nameX, y + 15); y += rowH;
+    }
+    rows.forEach(function(r){
+      if (y > 766) { doc.addPage(); y = 60; }
+      var ry = y + 15;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(46, 41, 37);
+      doc.text(r.name, nameX, ry);
+      doc.setTextColor(74, 66, 60);
+      doc.text(cell(r.weekday), colWk, ry, { align: 'right' });
+      doc.text(cell(r.sat), colSat, ry, { align: 'right' });
+      doc.text(cell(r.sun), colSun, ry, { align: 'right' });
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+      if (r.isCash) doc.setTextColor(150, 110, 20); else doc.setTextColor(150, 140, 128);
+      doc.text(r.isCash ? 'CASH' : 'ON BOOK', colType, ry, { align: 'right' });
+      doc.setDrawColor(236, 228, 216); doc.setLineWidth(0.7); doc.line(left, y + rowH, right, y + rowH);
+      y += rowH;
+    });
+    // Total band
+    var tot = computeWeekTotals(week); var grand = tot.weekday + tot.sat + tot.sun;
+    var totH = 24;
+    doc.setFillColor(70, 62, 58); doc.rect(left, y, right - left, totH, 'F');
+    var ty = y + 16;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5); doc.setTextColor(255, 255, 255);
+    doc.text('TOTAL', nameX, ty);
+    doc.text(cell(tot.weekday), colWk, ty, { align: 'right' });
+    doc.text(cell(tot.sat), colSat, ty, { align: 'right' });
+    doc.text(cell(tot.sun), colSun, ty, { align: 'right' });
+    doc.text(cell(grand), colType, ty, { align: 'right' });
+    y += totH;
+    // Footer
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(170, 160, 150);
+    doc.text('Generated ' + new Date().toLocaleString(), left, 815);
+    doc.save('Ratio_hours_' + week.weekStart + '.pdf');
+  }
+  function refreshEmailPreview(){
+    var ws = document.getElementById('email-week-select').value;
+    var week = timesheets.find(function(w){ return w.weekStart === ws; });
+    document.getElementById('email-preview').textContent = week ? buildHoursEmail(week).body : 'No completed weeks yet.';
+  }
+  function currentEmailWeek(){
+    var ws = document.getElementById('email-week-select').value;
+    return timesheets.find(function(w){ return w.weekStart === ws; });
+  }
+  function openEmailDialog(){
+    var weeks = emailPastWeeks();
+    document.getElementById('email-week-select').innerHTML = weeks.map(function(w){
+      var d = weekDates(w.weekStart);
+      return '<option value="' + w.weekStart + '">' + fmtShortDate(w.weekStart) + ' \u2013 ' + fmtShortDate(d.sun) + '</option>';
+    }).join('');
+    document.getElementById('email-recipient').value = emailRecipient;
+    var none = weeks.length === 0;
+    ['email-pdf-btn', 'email-mail-btn'].forEach(function(id){
+      var b = document.getElementById(id); if (b) { b.disabled = none; b.style.opacity = none ? '0.5' : ''; }
+    });
+    refreshEmailPreview();
+    document.getElementById('email-overlay').classList.add('visible');
+  }
+  function closeEmailDialog(){ document.getElementById('email-overlay').classList.remove('visible'); }
+  function downloadHoursPDF(){
+    var week = currentEmailWeek(); if (!week) return;
+    emailRecipient = (document.getElementById('email-recipient').value || '').trim() || 'lashandmi@gmail.com';
+    generateHoursPDF(week);
+  }
+  function sendHoursEmail(){
+    var week = currentEmailWeek(); if (!week) return;
+    var to = (document.getElementById('email-recipient').value || '').trim() || 'lashandmi@gmail.com';
+    emailRecipient = to;
+    var mail = buildHoursEmail(week);
+    window.location.href = 'mailto:' + to + '?subject=' + encodeURIComponent(mail.subject) + '&body=' + encodeURIComponent(mail.body);
+  }
+  (function(){
+    var fab = document.getElementById('ts-email-btn');
+    if (fab) fab.addEventListener('click', openEmailDialog);
+    var weekSel = document.getElementById('email-week-select');
+    if (weekSel) weekSel.addEventListener('change', refreshEmailPreview);
+    var pdfBtn = document.getElementById('email-pdf-btn');
+    if (pdfBtn) pdfBtn.addEventListener('click', downloadHoursPDF);
+    var mailBtn = document.getElementById('email-mail-btn');
+    if (mailBtn) mailBtn.addEventListener('click', sendHoursEmail);
+    var cancelBtn = document.getElementById('email-cancel-btn');
+    if (cancelBtn) cancelBtn.addEventListener('click', closeEmailDialog);
+    var ov = document.getElementById('email-overlay');
+    if (ov) ov.addEventListener('click', function(e){ if (e.target === ov) closeEmailDialog(); });
+  })();
 
   // ---------- Request N/A ----------
 
@@ -5850,45 +5259,69 @@
     if (active.length === 0) { container.innerHTML = ''; return; }
     var html = '<div class="section-label" style="margin:14px 0 8px;">Current N/A requests</div>';
     active.forEach(function(r){
-      var futureDates = r.dates.filter(function(d){ return d >= today; })
-        .sort()
-        .map(function(d){ return new Date(d + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' }); });
-      html += '<div class="delivery-bean-row" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;">';
-      html += '  <div><div style="font-size:14px;font-weight:600;color:#2E2925;">' + esc(r.staffName) + '</div>';
-      html += '  <div style="font-size:12px;color:#8A7F6F;margin-top:2px;">' + futureDates.join(' \u00b7 ') + '</div></div>';
-      html += '  <button class="btn-delete" data-action="delete-na" data-id="' + r.id + '" aria-label="Remove" style="width:36px;height:36px;border-radius:11px;border:1.5px solid #DCD2C2;background:#fff;color:#A32D2D;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg></button>';
-      html += '</div>';
+      var futureSorted = r.dates.filter(function(d){ return d >= today; }).sort();
+      if (naEditMode) {
+        var chips = futureSorted.map(function(d){
+          var lbl = new Date(d + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+          return '<button type="button" class="na-day-chip" data-action="remove-day" data-id="' + r.id + '" data-date="' + d + '" style="display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1.5px solid #DCD2C2;background:#FFFFFF;color:#463E3A;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">' + esc(lbl) + '<span style="color:#A32D2D;font-size:16px;line-height:1;">\u00d7</span></button>';
+        }).join('');
+        html += '<div class="delivery-bean-row" style="margin-bottom:8px;display:flex;flex-direction:column;align-items:stretch;gap:10px;">'
+          + '<div style="font-size:14px;font-weight:600;color:#2E2925;">' + esc(r.staffName) + '</div>'
+          + '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + chips + '</div>'
+          + '</div>';
+      } else {
+        var pills = futureSorted.map(function(d){
+          var lbl = new Date(d + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+          return '<span style="display:inline-block;padding:5px 11px;border-radius:999px;background:#F1E9DC;color:#6B5E54;font-size:12.5px;font-weight:600;">' + esc(lbl) + '</span>';
+        }).join('');
+        html += '<div class="delivery-bean-row" style="margin-bottom:8px;">'
+          + '<div style="font-size:14px;font-weight:700;color:#2E2925;margin-bottom:8px;">' + esc(r.staffName) + '</div>'
+          + '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + pills + '</div>'
+          + '</div>';
+      }
     });
     container.innerHTML = html;
-    container.querySelectorAll('[data-action="delete-na"]').forEach(function(btn){
+    container.querySelectorAll('[data-action="remove-day"]').forEach(function(btn){
       btn.addEventListener('click', function(){
         var id = btn.getAttribute('data-id');
-        confirmDanger('Remove this unavailability request?', function(){
+        var date = btn.getAttribute('data-date');
+        var req = naRequests.find(function(r){ return r.id === id; });
+        if (!req) return;
+        req.dates = req.dates.filter(function(d){ return d !== date; });
+        if (req.dates.length === 0) {
           naRequests = naRequests.filter(function(r){ return r.id !== id; });
-          saveWithStatus(saveNaToServer(naRequests));
-          renderNaExistingList();
-        }, { okText: 'Remove' });
+        }
+        saveWithStatus(saveNaToServer(naRequests));
+        refreshNaChips();
+        updateNaPreview();
+        renderNaExistingList();
       });
     });
   }
 
   function openNaScreen(){
+    renderNaExistingList();
+    showTsTab('na');
+  }
+
+  function openNaAddCard(){
     var opts = buildNaDateOptions();
     document.getElementById('na-start-select').innerHTML = opts;
     document.getElementById('na-end-select').innerHTML = opts;
-    var checks = document.getElementById('na-staff-checks');
-    checks.innerHTML = staffList.map(function(s){
+    document.getElementById('na-staff-checks').innerHTML = staffList.map(function(s){
       return '<button type="button" class="na-staff-chip" data-staff-id="' + s.id + '" data-existing="0">' + esc(s.name) + '</button>';
     }).join('');
     refreshNaChips();
     updateNaPreview();
-    var naStaffCol = document.getElementById('na-staff-collapse');
-    var naStaffTog = document.getElementById('na-staff-toggle');
-    if (naStaffCol) naStaffCol.classList.remove('collapsed');
-    if (naStaffTog) { naStaffTog.classList.remove('collapsed'); naStaffTog.setAttribute('aria-expanded', 'true'); }
-    renderNaExistingList();
-    showTsTab('na');
+    document.getElementById('na-add-overlay').classList.add('visible');
   }
+  function closeNaAddCard(){
+    document.getElementById('na-add-overlay').classList.remove('visible');
+  }
+  document.getElementById('na-cancel-btn').addEventListener('click', closeNaAddCard);
+  document.getElementById('na-add-overlay').addEventListener('click', function(e){
+    if (e.target === this) closeNaAddCard();
+  });
 
   document.getElementById('na-start-select').addEventListener('change', function(){
     var startSel = document.getElementById('na-start-select');
@@ -5948,6 +5381,7 @@
     refreshNaChips();
     updateNaPreview();
     renderNaExistingList();
+    closeNaAddCard();
   });
 
   // ---------- Handover ----------
@@ -7162,7 +6596,9 @@
   var gateSubmitBtn = document.getElementById('gate-submit-btn');
 
   async function attemptUnlock(password){
+    var gfp = document.getElementById('gate-fingerprint-btn');
     gateError.textContent = '';
+    if (gfp) gfp.classList.add('busy');
     gateSubmitBtn.disabled = true;
     gateSubmitBtn.textContent = 'Checking\u2026';
     setSessionPassword(password);
@@ -7215,6 +6651,7 @@
       if (tasksDirty) { saveHandoverToServer(handoverData).catch(function(){}); }
       showScreen('screen-menu');
       render();
+      var gpw = document.getElementById('gate-pw-overlay'); if (gpw) gpw.classList.remove('visible');
     } catch(e) {
       if (e && e.unauthorized) {
         gateError.textContent = 'Incorrect password. Please try again.';
@@ -7224,21 +6661,46 @@
       setSessionPassword('');
       document.getElementById('gate-password-input').value = '';
     } finally {
+      if (gfp) gfp.classList.remove('busy');
       gateSubmitBtn.disabled = false;
       gateSubmitBtn.textContent = 'Unlock';
     }
   }
 
   gateSubmitBtn.addEventListener('click', function(){
-    var pw = gateInput.value;
-    if (!pw) {
-      gateError.textContent = 'Please enter the password.';
-      return;
-    }
-    attemptUnlock(pw);
+    // === DEV BYPASS (暫時) ：按 Unlock 直接用預設密碼進入。
+    //     要還原密碼：刪掉下面這一行、把再下面的區塊取消註解即可。 ===
+    attemptUnlock(gateInput.value || '0000');
+    // var pw = gateInput.value;
+    // if (!pw) {
+    //   gateError.textContent = 'Please enter the password.';
+    //   return;
+    // }
+    // attemptUnlock(pw);
   });
   gateInput.addEventListener('keydown', function(e){
     if (e.key === 'Enter') gateSubmitBtn.click();
+  });
+  function openGatePwOverlay(){
+    var ov = document.getElementById('gate-pw-overlay');
+    gateError.textContent = '';
+    gateInput.value = '';
+    ov.classList.add('visible');
+    setTimeout(function(){ gateInput.focus(); }, 100);
+  }
+  function closeGatePwOverlay(){
+    document.getElementById('gate-pw-overlay').classList.remove('visible');
+  }
+  var gateFingerprintBtn = document.getElementById('gate-fingerprint-btn');
+  if (gateFingerprintBtn) {
+    gateFingerprintBtn.addEventListener('click', openGatePwOverlay);
+    gateFingerprintBtn.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openGatePwOverlay(); }
+    });
+  }
+  document.getElementById('gate-pw-cancel').addEventListener('click', closeGatePwOverlay);
+  document.getElementById('gate-pw-overlay').addEventListener('click', function(e){
+    if (e.target.id === 'gate-pw-overlay') closeGatePwOverlay();
   });
 
   // ---------- Setting screen ----------
