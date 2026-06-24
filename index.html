@@ -4449,11 +4449,18 @@
           var isCash = prev && cashSet.indexOf(shift.staffId) !== -1;
           var isLocked = prev && lockSet.indexOf(shift.staffId) !== -1;
           var rowCls = 'ts-shift-row' + (isCash ? ' ts-shift-cash' : '') + (isLocked ? ' ts-shift-locked' : '');
-          var nameHtml = '<span class="ts-shift-name">' + esc(shift.staffName) + '</span>';
-          if (prev) nameHtml = '<span class="ts-shift-namewrap">' + nameHtml + '<span class="ts-pay-tag ' + (isCash ? 'cash' : 'onbook') + '">' + (isCash ? 'Cash' : 'On Book') + '</span></span>';
           var mainAttr = prev ? ' data-action="toggle-cash" data-staff-id="' + esc(shift.staffId) + '"' : '';
+          var timeRange = '<span>' + (fmtTime12(shift.start) || shift.start) + '</span><span class="ts-shift-dash">\u2013</span><span>' + (fmtTime12(shift.end) || shift.end) + '</span>';
+          var mainInner;
+          if (prev) {
+            mainInner = '<div class="ts-shift-top"><span class="ts-shift-name">' + esc(shift.staffName) + '</span><span class="ts-pay-tag ' + (isCash ? 'cash' : 'onbook') + '">' + (isCash ? 'Cash' : 'On Book') + '</span></div>'
+              + '<div class="ts-shift-time ts-shift-time-prev"><span class="ts-shift-trange">' + timeRange + '</span><span class="ts-shift-hours">' + fmtHours(hrs) + '</span></div>';
+          } else {
+            mainInner = '<div class="ts-shift-top"><span class="ts-shift-name">' + esc(shift.staffName) + '</span><span class="ts-shift-hours">' + fmtHours(hrs) + '</span></div>'
+              + '<div class="ts-shift-time">' + timeRange + '</div>';
+          }
           html += '    <div class="' + rowCls + '" data-shift-idx="' + idx + '">';
-          html += '      <div class="ts-shift-main"' + mainAttr + '><div class="ts-shift-top">' + nameHtml + '<span class="ts-shift-hours">' + fmtHours(hrs) + '</span></div><div class="ts-shift-time"><span>' + (fmtTime12(shift.start) || shift.start) + '</span><span class="ts-shift-dash">\u2013</span><span>' + (fmtTime12(shift.end) || shift.end) + '</span></div></div>';
+          html += '      <div class="ts-shift-main"' + mainAttr + '>' + mainInner + '</div>';
           html += '      <div class="ts-shift-actions">';
           if (prev && isCash) {
             html += '        <label class="ts-lock-check"><input type="checkbox" data-action="toggle-lock" data-staff-id="' + esc(shift.staffId) + '"' + (isLocked ? ' checked' : '') + '></label>';
@@ -4789,12 +4796,18 @@
       var dates = weekDates(week.weekStart);
       var expanded = !!expandedPreviousWeeks[week.id];
       var totals = computeWeekTotals(week);
+      var grand = totals.weekday + totals.sat + totals.sun;
+      var shiftCount = 0; var staffSet = {};
+      DAY_KEYS.forEach(function(dk){ (week.days[dk] || []).forEach(function(s){ shiftCount++; staffSet[s.staffId] = 1; }); });
+      var staffCount = Object.keys(staffSet).length;
 
-      html += '<div class="ts-previous-row" data-week-id="' + week.id + '">';
+      html += '<div class="ts-previous-row' + (expanded ? ' expanded' : '') + '" data-week-id="' + week.id + '">';
       html += '  <div class="ts-previous-header" data-action="toggle-previous-week">';
-      html += '    <div>';
+      html += '    <div class="ts-previous-headtext">';
       html += '      <div class="ts-previous-range">' + fmtShortDate(week.weekStart) + ' \u2013 ' + fmtShortDate(dates.sun) + '</div>';
-      html += '      <div class="ts-previous-meta">Weekday ' + fmtHours(totals.weekday) + ' \u00b7 Sat ' + fmtHours(totals.sat) + ' \u00b7 Sun ' + fmtHours(totals.sun) + '</div>';
+      if (!expanded) {
+        html += '      <div class="ts-previous-meta">' + staffCount + ' staff \u00b7 ' + shiftCount + ' shift' + (shiftCount === 1 ? '' : 's') + ' \u00b7 ' + fmtHours(grand) + '</div>';
+      }
       html += '    </div>';
       html += '    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate(' + (expanded ? '180deg' : '0deg') + ');"><polyline points="6 9 12 15 18 9"/></svg>';
       html += '  </div>';
