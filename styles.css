@@ -228,7 +228,20 @@
     background: #FFFFFF; border: 1.5px solid #DCD2C2;
     display: flex; align-items: center; justify-content: center;
     color: #463E3A; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
   }
+  /* --- Shared tap feedback for icon + back buttons (used app-wide) --- */
+  .icon-btn svg, .back-btn svg { transition: transform 0.12s ease; will-change: transform; }
+  .icon-btn:active svg, .back-btn:active svg { transform: scale(0.8); }
+  .icon-btn:not(.active):active, .back-btn:active { background: #F1E9DC; border-color: #C9BCA6; }
+  .icon-btn.active:active { background: #2E2925; }
+  @media (hover: hover) {
+    .icon-btn:not(.active):hover, .back-btn:hover { border-color: #C7B9A2; box-shadow: 0 2px 9px rgba(70, 62, 58, 0.09); }
+  }
+  /* --- Reusable tap-feedback utility for any custom button (normal-flow elements) --- */
+  .tap-fb { -webkit-tap-highlight-color: transparent; transition: transform 0.12s ease, opacity 0.15s ease, background-color 0.15s ease; }
+  .tap-fb:active { transform: scale(0.93); opacity: 0.9; }
 
   .import-confirm-btn {
     flex: 1; padding: 12px 0; font-size: 14px; font-weight: 600;
@@ -481,6 +494,8 @@
     width: 44px; height: 44px; border-radius: 14px; background: #FFFFFF;
     border: 1.5px solid #DCD2C2; display: flex; align-items: center; justify-content: center;
     color: #463E3A; cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
   }
   .form-topbar h1 { font-size: 19px; font-weight: 600; color: #463E3A; }
   .form-scroll { flex: 1; overflow-y: auto; padding: 6px 20px 16px; overscroll-behavior: contain; min-height: 0; }
