@@ -2576,6 +2576,33 @@
     }
   }
 
+  // Refresh data from the server WITHOUT logging out (keeps the sessionStorage password
+  // and avoids a full page reload, which would otherwise drop back to the password gate).
+  var _refreshingLive = false;
+  async function refreshLiveData(toggleEl){
+    if (_refreshingLive) return;
+    _refreshingLive = true;
+    if (toggleEl){ toggleEl.classList.add('off'); toggleEl.setAttribute('aria-checked', 'false'); }
+    try {
+      await loadAllData();
+      var active = document.querySelector('.screen.active');
+      if (active && active.id) {
+        showScreen(active.id);
+        // showScreen has no render hook for the timesheet — refresh its current tab explicitly.
+        if (active.id === 'screen-timesheet' && typeof showTsTab === 'function' && tsActiveTab) {
+          showTsTab(tsActiveTab);
+        }
+      }
+    } catch (e) {
+      logError('refresh-live', e && (e.message || e));
+    } finally {
+      setTimeout(function(){
+        if (toggleEl){ toggleEl.classList.remove('off'); toggleEl.setAttribute('aria-checked', 'true'); }
+        _refreshingLive = false;
+      }, 400);
+    }
+  }
+
 
 
 
@@ -4207,7 +4234,7 @@
   var cmFootRefresh = document.getElementById('cm-foot-refresh');
   if (cmFootRefresh) cmFootRefresh.addEventListener('click', function(){ renderCMarket(); });
   var cmFootToggle = document.getElementById('cm-foot-toggle');
-  if (cmFootToggle) cmFootToggle.addEventListener('click', function(){ cmFootToggle.classList.toggle('off'); });
+  if (cmFootToggle) cmFootToggle.addEventListener('click', function(){ refreshLiveData(cmFootToggle); });
 
   // ---------- Purchase footer dock ----------
   [['dl-icon-inventory','menu-open-inventory-btn'],
@@ -4223,7 +4250,7 @@
   var dlFootAdd = document.getElementById('dl-foot-add');
   if (dlFootAdd) dlFootAdd.addEventListener('click', function(){ var b=document.getElementById('add-delivery-row-btn'); if(b)b.click(); });
   var dlFootToggle = document.getElementById('dl-foot-toggle');
-  if (dlFootToggle) dlFootToggle.addEventListener('click', function(){ dlFootToggle.classList.toggle('off'); });
+  if (dlFootToggle) dlFootToggle.addEventListener('click', function(){ refreshLiveData(dlFootToggle); });
 
   // ---------- Stock Transfer footer dock ----------
   [['tf-icon-inventory','menu-open-inventory-btn'],
@@ -4239,7 +4266,7 @@
   var tfFootHistory = document.getElementById('tf-foot-history');
   if (tfFootHistory) tfFootHistory.addEventListener('click', function(){ var b=document.getElementById('open-transfer-history-btn'); if(b)b.click(); });
   var tfFootToggle = document.getElementById('tf-foot-toggle');
-  if (tfFootToggle) tfFootToggle.addEventListener('click', function(){ tfFootToggle.classList.toggle('off'); });
+  if (tfFootToggle) tfFootToggle.addEventListener('click', function(){ refreshLiveData(tfFootToggle); });
 
   // ---------- Inventory footer dock ----------
   [['iv-icon-inventory','menu-open-inventory-btn'],
@@ -4255,7 +4282,7 @@
   var ivFootRefresh = document.getElementById('iv-foot-refresh');
   if (ivFootRefresh) ivFootRefresh.addEventListener('click', function(){ render(); });
   var ivFootToggle = document.getElementById('iv-foot-toggle');
-  if (ivFootToggle) ivFootToggle.addEventListener('click', function(){ ivFootToggle.classList.toggle('off'); });
+  if (ivFootToggle) ivFootToggle.addEventListener('click', function(){ refreshLiveData(ivFootToggle); });
 
   // ---------- Transfer PIN ----------
   var transferUnlocked = false;
@@ -4336,14 +4363,7 @@
     showScreen('screen-menu');
   });
   var tsRefreshBtn = document.getElementById('ts-refresh-btn');
-  if (tsRefreshBtn) tsRefreshBtn.addEventListener('click', function(){
-    tsRefreshBtn.classList.add('off');
-    tsRefreshBtn.setAttribute('aria-checked', 'false');
-    setTimeout(function(){
-      try { setSessionPassword(''); } catch(e) {}
-      location.reload();
-    }, 240);
-  });
+  if (tsRefreshBtn) tsRefreshBtn.addEventListener('click', function(){ refreshLiveData(tsRefreshBtn); });
   var tsNaToggleBtn = document.getElementById('ts-na-toggle');
   var tsIconsCollapseEl = document.getElementById('ts-icons-collapse');
   if (tsNaToggleBtn && tsIconsCollapseEl) tsNaToggleBtn.addEventListener('click', function(){
@@ -7454,14 +7474,7 @@
     if (swapBtn) swapBtn.addEventListener('click', swapFrames);
 
     var refreshBtn = document.getElementById('glass-refresh-btn');
-    if (refreshBtn) refreshBtn.addEventListener('click', function(){
-      refreshBtn.classList.add('off');
-      refreshBtn.setAttribute('aria-checked', 'false');
-      setTimeout(function(){
-        try { setSessionPassword(''); } catch(e) {}
-        location.reload();
-      }, 240);
-    });
+    if (refreshBtn) refreshBtn.addEventListener('click', function(){ refreshLiveData(refreshBtn); });
 
     // ----- Drag to reorder / move between frames -----
     var dragEl = null, ghost = null, pressTimer = null, dragging = false;
