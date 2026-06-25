@@ -3739,7 +3739,8 @@
       ? "Receiving beans from another roaster. If you select an existing bean, the quantity and cost will be merged into your current stock (weighted average)."
       : "Sending beans to another roaster. This will deduct from your stock and use your current cost per kg as the pricing baseline.";
     populateTransferBeanSelect();
-    document.getElementById('transfer-new-name-group').style.display = 'none';
+    var _bsel = document.getElementById('transfer-bean-select');
+    document.getElementById('transfer-new-name-group').style.display = (_bsel.value === '__new__') ? 'block' : 'none';
     if (dir === 'out') {
       recalcTransferOutPriceFromMargin();
     }
