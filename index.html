@@ -2790,11 +2790,7 @@
       renderCountryBreakdown();
     });
     var gbToggle = document.getElementById('gb-measure-toggle');
-    if (gbToggle) gbToggle.addEventListener('click', function(){
-      // Visual placeholder only — value mode (GB_SHOW_PRICE) is currently disabled.
-      var off = gbToggle.classList.toggle('off');
-      gbToggle.setAttribute('aria-checked', off ? 'false' : 'true');
-    });
+    if (gbToggle) gbToggle.addEventListener('click', function(){ lockApp(gbToggle); });
 
     gbAnalysisBound = true;
   }
@@ -2870,24 +2866,25 @@
       ctx.stroke();
       startAngle += slice;
     });
-    // Centre label: total in the current measure (auto-shrinks to fit), plus the group count.
+    // Centre label: number of distinct groups + "<Dimension> total" (no kg shown in the chart).
     var famNow = (getComputedStyle(document.body).fontFamily) || 'system-ui, sans-serif';
-    var centreMain = metric === 'value' ? fmtMoney(total) : fmtKg(total);
-    var fs = 16;
-    ctx.font = '700 ' + fs + 'px ' + famNow;
-    while (ctx.measureText(centreMain).width > (Rin * 2 - 14) && fs > 9) {
-      fs -= 1; ctx.font = '700 ' + fs + 'px ' + famNow;
-    }
+    var dimLabels = { country: 'Country', variety: 'Variety', process: 'Process', supplier: 'Supplier' };
+    var centreMain = String(sorted.length);
+    var centreSub = (dimLabels[gbAnalysis.dim] || 'Group') + ' total';
     ctx.fillStyle = '#2E2925';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(centreMain, cx, cy - 7);
+    ctx.font = '700 26px ' + famNow;
+    ctx.fillText(centreMain, cx, cy - 8);
     ctx.fillStyle = '#8A7F6F';
-    ctx.font = '600 10.5px ' + famNow;
-    ctx.fillText(sorted.length + (sorted.length === 1 ? ' group' : ' groups'), cx, cy + 11);
+    var subFs = 11;
+    ctx.font = '600 ' + subFs + 'px ' + famNow;
+    while (ctx.measureText(centreSub).width > (Rin * 2 - 12) && subFs > 8) {
+      subFs -= 1; ctx.font = '600 ' + subFs + 'px ' + famNow;
+    }
+    ctx.fillText(centreSub, cx, cy + 12);
 
-    // Legend (with metric value per slice)
-    function fmtMetric(v){ return metric === 'value' ? fmtMoney(v) : fmtKg(v); }
+    // Legend: percentage + name (no kg).
     var legend = document.getElementById('country-pie-legend');
     legend.innerHTML = sorted.map(function(k, i){
       var pct = Math.round(groups[k] / total * 100);
@@ -2895,7 +2892,6 @@
         + '<span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:' + GB_COLOURS[i % GB_COLOURS.length] + ';flex-shrink:0;"></span>'
         + '<span style="font-size:15px;color:#2E2925;font-weight:600;min-width:38px;">' + pct + '%</span>'
         + '<span style="font-size:13px;color:#8A7F6F;flex:1;min-width:0;">' + esc(k) + '</span>'
-        + '<span style="font-size:12px;color:#A08858;white-space:nowrap;">' + fmtMetric(groups[k]) + '</span>'
         + '</div>';
     }).join('');
 
