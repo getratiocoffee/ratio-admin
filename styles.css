@@ -60,6 +60,9 @@
   .glass-footer .glass-toggle { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
   /* Green Bean footer: toggle stays centered; the label + cycle button group on the right so nothing overlaps the toggle. */
   #gb-bottom-bar .glass-footer .frame-label { flex: 0 1 auto; margin-left: auto; }
+  /* Summary dock takes only its natural height and pins to the bottom, so the chart + legend
+     get the full scroll area instead of being squeezed into half the screen. */
+  #gb-bottom-bar { flex: 0 0 auto; margin-top: auto; }
   /* Sub-screen docks (Inventory / Purchase / Transfer / C Market): same right-grouped label. */
   .sib-dock .glass-footer .frame-label { flex: 0 1 auto; margin-left: auto; }
   /* Dock takes only its natural height and pins to the bottom, leaving all scroll space to the page's main area. */

@@ -1410,8 +1410,8 @@
             <button type="button" data-metric="value">By value ($)</button>
           </div>
         </div>
-        <div style="display:flex; flex-direction:column; align-items:center; gap:16px;">
-          <canvas id="country-pie-canvas" width="160" height="160" style="flex-shrink:0;"></canvas>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+          <canvas id="country-pie-canvas" width="150" height="150" style="flex-shrink:0;"></canvas>
           <div id="country-pie-legend" style="display:flex; flex-direction:column; gap:8px; width:100%; max-width:300px;"></div>
         </div>
       </div>
@@ -2839,7 +2839,7 @@
     var canvas = document.getElementById('country-pie-canvas');
     var ctx = canvas.getContext('2d');
     var dpr = window.devicePixelRatio || 1;
-    var SIZE = 160;                          // logical display size (px)
+    var SIZE = 150;                          // logical display size (px)
     canvas.style.width = SIZE + 'px';
     canvas.style.height = SIZE + 'px';
     canvas.width = Math.round(SIZE * dpr);
