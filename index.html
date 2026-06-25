@@ -1224,11 +1224,11 @@
     <!-- ===== HANDOVER SCREEN (placeholder) ===== -->
     <div class="screen" id="screen-handover">
       <div class="form-topbar">
-        <div class="back-btn" id="handover-back-btn" aria-label="Back">
+        <div class="back-btn" id="handover-back-btn" aria-label="Back" style="display:none;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
         <h1>Hand Over</h1>
-        <button class="icon-btn" id="handover-manage-btn" aria-label="Manage tasks" style="margin-left:auto;" title="Manage task list">
+        <button class="icon-btn" id="handover-manage-btn" aria-label="Manage tasks" style="margin-left:auto; display:none;" title="Manage task list">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
       </div>
@@ -1236,6 +1236,50 @@
         <div style="overflow-y:auto; overscroll-behavior:contain; padding:20px 20px max(24px, env(safe-area-inset-bottom)); flex-shrink:0; max-height:100%;">
           <div id="handover-date-header" style="padding:0 0 14px;"></div>
           <div id="handover-task-list"></div>
+        </div>
+      </div>
+
+      <!-- FOOTER dock (bottom banner, same template as the other section pages) -->
+      <div class="menu-body sib-dock" id="ho-bottom-bar">
+        <div class="glass-frame">
+          <div class="ts-grid">
+            <button class="app-grid-item ts-tab-active" id="ho-icon-handover">
+              <span class="app-grid-icon" style="background:#E0EEF8;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A5C8A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12h6M9 16h4"/><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </span>
+              <span class="app-grid-label">Hand Over</span>
+            </button>
+            <button class="app-grid-item" id="ho-icon-order">
+              <span class="app-grid-icon" style="background:#FCE4EC;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#9C1B3E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              </span>
+              <span class="app-grid-label">Order</span>
+            </button>
+            <button class="app-grid-item" id="ho-icon-roastedbean">
+              <span class="app-grid-icon" style="background:#E8F4EC;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1E6B3A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="8" ry="6"/><path d="M12 6c2 2 2 8 0 12"/></svg>
+              </span>
+              <span class="app-grid-label">Coffee Bean</span>
+            </button>
+            <button class="app-grid-item" id="ho-icon-setting">
+              <span class="app-grid-icon" style="background:#E8EFF5;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2D5A8E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              </span>
+              <span class="app-grid-label">Tools</span>
+            </button>
+          </div>
+        </div>
+        <div class="glass-footer">
+          <div class="back-btn" id="ho-foot-back" aria-label="Back">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </div>
+          <span class="frame-label">Hand Over</span>
+          <button class="glass-toggle" id="ho-foot-toggle" role="switch" aria-checked="true" aria-label="Lock / refresh">
+            <span class="glass-toggle-knob"></span>
+          </button>
+          <button class="icon-btn" id="ho-foot-manage" aria-label="Manage tasks" title="Manage task list">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -6020,6 +6064,23 @@
   document.getElementById('handover-back-btn').addEventListener('click', function(){
     showScreen('screen-menu');
   });
+
+  // ---------- Hand Over bottom banner dock ----------
+  [['ho-icon-handover','menu-open-handover-btn'],
+   ['ho-icon-order','menu-open-order-btn'],
+   ['ho-icon-roastedbean','menu-open-roastedbean-btn'],
+   ['ho-icon-setting','menu-open-setting-btn']].forEach(function(p){
+    var ic = document.getElementById(p[0]);
+    var orig = document.getElementById(p[1]);
+    if (ic && orig) ic.addEventListener('click', function(){ orig.click(); });
+  });
+  var hoFootBack = document.getElementById('ho-foot-back');
+  if (hoFootBack) hoFootBack.addEventListener('click', function(){ showScreen('screen-menu'); });
+  var hoFootManage = document.getElementById('ho-foot-manage');
+  if (hoFootManage) hoFootManage.addEventListener('click', function(){ var b=document.getElementById('handover-manage-btn'); if(b)b.click(); });
+  var hoFootToggle = document.getElementById('ho-foot-toggle');
+  if (hoFootToggle) hoFootToggle.addEventListener('click', function(){ lockApp(hoFootToggle); });
+
   document.getElementById('handover-manage-btn').addEventListener('click', function(){
     var tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
