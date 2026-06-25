@@ -1390,7 +1390,7 @@
         <div class="back-btn" id="greenbean-back-btn" aria-label="Back" style="display:none;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
-        <h1>Inventory</h1>
+        <h1>Summary</h1>
       </div>
 
       <!-- Inventory analysis (multi-dimension breakdown) — scrollable so the bottom bar stays pinned -->
@@ -1410,9 +1410,9 @@
             <button type="button" data-metric="value">By value ($)</button>
           </div>
         </div>
-        <div style="display:flex; align-items:center; gap:20px; justify-content:center; flex-wrap:wrap;">
-          <canvas id="country-pie-canvas" width="150" height="150" style="flex-shrink:0;"></canvas>
-          <div id="country-pie-legend" style="display:flex; flex-direction:column; gap:8px; min-width:150px;"></div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:16px;">
+          <canvas id="country-pie-canvas" width="160" height="160" style="flex-shrink:0;"></canvas>
+          <div id="country-pie-legend" style="display:flex; flex-direction:column; gap:8px; width:100%; max-width:300px;"></div>
         </div>
       </div>
 
@@ -2838,27 +2838,53 @@
     var total = Object.keys(groups).reduce(function(s, k){ return s + groups[k]; }, 0);
     var sorted = Object.keys(groups).sort(function(a, b){ return groups[b] - groups[a]; });
 
-    // Pie
+    // Pie → retina-crisp donut with a centre total. One render path, so every breakdown
+    // (Country / Variety / Process / Supplier) and measure (weight / value) stays consistent.
     var canvas = document.getElementById('country-pie-canvas');
     var ctx = canvas.getContext('2d');
-    var W = canvas.width, H = canvas.height;
-    var cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 2;
+    var dpr = window.devicePixelRatio || 1;
+    var SIZE = 160;                          // logical display size (px)
+    canvas.style.width = SIZE + 'px';
+    canvas.style.height = SIZE + 'px';
+    canvas.width = Math.round(SIZE * dpr);
+    canvas.height = Math.round(SIZE * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var W = SIZE, H = SIZE;
+    var cx = W / 2, cy = H / 2;
+    var Rout = Math.min(W, H) / 2 - 3;
+    var Rin = Rout * 0.6;                     // donut hole
     ctx.clearRect(0, 0, W, H);
     if (total <= 0) { wrapper.style.display = 'none'; return; }
     var startAngle = -Math.PI / 2;
     sorted.forEach(function(k, i){
       var slice = groups[k] / total * Math.PI * 2;
       ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.arc(cx, cy, R, startAngle, startAngle + slice);
+      ctx.arc(cx, cy, Rout, startAngle, startAngle + slice);
+      ctx.arc(cx, cy, Rin, startAngle + slice, startAngle, true);
       ctx.closePath();
       ctx.fillStyle = GB_COLOURS[i % GB_COLOURS.length];
       ctx.fill();
       ctx.strokeStyle = '#FAF6F0';
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 2;
+      ctx.lineJoin = 'round';
       ctx.stroke();
       startAngle += slice;
     });
+    // Centre label: total in the current measure (auto-shrinks to fit), plus the group count.
+    var famNow = (getComputedStyle(document.body).fontFamily) || 'system-ui, sans-serif';
+    var centreMain = metric === 'value' ? fmtMoney(total) : fmtKg(total);
+    var fs = 16;
+    ctx.font = '700 ' + fs + 'px ' + famNow;
+    while (ctx.measureText(centreMain).width > (Rin * 2 - 14) && fs > 9) {
+      fs -= 1; ctx.font = '700 ' + fs + 'px ' + famNow;
+    }
+    ctx.fillStyle = '#2E2925';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(centreMain, cx, cy - 7);
+    ctx.fillStyle = '#8A7F6F';
+    ctx.font = '600 10.5px ' + famNow;
+    ctx.fillText(sorted.length + (sorted.length === 1 ? ' group' : ' groups'), cx, cy + 11);
 
     // Legend (with metric value per slice)
     function fmtMetric(v){ return metric === 'value' ? fmtMoney(v) : fmtKg(v); }
@@ -4216,7 +4242,7 @@
     if (ic && orig) ic.addEventListener('click', function(){ orig.click(); });
   });
   var cmFootBack = document.getElementById('cm-foot-back');
-  if (cmFootBack) cmFootBack.addEventListener('click', function(){ showScreen('screen-greenbean'); });
+  if (cmFootBack) cmFootBack.addEventListener('click', function(){ showScreen('screen-menu'); });
   var cmFootRefresh = document.getElementById('cm-foot-refresh');
   if (cmFootRefresh) cmFootRefresh.addEventListener('click', function(){ renderCMarket(); });
   var cmFootToggle = document.getElementById('cm-foot-toggle');
@@ -4232,7 +4258,7 @@
     if (ic && orig) ic.addEventListener('click', function(){ orig.click(); });
   });
   var dlFootBack = document.getElementById('dl-foot-back');
-  if (dlFootBack) dlFootBack.addEventListener('click', function(){ showScreen('screen-greenbean'); });
+  if (dlFootBack) dlFootBack.addEventListener('click', function(){ showScreen('screen-menu'); });
   var dlFootAdd = document.getElementById('dl-foot-add');
   if (dlFootAdd) dlFootAdd.addEventListener('click', function(){ var b=document.getElementById('add-delivery-row-btn'); if(b)b.click(); });
   var dlFootToggle = document.getElementById('dl-foot-toggle');
@@ -4248,7 +4274,7 @@
     if (ic && orig) ic.addEventListener('click', function(){ orig.click(); });
   });
   var tfFootBack = document.getElementById('tf-foot-back');
-  if (tfFootBack) tfFootBack.addEventListener('click', function(){ showScreen('screen-greenbean'); });
+  if (tfFootBack) tfFootBack.addEventListener('click', function(){ showScreen('screen-menu'); });
   var tfFootHistory = document.getElementById('tf-foot-history');
   if (tfFootHistory) tfFootHistory.addEventListener('click', function(){ var b=document.getElementById('open-transfer-history-btn'); if(b)b.click(); });
   var tfFootToggle = document.getElementById('tf-foot-toggle');
@@ -4264,7 +4290,7 @@
     if (ic && orig) ic.addEventListener('click', function(){ orig.click(); });
   });
   var ivFootBack = document.getElementById('iv-foot-back');
-  if (ivFootBack) ivFootBack.addEventListener('click', function(){ showScreen('screen-greenbean'); });
+  if (ivFootBack) ivFootBack.addEventListener('click', function(){ showScreen('screen-menu'); });
   var ivFootRefresh = document.getElementById('iv-foot-refresh');
   if (ivFootRefresh) ivFootRefresh.addEventListener('click', function(){ render(); });
   var ivFootToggle = document.getElementById('iv-foot-toggle');
