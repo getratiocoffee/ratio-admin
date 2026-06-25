@@ -3,12 +3,19 @@ export default async function handler(req, res) {
 
   const history = req.query.history === '1';
 
+  // Map the UI's range labels (and raw Yahoo ranges) to a valid Yahoo range string.
+  const RANGE_MAP = {
+    '1M': '1mo', '3M': '3mo', '6M': '6mo', '1Y': '1y',
+    '1mo': '1mo', '3mo': '3mo', '6mo': '6mo', '1y': '1y'
+  };
+
   try {
     const headers = { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' };
 
     if (history) {
-      // 6 months of daily closes
-      const url = 'https://query1.finance.yahoo.com/v8/finance/chart/KC=F?interval=1d&range=6mo';
+      // Daily closes for the requested range (defaults to 6 months)
+      const yRange = RANGE_MAP[req.query.range] || '6mo';
+      const url = 'https://query1.finance.yahoo.com/v8/finance/chart/KC=F?interval=1d&range=' + yRange;
       const r = await fetch(url, { headers });
       if (!r.ok) throw new Error('Yahoo fetch failed: ' + r.status);
       const data = await r.json();

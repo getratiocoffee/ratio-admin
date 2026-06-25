@@ -2972,11 +2972,21 @@
     }
     return out;
   }
-  // SINGLE INTEGRATION POINT — swap this body to pull real C-market data later.
-  function loadCMarketData(range){
-    var days = range === '1M' ? 30 : range === '3M' ? 90 : range === '6M' ? 182 : 365;
+  function cmDaysForRange(range){
+    return range === '1M' ? 30 : range === '3M' ? 90 : range === '6M' ? 182 : 365;
+  }
+  // Fallback sample series — used ONLY if the live feed can't be reached.
+  function cmSampleData(range){
     var full = cmGenerateSeries(365);
-    return full.slice(full.length - days);
+    return full.slice(full.length - cmDaysForRange(range));
+  }
+  // LIVE DATA — real Coffee "C" (ICE KC=F) daily closes from the backend API.
+  async function loadCMarketData(range){
+    var resp = await fetch('/api/cmarket?history=1&range=' + encodeURIComponent(range), { headers: { 'Accept': 'application/json' } });
+    if (!resp.ok) throw new Error('cmarket ' + resp.status);
+    var data = await resp.json();
+    if (!data || !Array.isArray(data.history) || !data.history.length) throw new Error('no history');
+    return data.history.map(function(p){ return { t: p.t, v: p.c }; });
   }
 
   function cmBindToggles(){
@@ -3049,9 +3059,22 @@
     ctx.textAlign = 'right'; ctx.fillText(fmtD(series[series.length - 1].t), padL + plotW, cssH - 6);
   }
 
-  function renderCMarket(){
-    var series = loadCMarketData(cmState.range);
+  async function renderCMarket(){
+    var series, live = true;
+    try {
+      series = await loadCMarketData(cmState.range);
+    } catch (e) {
+      live = false;
+      series = cmSampleData(cmState.range);
+    }
     if (!series || !series.length) return;
+    var badge = document.querySelector('.cm-badge');
+    if (badge){
+      badge.textContent = live ? 'Live \u00B7 ICE KC=F' : 'Sample data (live feed unavailable)';
+      badge.title = live
+        ? 'Live daily closes from ICE Coffee C (KC=F) via Yahoo Finance'
+        : 'Could not reach the live feed \u2014 showing illustrative sample data';
+    }
     var first = series[0].v, last = series[series.length - 1].v;
     var hi = series.reduce(function(m, p){ return p.v > m ? p.v : m; }, -Infinity);
     var lo = series.reduce(function(m, p){ return p.v < m ? p.v : m; }, Infinity);
