@@ -1718,84 +1718,88 @@
       </div>
     </div>
 
-    <!-- ===== ADD / EDIT BEAN SCREEN ===== -->
-    <div class="screen" id="screen-form">
-      <div class="form-topbar">
-        <div class="back-btn" id="form-back-btn" aria-label="Back">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        </div>
-        <h1 id="form-title">Add bean</h1>
-      </div>
-
-      <div class="form-scroll">
-        <div class="section-label">Basics</div>
-
-        <div class="field-group">
-          <label class="field-label">Name</label>
-          <input type="text" class="field-input" id="f-name" placeholder="e.g. Yirgacheffe Kochere">
-        </div>
-        <div class="field-group">
-          <label class="field-label">Country</label>
-          <input type="text" class="field-input" id="f-country" placeholder="e.g. Ethiopia">
-        </div>
-        <div class="field-row">
-          <div class="field-group">
-            <label class="field-label">Region</label>
-            <input type="text" class="field-input" id="f-region" placeholder="e.g. Yirgacheffe">
+    <!-- ===== ADD / EDIT BEAN POPUP ===== -->
+    <div class="radar-overlay" id="bean-form-overlay" style="z-index:1150;">
+      <div class="ts-add-card">
+        <div class="ts-add-card-head">
+          <div class="ts-add-card-headtext">
+            <div class="ts-add-card-title" id="form-title">Add bean</div>
           </div>
-          <div class="field-group">
-            <label class="field-label">Station / Farm</label>
-            <input type="text" class="field-input" id="f-station" placeholder="e.g. Kochere">
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field-group">
-            <label class="field-label">Process</label>
-            <input type="text" class="field-input" id="f-process" placeholder="e.g. Washed">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Altitude</label>
-            <input type="text" class="field-input" id="f-altitude" placeholder="e.g. 1900m">
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field-group">
-            <label class="field-label">Variety</label>
-            <input type="text" class="field-input" id="f-variety" placeholder="e.g. Heirloom">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Harvest</label>
-            <input type="text" class="field-input" id="f-harvest" placeholder="e.g. 2025">
-          </div>
+          <button class="ts-add-close" id="form-back-btn" type="button" aria-label="Close">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
 
-        <div class="divider"></div>
-        <div class="section-label">Stock &amp; cost</div>
+        <div class="ts-add-card-body">
+          <div class="section-label">Basics</div>
 
-        <div class="field-group">
-          <label class="field-label">Quantity</label>
-          <div class="qty-input-wrap">
-            <input type="number" class="field-input" id="f-quantity" min="0" step="0.1" placeholder="0.0" inputmode="decimal">
-            <span class="qty-unit">kg</span>
+          <div class="field-group">
+            <label class="field-label">Name</label>
+            <input type="text" class="field-input" id="f-name" placeholder="e.g. Yirgacheffe Kochere">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Country</label>
+            <input type="text" class="field-input" id="f-country" placeholder="e.g. Ethiopia">
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Region</label>
+              <input type="text" class="field-input" id="f-region" placeholder="e.g. Yirgacheffe">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Station / Farm</label>
+              <input type="text" class="field-input" id="f-station" placeholder="e.g. Kochere">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Process</label>
+              <input type="text" class="field-input" id="f-process" placeholder="e.g. Washed">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Altitude</label>
+              <input type="text" class="field-input" id="f-altitude" placeholder="e.g. 1900m">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Variety</label>
+              <input type="text" class="field-input" id="f-variety" placeholder="e.g. Heirloom">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Harvest</label>
+              <input type="text" class="field-input" id="f-harvest" placeholder="e.g. 2025">
+            </div>
+          </div>
+
+          <div class="divider"></div>
+          <div class="section-label">Stock &amp; cost</div>
+
+          <div class="field-group">
+            <label class="field-label">Quantity</label>
+            <div class="qty-input-wrap">
+              <input type="number" class="field-input" id="f-quantity" min="0" step="0.1" placeholder="0.0" inputmode="decimal">
+              <span class="qty-unit">kg</span>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Cost per kg</label>
+            <div class="cost-input-wrap">
+              <span class="cost-prefix">$</span>
+              <input type="number" class="field-input" id="f-cost" min="0" step="0.1" placeholder="0.00" inputmode="decimal">
+              <span class="cost-suffix">/kg</span>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Supplier</label>
+            <input type="text" class="field-input" id="f-supplier" placeholder="e.g. Trabocca">
           </div>
         </div>
-        <div class="field-group">
-          <label class="field-label">Cost per kg</label>
-          <div class="cost-input-wrap">
-            <span class="cost-prefix">$</span>
-            <input type="number" class="field-input" id="f-cost" min="0" step="0.1" placeholder="0.00" inputmode="decimal">
-            <span class="cost-suffix">/kg</span>
-          </div>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Supplier</label>
-          <input type="text" class="field-input" id="f-supplier" placeholder="e.g. Trabocca">
-        </div>
-      </div>
 
-      <div class="form-bottom-bar">
-        <button class="btn-save" id="save-bean-btn" disabled>Save bean</button>
-        <p class="required-hint">Name and quantity are required — everything else can be filled in later</p>
+        <div class="ts-add-card-foot">
+          <button class="btn-save" id="save-bean-btn" disabled>Save bean</button>
+          <p class="required-hint" style="margin-top:8px;">Name and quantity are required — everything else can be filled in later</p>
+        </div>
       </div>
     </div>
 
@@ -3189,7 +3193,7 @@
     clearForm();
     document.getElementById('form-title').textContent = 'Add bean';
     checkFormValid();
-    showScreen('screen-form');
+    document.getElementById('bean-form-overlay').classList.add('visible');
   }
 
   function openEditForm(id){
@@ -3199,11 +3203,11 @@
     fillForm(bean);
     document.getElementById('form-title').textContent = 'Edit bean';
     checkFormValid();
-    showScreen('screen-form');
+    document.getElementById('bean-form-overlay').classList.add('visible');
   }
 
   document.getElementById('open-add-btn').addEventListener('click', openAddForm);
-  document.getElementById('form-back-btn').addEventListener('click', function(){ showScreen('screen-list'); });
+  document.getElementById('form-back-btn').addEventListener('click', function(){ document.getElementById('bean-form-overlay').classList.remove('visible'); });
 
   document.getElementById('save-bean-btn').addEventListener('click', function(){
     if (!checkFormValid()) return;
@@ -3221,7 +3225,7 @@
       beans.push(values);
     }
     persist();
-    showScreen('screen-list');
+    document.getElementById('bean-form-overlay').classList.remove('visible');
     render();
   });
 
