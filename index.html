@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Ratio Admin · build 2026-06-25h -->
+<!-- Ratio Admin · build 2026-06-28a · current timesheet week stepper -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -134,11 +134,18 @@
           <span class="app-grid-label">Timesheet</span>
         </button>
 
-        <button class="app-grid-item" id="st-icon-other">
-          <span class="app-grid-icon" style="background:#E8EFF5;">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2D5A8E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1.2"/><rect x="14" y="4" width="6" height="6" rx="1.2"/><rect x="4" y="14" width="6" height="6" rx="1.2"/><rect x="14" y="14" width="6" height="6" rx="1.2"/></svg>
+        <button class="app-grid-item" id="menu-open-sensory-btn">
+          <span class="app-grid-icon" style="background:#FDE8D8;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#B04A10" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 2c0 2.5 3 2.5 3 5"/>
+              <path d="M11 2c0 2.5 3 2.5 3 5"/>
+              <path d="M3 10h18v2a7 7 0 0 1-7 7h-4a7 7 0 0 1-7-7v-2z"/>
+              <path d="M21 12h1a2 2 0 0 1 0 4h-1"/>
+              <path d="M8 22h8"/>
+              <path d="M12 19v3"/>
+            </svg>
           </span>
-          <span class="app-grid-label">Other</span>
+          <span class="app-grid-label">Sensory</span>
         </button>
 
         <button class="app-grid-item" id="menu-open-roasting-btn">
@@ -299,7 +306,18 @@
       </div>
 <div id="ts-current-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; justify-content:flex-start; overflow:hidden; min-height:0;">
         <div style="flex-shrink:0; padding:16px 20px 14px; border-bottom:1px solid #E8E0D3; box-shadow:0 5px 12px -8px rgba(70,62,58,0.18); position:relative; z-index:2;">
-          <p class="field-hint" id="ts-current-range"></p>
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+            <button class="back-btn" id="ts-current-prev" aria-label="Previous week" style="width:36px; height:36px; flex-shrink:0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <div style="flex:1; text-align:center; min-width:0;">
+              <div id="ts-current-weeklabel" style="font-size:15px; font-weight:700; color:#463E3A;">This week</div>
+              <p class="field-hint" id="ts-current-range" style="margin:2px 0 0;"></p>
+            </div>
+            <button class="back-btn" id="ts-current-next" aria-label="Next week" style="width:36px; height:36px; flex-shrink:0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
           <div id="ts-current-totals"></div>
         </div>
         <div style="flex:1; overflow-y:auto; overscroll-behavior:contain; padding:14px 20px max(20px, env(safe-area-inset-bottom)); min-height:0;">
@@ -315,7 +333,7 @@
         <div class="back-btn" id="ts-previous-back-btn" aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
-        <h1>Previous</h1>
+        <h1>Previous Timesheets</h1>
       </div>
 <div id="ts-previous-body" class="ts-panel" style="flex:1; display:flex; flex-direction:column; justify-content:flex-start; overflow:hidden; min-height:0;">
         <div class="ts-tab-bar"></div>
@@ -359,7 +377,7 @@
         <div class="back-btn" id="staff-contacts-back-btn" aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
-        <h1>Contacts</h1>
+        <h1>Staff Contacts</h1>
         <button class="icon-btn" id="staff-add-open-btn" aria-label="Add staff member" style="margin-left:auto;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
         </button>
@@ -1217,11 +1235,11 @@
     <!-- ===== HANDOVER SCREEN (placeholder) ===== -->
     <div class="screen" id="screen-handover">
       <div class="form-topbar">
-        <div class="back-btn" id="handover-back-btn" aria-label="Back" style="display:none;">
+        <div class="back-btn" id="handover-back-btn" aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
         <h1>Hand Over</h1>
-        <button class="icon-btn" id="handover-manage-btn" aria-label="Manage tasks" style="margin-left:auto; display:none;" title="Manage task list">
+        <button class="icon-btn" id="handover-manage-btn" aria-label="Manage tasks" style="margin-left:auto;" title="Manage task list">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
       </div>
@@ -1229,50 +1247,6 @@
         <div style="overflow-y:auto; overscroll-behavior:contain; padding:20px 20px max(24px, env(safe-area-inset-bottom)); flex-shrink:0; max-height:100%;">
           <div id="handover-date-header" style="padding:0 0 14px;"></div>
           <div id="handover-task-list"></div>
-        </div>
-      </div>
-
-      <!-- FOOTER dock (bottom banner, same template as the other section pages) -->
-      <div class="menu-body sib-dock" id="ho-bottom-bar">
-        <div class="glass-frame">
-          <div class="ts-grid">
-            <button class="app-grid-item" id="ho-icon-duty">
-              <span class="app-grid-icon" style="background:#E0EEF8;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A5C8A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3.2a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V4"/><polyline points="9 13 11 15 15 10.5"/></svg>
-              </span>
-              <span class="app-grid-label">Duty</span>
-            </button>
-            <button class="app-grid-item" id="ho-icon-reminder">
-              <span class="app-grid-icon" style="background:#FCE8B3;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#92560C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
-              </span>
-              <span class="app-grid-label">Reminder</span>
-            </button>
-            <button class="app-grid-item" id="ho-icon-event">
-              <span class="app-grid-icon" style="background:#E3DCF2;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5B3FA6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>
-              </span>
-              <span class="app-grid-label">Event</span>
-            </button>
-            <button class="app-grid-item" id="ho-icon-note">
-              <span class="app-grid-icon" style="background:#E8F4EC;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1E6B3A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 3 14 8 20 8"/><line x1="8" y1="13" x2="15" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
-              </span>
-              <span class="app-grid-label">Note</span>
-            </button>
-          </div>
-        </div>
-        <div class="glass-footer">
-          <div class="back-btn" id="ho-foot-back" aria-label="Back">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          </div>
-          <span class="frame-label">Hand Over</span>
-          <button class="glass-toggle" id="ho-foot-toggle" role="switch" aria-checked="true" aria-label="Lock / refresh">
-            <span class="glass-toggle-knob"></span>
-          </button>
-          <button class="icon-btn" id="ho-foot-manage" aria-label="Manage tasks" title="Manage task list">
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-          </button>
         </div>
       </div>
     </div>
@@ -1427,7 +1401,7 @@
         <div class="back-btn" id="greenbean-back-btn" aria-label="Back" style="display:none;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
-        <h1>Summary</h1>
+        <h1>Inventory</h1>
       </div>
 
       <!-- Inventory analysis (multi-dimension breakdown) — scrollable so the bottom bar stays pinned -->
@@ -1447,9 +1421,9 @@
             <button type="button" data-metric="value">By value ($)</button>
           </div>
         </div>
-        <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="display:flex; align-items:center; gap:20px; justify-content:center; flex-wrap:wrap;">
           <canvas id="country-pie-canvas" width="150" height="150" style="flex-shrink:0;"></canvas>
-          <div id="country-pie-legend" style="display:flex; flex-direction:column; gap:8px; width:100%; max-width:300px;"></div>
+          <div id="country-pie-legend" style="display:flex; flex-direction:column; gap:8px; min-width:150px;"></div>
         </div>
       </div>
 
@@ -1566,7 +1540,7 @@
     <!-- ===== C MARKET CHART SCREEN ===== -->
     <div class="screen" id="screen-cmarket">
       <div class="form-topbar">
-        <div class="back-btn" id="cmarket-back-btn" aria-label="Back" style="display:none;">
+        <div class="back-btn" id="cmarket-back-btn" aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
         <h1>C Market</h1>
@@ -1606,57 +1580,13 @@
         </div>
 
       </div>
-
-      <!-- FOOTER dock (Green Bean template) -->
-      <div class="menu-body sib-dock" id="cm-bottom-bar">
-        <div class="glass-frame">
-          <div class="ts-grid">
-            <button class="app-grid-item" id="cm-icon-inventory">
-              <span class="app-grid-icon" style="background:#DDEBD9;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3C7A3C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22v-6a3 3 0 0 1 6 0v6"/></svg>
-              </span>
-              <span class="app-grid-label">Inventory</span>
-            </button>
-            <button class="app-grid-item" id="cm-icon-purchase">
-              <span class="app-grid-icon" style="background:#EFE6D2;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#92560C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="14" y2="13"/></svg>
-              </span>
-              <span class="app-grid-label">Purchase</span>
-            </button>
-            <button class="app-grid-item" id="cm-icon-transfer">
-              <span class="app-grid-icon" style="background:#DCEAF5;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A5C8A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="8 20 3 20 3 15"/><line x1="20" y1="4" x2="3" y2="21"/></svg>
-              </span>
-              <span class="app-grid-label">Stock Transfer</span>
-            </button>
-            <button class="app-grid-item ts-tab-active" id="cm-icon-cmarket">
-              <span class="app-grid-icon" style="background:#E3DCF2;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5B3FA6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
-              </span>
-              <span class="app-grid-label">C Market</span>
-            </button>
-          </div>
-        </div>
-        <div class="glass-footer">
-          <div class="back-btn" id="cm-foot-back" aria-label="Back">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          </div>
-          <span class="frame-label">Green Bean</span>
-          <button class="glass-toggle" id="cm-foot-toggle" role="switch" aria-checked="true" aria-label="Toggle">
-            <span class="glass-toggle-knob"></span>
-          </button>
-          <button class="icon-btn" id="cm-foot-refresh" aria-label="Refresh chart">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-          </button>
-        </div>
-      </div>
     </div>
 
     <div class="screen" id="screen-list">
 
       <div class="app-header">
         <div class="brand">
-          <button class="back-btn" id="list-back-to-menu-btn" aria-label="Back to menu" style="display:none;">
+          <button class="back-btn" id="list-back-to-menu-btn" aria-label="Back to menu" style="margin-right: 4px;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           </button>
           <span class="brand-name">Inventory</span>
@@ -1709,141 +1639,93 @@
           </button>
         </div>
       </div>
-
-      <!-- FOOTER dock (Green Bean template) -->
-      <div class="menu-body sib-dock" id="iv-bottom-bar">
-        <div class="glass-frame">
-          <div class="ts-grid">
-            <button class="app-grid-item ts-tab-active" id="iv-icon-inventory">
-              <span class="app-grid-icon" style="background:#DDEBD9;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3C7A3C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22v-6a3 3 0 0 1 6 0v6"/></svg>
-              </span>
-              <span class="app-grid-label">Inventory</span>
-            </button>
-            <button class="app-grid-item" id="iv-icon-purchase">
-              <span class="app-grid-icon" style="background:#EFE6D2;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#92560C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="14" y2="13"/></svg>
-              </span>
-              <span class="app-grid-label">Purchase</span>
-            </button>
-            <button class="app-grid-item" id="iv-icon-transfer">
-              <span class="app-grid-icon" style="background:#DCEAF5;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A5C8A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="8 20 3 20 3 15"/><line x1="20" y1="4" x2="3" y2="21"/></svg>
-              </span>
-              <span class="app-grid-label">Stock Transfer</span>
-            </button>
-            <button class="app-grid-item" id="iv-icon-cmarket">
-              <span class="app-grid-icon" style="background:#E3DCF2;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5B3FA6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
-              </span>
-              <span class="app-grid-label">C Market</span>
-            </button>
-          </div>
-        </div>
-        <div class="glass-footer">
-          <div class="back-btn" id="iv-foot-back" aria-label="Back">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          </div>
-          <span class="frame-label">Green Bean</span>
-          <button class="glass-toggle" id="iv-foot-toggle" role="switch" aria-checked="true" aria-label="Toggle">
-            <span class="glass-toggle-knob"></span>
-          </button>
-          <button class="icon-btn" id="iv-foot-refresh" aria-label="Refresh list">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-          </button>
-        </div>
-      </div>
     </div>
 
-    <!-- ===== ADD / EDIT BEAN POPUP ===== -->
-    <div class="radar-overlay" id="bean-form-overlay" style="z-index:1150;">
-      <div class="ts-add-card">
-        <div class="ts-add-card-head">
-          <div class="ts-add-card-headtext">
-            <div class="ts-add-card-title" id="form-title">Add bean</div>
-          </div>
-          <button class="ts-add-close" id="form-back-btn" type="button" aria-label="Close">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
+    <!-- ===== ADD / EDIT BEAN SCREEN ===== -->
+    <div class="screen" id="screen-form">
+      <div class="form-topbar">
+        <div class="back-btn" id="form-back-btn" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
+        <h1 id="form-title">Add bean</h1>
+      </div>
 
-        <div class="ts-add-card-body">
-          <div class="section-label">Basics</div>
+      <div class="form-scroll">
+        <div class="section-label">Basics</div>
 
+        <div class="field-group">
+          <label class="field-label">Name</label>
+          <input type="text" class="field-input" id="f-name" placeholder="e.g. Yirgacheffe Kochere">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Country</label>
+          <input type="text" class="field-input" id="f-country" placeholder="e.g. Ethiopia">
+        </div>
+        <div class="field-row">
           <div class="field-group">
-            <label class="field-label">Name</label>
-            <input type="text" class="field-input" id="f-name" placeholder="e.g. Yirgacheffe Kochere">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Country</label>
-            <input type="text" class="field-input" id="f-country" placeholder="e.g. Ethiopia">
-          </div>
-          <div class="field-row">
-            <div class="field-group">
-              <label class="field-label">Region</label>
-              <input type="text" class="field-input" id="f-region" placeholder="e.g. Yirgacheffe">
-            </div>
-            <div class="field-group">
-              <label class="field-label">Station / Farm</label>
-              <input type="text" class="field-input" id="f-station" placeholder="e.g. Kochere">
-            </div>
-          </div>
-          <div class="field-row">
-            <div class="field-group">
-              <label class="field-label">Process</label>
-              <input type="text" class="field-input" id="f-process" placeholder="e.g. Washed">
-            </div>
-            <div class="field-group">
-              <label class="field-label">Altitude</label>
-              <input type="text" class="field-input" id="f-altitude" placeholder="e.g. 1900m">
-            </div>
-          </div>
-          <div class="field-row">
-            <div class="field-group">
-              <label class="field-label">Variety</label>
-              <input type="text" class="field-input" id="f-variety" placeholder="e.g. Heirloom">
-            </div>
-            <div class="field-group">
-              <label class="field-label">Harvest</label>
-              <input type="text" class="field-input" id="f-harvest" placeholder="e.g. 2025">
-            </div>
-          </div>
-
-          <div class="divider"></div>
-          <div class="section-label">Stock &amp; cost</div>
-
-          <div class="field-group">
-            <label class="field-label">Quantity</label>
-            <div class="qty-input-wrap">
-              <input type="number" class="field-input" id="f-quantity" min="0" step="0.1" placeholder="0.0" inputmode="decimal">
-              <span class="qty-unit">kg</span>
-            </div>
+            <label class="field-label">Region</label>
+            <input type="text" class="field-input" id="f-region" placeholder="e.g. Yirgacheffe">
           </div>
           <div class="field-group">
-            <label class="field-label">Cost per kg</label>
-            <div class="cost-input-wrap">
-              <span class="cost-prefix">$</span>
-              <input type="number" class="field-input" id="f-cost" min="0" step="0.1" placeholder="0.00" inputmode="decimal">
-              <span class="cost-suffix">/kg</span>
-            </div>
+            <label class="field-label">Station / Farm</label>
+            <input type="text" class="field-input" id="f-station" placeholder="e.g. Kochere">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Process</label>
+            <input type="text" class="field-input" id="f-process" placeholder="e.g. Washed">
           </div>
           <div class="field-group">
-            <label class="field-label">Supplier</label>
-            <input type="text" class="field-input" id="f-supplier" placeholder="e.g. Trabocca">
+            <label class="field-label">Altitude</label>
+            <input type="text" class="field-input" id="f-altitude" placeholder="e.g. 1900m">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Variety</label>
+            <input type="text" class="field-input" id="f-variety" placeholder="e.g. Heirloom">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Harvest</label>
+            <input type="text" class="field-input" id="f-harvest" placeholder="e.g. 2025">
           </div>
         </div>
 
-        <div class="ts-add-card-foot">
-          <button class="btn-save" id="save-bean-btn" disabled>Save bean</button>
-          <p class="required-hint" style="margin-top:8px;">Name and quantity are required — everything else can be filled in later</p>
+        <div class="divider"></div>
+        <div class="section-label">Stock &amp; cost</div>
+
+        <div class="field-group">
+          <label class="field-label">Quantity</label>
+          <div class="qty-input-wrap">
+            <input type="number" class="field-input" id="f-quantity" min="0" step="0.1" placeholder="0.0" inputmode="decimal">
+            <span class="qty-unit">kg</span>
+          </div>
         </div>
+        <div class="field-group">
+          <label class="field-label">Cost per kg</label>
+          <div class="cost-input-wrap">
+            <span class="cost-prefix">$</span>
+            <input type="number" class="field-input" id="f-cost" min="0" step="0.1" placeholder="0.00" inputmode="decimal">
+            <span class="cost-suffix">/kg</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Supplier</label>
+          <input type="text" class="field-input" id="f-supplier" placeholder="e.g. Trabocca">
+        </div>
+      </div>
+
+      <div class="form-bottom-bar">
+        <button class="btn-save" id="save-bean-btn" disabled>Save bean</button>
+        <p class="required-hint">Name and quantity are required — everything else can be filled in later</p>
       </div>
     </div>
 
     <!-- ===== STOCK DELIVERY SCREEN ===== -->
     <div class="screen" id="screen-delivery">
       <div class="form-topbar">
-        <div class="back-btn" id="delivery-back-btn" aria-label="Back" style="display:none;">
+        <div class="back-btn" id="delivery-back-btn" aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
         <h1>Purchase</h1>
@@ -1882,60 +1764,16 @@
         <button class="btn-save" id="confirm-delivery-btn" disabled>Confirm and add to stock</button>
         <p class="required-hint">Each bean's stock and cost per kg will be updated automatically.</p>
       </div>
-
-      <!-- FOOTER dock (Green Bean template) -->
-      <div class="menu-body sib-dock" id="dl-bottom-bar">
-        <div class="glass-frame">
-          <div class="ts-grid">
-            <button class="app-grid-item" id="dl-icon-inventory">
-              <span class="app-grid-icon" style="background:#DDEBD9;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3C7A3C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22v-6a3 3 0 0 1 6 0v6"/></svg>
-              </span>
-              <span class="app-grid-label">Inventory</span>
-            </button>
-            <button class="app-grid-item ts-tab-active" id="dl-icon-purchase">
-              <span class="app-grid-icon" style="background:#EFE6D2;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#92560C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="14" y2="13"/></svg>
-              </span>
-              <span class="app-grid-label">Purchase</span>
-            </button>
-            <button class="app-grid-item" id="dl-icon-transfer">
-              <span class="app-grid-icon" style="background:#DCEAF5;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A5C8A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="8 20 3 20 3 15"/><line x1="20" y1="4" x2="3" y2="21"/></svg>
-              </span>
-              <span class="app-grid-label">Stock Transfer</span>
-            </button>
-            <button class="app-grid-item" id="dl-icon-cmarket">
-              <span class="app-grid-icon" style="background:#E3DCF2;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5B3FA6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
-              </span>
-              <span class="app-grid-label">C Market</span>
-            </button>
-          </div>
-        </div>
-        <div class="glass-footer">
-          <div class="back-btn" id="dl-foot-back" aria-label="Back">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          </div>
-          <span class="frame-label">Green Bean</span>
-          <button class="glass-toggle" id="dl-foot-toggle" role="switch" aria-checked="true" aria-label="Toggle">
-            <span class="glass-toggle-knob"></span>
-          </button>
-          <button class="icon-btn" id="dl-foot-add" aria-label="Add bean to delivery">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-          </button>
-        </div>
-      </div>
     </div>
 
     <!-- ===== STOCK TRANSFER SCREEN ===== -->
     <div class="screen" id="screen-transfer">
       <div class="form-topbar">
-        <div class="back-btn" id="transfer-back-btn" aria-label="Back" style="display:none;">
+        <div class="back-btn" id="transfer-back-btn" aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
         <h1 style="flex:1;">Stock transfer</h1>
-        <button class="back-btn" id="open-transfer-history-btn" aria-label="Transfer history" title="Transfer history" style="display:none;">
+        <button class="back-btn" id="open-transfer-history-btn" aria-label="Transfer history" title="Transfer history">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
         </button>
       </div>
@@ -2099,50 +1937,6 @@
         <button class="btn-save" id="confirm-transfer-btn" disabled>Confirm transfer</button>
         <p class="required-hint" id="transfer-confirm-hint">This will update your stock and save a record for the invoice.</p>
       </div>
-
-      <!-- FOOTER dock (Green Bean template) -->
-      <div class="menu-body sib-dock" id="tf-bottom-bar">
-        <div class="glass-frame">
-          <div class="ts-grid">
-            <button class="app-grid-item" id="tf-icon-inventory">
-              <span class="app-grid-icon" style="background:#DDEBD9;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3C7A3C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22v-6a3 3 0 0 1 6 0v6"/></svg>
-              </span>
-              <span class="app-grid-label">Inventory</span>
-            </button>
-            <button class="app-grid-item" id="tf-icon-purchase">
-              <span class="app-grid-icon" style="background:#EFE6D2;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#92560C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="14" y2="13"/></svg>
-              </span>
-              <span class="app-grid-label">Purchase</span>
-            </button>
-            <button class="app-grid-item ts-tab-active" id="tf-icon-transfer">
-              <span class="app-grid-icon" style="background:#DCEAF5;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A5C8A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="8 20 3 20 3 15"/><line x1="20" y1="4" x2="3" y2="21"/></svg>
-              </span>
-              <span class="app-grid-label">Stock Transfer</span>
-            </button>
-            <button class="app-grid-item" id="tf-icon-cmarket">
-              <span class="app-grid-icon" style="background:#E3DCF2;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5B3FA6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
-              </span>
-              <span class="app-grid-label">C Market</span>
-            </button>
-          </div>
-        </div>
-        <div class="glass-footer">
-          <div class="back-btn" id="tf-foot-back" aria-label="Back">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          </div>
-          <span class="frame-label">Green Bean</span>
-          <button class="glass-toggle" id="tf-foot-toggle" role="switch" aria-checked="true" aria-label="Toggle">
-            <span class="glass-toggle-knob"></span>
-          </button>
-          <button class="icon-btn" id="tf-foot-history" aria-label="Transfer history">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
-          </button>
-        </div>
-      </div>
     </div>
 
     <!-- ===== TRANSFER RECORD / INVOICE SCREEN ===== -->
@@ -2217,7 +2011,7 @@
     <!-- ===== SETTING SCREEN ===== -->
     <div class="screen" id="screen-setting">
       <div class="form-topbar">
-        <div class="back-btn" id="setting-back-btn" aria-label="Back" style="display:none;">
+        <div class="back-btn" id="setting-back-btn" aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </div>
         <h1>Setting</h1>
@@ -2283,58 +2077,6 @@
           Export backup (.json)
         </button>
 
-      </div>
-
-      <!-- FOOTER dock (bottom banner) -->
-      <div class="menu-body sib-dock" id="st-bottom-bar">
-        <div class="glass-frame">
-          <div class="ts-grid">
-            <button class="app-grid-item" id="st-icon-menu">
-              <span class="app-grid-icon" style="background:#E0EEF8;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A5C8A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg>
-              </span>
-              <span class="app-grid-label">Menu</span>
-            </button>
-            <button class="app-grid-item" id="st-icon-invoice">
-              <span class="app-grid-icon" style="background:#FCE4EC;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#9C1B3E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/></svg>
-              </span>
-              <span class="app-grid-label">Invoice</span>
-            </button>
-            <button class="app-grid-item" id="menu-open-sensory-btn">
-              <span class="app-grid-icon" style="background:#FDE8D8;">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#B04A10" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2c0 2.5 3 2.5 3 5"/><path d="M11 2c0 2.5 3 2.5 3 5"/><path d="M3 10h18v2a7 7 0 0 1-7 7h-4a7 7 0 0 1-7-7v-2z"/><path d="M21 12h1a2 2 0 0 1 0 4h-1"/><path d="M8 22h8"/><path d="M12 19v3"/></svg>
-              </span>
-              <span class="app-grid-label">Sensory</span>
-            </button>
-          </div>
-        </div>
-        <div class="glass-footer">
-          <div class="back-btn" id="st-foot-back" aria-label="Back">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          </div>
-          <span class="frame-label">Tools</span>
-          <button class="glass-toggle" id="st-foot-toggle" role="switch" aria-checked="true" aria-label="Lock / refresh">
-            <span class="glass-toggle-knob"></span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== COMING SOON SCREEN ===== -->
-    <div class="screen" id="screen-coming-soon">
-      <div class="form-topbar">
-        <div class="back-btn" id="coming-soon-back-btn" aria-label="Back">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        </div>
-        <h1 id="coming-soon-title">Coming soon</h1>
-      </div>
-      <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px 28px; min-height:0;">
-        <div style="width:84px; height:84px; border-radius:50%; background:#EFE6D2; display:flex; align-items:center; justify-content:center; margin-bottom:22px;">
-          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#92560C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
-        </div>
-        <div style="font-size:22px; font-weight:700; color:#463E3A; margin-bottom:8px;">Coming soon</div>
-        <div style="font-size:14px; color:#8A7F6F; max-width:250px; line-height:1.55;">This feature is still being built &mdash; check back soon.</div>
       </div>
     </div>
   </div>
@@ -2665,19 +2407,6 @@
     }
   }
 
-  // Lock the app: clear the saved session password and reload, which drops back to the
-  // password gate (the app always shows the gate on load and never auto-unlocks).
-  var _lockingApp = false;
-  function lockApp(toggleEl){
-    if (_lockingApp) return;
-    _lockingApp = true;
-    if (toggleEl){ toggleEl.classList.add('off'); toggleEl.setAttribute('aria-checked', 'false'); }
-    setTimeout(function(){
-      try { setSessionPassword(''); } catch(e) {}
-      location.reload();
-    }, 240);
-  }
-
 
 
 
@@ -2879,7 +2608,11 @@
       renderCountryBreakdown();
     });
     var gbToggle = document.getElementById('gb-measure-toggle');
-    if (gbToggle) gbToggle.addEventListener('click', function(){ lockApp(gbToggle); });
+    if (gbToggle) gbToggle.addEventListener('click', function(){
+      // Visual placeholder only — value mode (GB_SHOW_PRICE) is currently disabled.
+      var off = gbToggle.classList.toggle('off');
+      gbToggle.setAttribute('aria-checked', off ? 'false' : 'true');
+    });
 
     gbAnalysisBound = true;
   }
@@ -2923,57 +2656,30 @@
     var total = Object.keys(groups).reduce(function(s, k){ return s + groups[k]; }, 0);
     var sorted = Object.keys(groups).sort(function(a, b){ return groups[b] - groups[a]; });
 
-    // Pie → retina-crisp donut with a centre total. One render path, so every breakdown
-    // (Country / Variety / Process / Supplier) and measure (weight / value) stays consistent.
+    // Pie
     var canvas = document.getElementById('country-pie-canvas');
     var ctx = canvas.getContext('2d');
-    var dpr = window.devicePixelRatio || 1;
-    var SIZE = 150;                          // logical display size (px)
-    canvas.style.width = SIZE + 'px';
-    canvas.style.height = SIZE + 'px';
-    canvas.width = Math.round(SIZE * dpr);
-    canvas.height = Math.round(SIZE * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    var W = SIZE, H = SIZE;
-    var cx = W / 2, cy = H / 2;
-    var Rout = Math.min(W, H) / 2 - 3;
-    var Rin = Rout * 0.6;                     // donut hole
+    var W = canvas.width, H = canvas.height;
+    var cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 2;
     ctx.clearRect(0, 0, W, H);
     if (total <= 0) { wrapper.style.display = 'none'; return; }
     var startAngle = -Math.PI / 2;
     sorted.forEach(function(k, i){
       var slice = groups[k] / total * Math.PI * 2;
       ctx.beginPath();
-      ctx.arc(cx, cy, Rout, startAngle, startAngle + slice);
-      ctx.arc(cx, cy, Rin, startAngle + slice, startAngle, true);
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, R, startAngle, startAngle + slice);
       ctx.closePath();
       ctx.fillStyle = GB_COLOURS[i % GB_COLOURS.length];
       ctx.fill();
       ctx.strokeStyle = '#FAF6F0';
-      ctx.lineWidth = 2;
-      ctx.lineJoin = 'round';
+      ctx.lineWidth = 1.5;
       ctx.stroke();
       startAngle += slice;
     });
-    // Centre label: number of distinct groups + "<Dimension> total" (no kg shown in the chart).
-    var famNow = (getComputedStyle(document.body).fontFamily) || 'system-ui, sans-serif';
-    var dimLabels = { country: 'Country', variety: 'Variety', process: 'Process', supplier: 'Supplier' };
-    var centreMain = String(sorted.length);
-    var centreSub = (dimLabels[gbAnalysis.dim] || 'Group') + ' total';
-    ctx.fillStyle = '#2E2925';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.font = '700 26px ' + famNow;
-    ctx.fillText(centreMain, cx, cy - 8);
-    ctx.fillStyle = '#8A7F6F';
-    var subFs = 11;
-    ctx.font = '600 ' + subFs + 'px ' + famNow;
-    while (ctx.measureText(centreSub).width > (Rin * 2 - 12) && subFs > 8) {
-      subFs -= 1; ctx.font = '600 ' + subFs + 'px ' + famNow;
-    }
-    ctx.fillText(centreSub, cx, cy + 12);
 
-    // Legend: percentage + name (no kg).
+    // Legend (with metric value per slice)
+    function fmtMetric(v){ return metric === 'value' ? fmtMoney(v) : fmtKg(v); }
     var legend = document.getElementById('country-pie-legend');
     legend.innerHTML = sorted.map(function(k, i){
       var pct = Math.round(groups[k] / total * 100);
@@ -2981,6 +2687,7 @@
         + '<span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:' + GB_COLOURS[i % GB_COLOURS.length] + ';flex-shrink:0;"></span>'
         + '<span style="font-size:15px;color:#2E2925;font-weight:600;min-width:38px;">' + pct + '%</span>'
         + '<span style="font-size:13px;color:#8A7F6F;flex:1;min-width:0;">' + esc(k) + '</span>'
+        + '<span style="font-size:12px;color:#A08858;white-space:nowrap;">' + fmtMetric(groups[k]) + '</span>'
         + '</div>';
     }).join('');
 
@@ -3017,21 +2724,11 @@
     }
     return out;
   }
-  function cmDaysForRange(range){
-    return range === '1M' ? 30 : range === '3M' ? 90 : range === '6M' ? 182 : 365;
-  }
-  // Fallback sample series — used ONLY if the live feed can't be reached.
-  function cmSampleData(range){
+  // SINGLE INTEGRATION POINT — swap this body to pull real C-market data later.
+  function loadCMarketData(range){
+    var days = range === '1M' ? 30 : range === '3M' ? 90 : range === '6M' ? 182 : 365;
     var full = cmGenerateSeries(365);
-    return full.slice(full.length - cmDaysForRange(range));
-  }
-  // LIVE DATA — real Coffee "C" (ICE KC=F) daily closes from the backend API.
-  async function loadCMarketData(range){
-    var resp = await fetch('/api/cmarket?history=1&range=' + encodeURIComponent(range), { headers: { 'Accept': 'application/json' } });
-    if (!resp.ok) throw new Error('cmarket ' + resp.status);
-    var data = await resp.json();
-    if (!data || !Array.isArray(data.history) || !data.history.length) throw new Error('no history');
-    return data.history.map(function(p){ return { t: p.t, v: p.c }; });
+    return full.slice(full.length - days);
   }
 
   function cmBindToggles(){
@@ -3104,22 +2801,9 @@
     ctx.textAlign = 'right'; ctx.fillText(fmtD(series[series.length - 1].t), padL + plotW, cssH - 6);
   }
 
-  async function renderCMarket(){
-    var series, live = true;
-    try {
-      series = await loadCMarketData(cmState.range);
-    } catch (e) {
-      live = false;
-      series = cmSampleData(cmState.range);
-    }
+  function renderCMarket(){
+    var series = loadCMarketData(cmState.range);
     if (!series || !series.length) return;
-    var badge = document.querySelector('.cm-badge');
-    if (badge){
-      badge.textContent = live ? 'Live \u00B7 ICE KC=F' : 'Sample data (live feed unavailable)';
-      badge.title = live
-        ? 'Live daily closes from ICE Coffee C (KC=F) via Yahoo Finance'
-        : 'Could not reach the live feed \u2014 showing illustrative sample data';
-    }
     var first = series[0].v, last = series[series.length - 1].v;
     var hi = series.reduce(function(m, p){ return p.v > m ? p.v : m; }, -Infinity);
     var lo = series.reduce(function(m, p){ return p.v < m ? p.v : m; }, Infinity);
@@ -3340,7 +3024,7 @@
     clearForm();
     document.getElementById('form-title').textContent = 'Add bean';
     checkFormValid();
-    document.getElementById('bean-form-overlay').classList.add('visible');
+    showScreen('screen-form');
   }
 
   function openEditForm(id){
@@ -3350,11 +3034,11 @@
     fillForm(bean);
     document.getElementById('form-title').textContent = 'Edit bean';
     checkFormValid();
-    document.getElementById('bean-form-overlay').classList.add('visible');
+    showScreen('screen-form');
   }
 
   document.getElementById('open-add-btn').addEventListener('click', openAddForm);
-  document.getElementById('form-back-btn').addEventListener('click', function(){ document.getElementById('bean-form-overlay').classList.remove('visible'); });
+  document.getElementById('form-back-btn').addEventListener('click', function(){ showScreen('screen-list'); });
 
   document.getElementById('save-bean-btn').addEventListener('click', function(){
     if (!checkFormValid()) return;
@@ -3372,7 +3056,7 @@
       beans.push(values);
     }
     persist();
-    document.getElementById('bean-form-overlay').classList.remove('visible');
+    showScreen('screen-list');
     render();
   });
 
@@ -3807,8 +3491,7 @@
       ? "Receiving beans from another roaster. If you select an existing bean, the quantity and cost will be merged into your current stock (weighted average)."
       : "Sending beans to another roaster. This will deduct from your stock and use your current cost per kg as the pricing baseline.";
     populateTransferBeanSelect();
-    var _bsel = document.getElementById('transfer-bean-select');
-    document.getElementById('transfer-new-name-group').style.display = (_bsel.value === '__new__') ? 'block' : 'none';
+    document.getElementById('transfer-new-name-group').style.display = 'none';
     if (dir === 'out') {
       recalcTransferOutPriceFromMargin();
     }
@@ -4340,71 +4023,6 @@
   document.getElementById('cmarket-back-btn').addEventListener('click', function(){
     showScreen('screen-greenbean');
   });
-
-  // ---------- C Market footer dock (Green Bean template) ----------
-  [['cm-icon-inventory','menu-open-inventory-btn'],
-   ['cm-icon-purchase','menu-open-purchase-btn'],
-   ['cm-icon-transfer','menu-open-transfer-btn'],
-   ['cm-icon-cmarket','menu-open-cmarket-btn']].forEach(function(p){
-    var ic = document.getElementById(p[0]);
-    var orig = document.getElementById(p[1]);
-    if (ic && orig) ic.addEventListener('click', function(){ orig.click(); });
-  });
-  var cmFootBack = document.getElementById('cm-foot-back');
-  if (cmFootBack) cmFootBack.addEventListener('click', function(){ showScreen('screen-menu'); });
-  var cmFootRefresh = document.getElementById('cm-foot-refresh');
-  if (cmFootRefresh) cmFootRefresh.addEventListener('click', function(){ renderCMarket(); });
-  var cmFootToggle = document.getElementById('cm-foot-toggle');
-  if (cmFootToggle) cmFootToggle.addEventListener('click', function(){ lockApp(cmFootToggle); });
-
-  // ---------- Purchase footer dock ----------
-  [['dl-icon-inventory','menu-open-inventory-btn'],
-   ['dl-icon-purchase','menu-open-purchase-btn'],
-   ['dl-icon-transfer','menu-open-transfer-btn'],
-   ['dl-icon-cmarket','menu-open-cmarket-btn']].forEach(function(p){
-    var ic = document.getElementById(p[0]);
-    var orig = document.getElementById(p[1]);
-    if (ic && orig) ic.addEventListener('click', function(){ orig.click(); });
-  });
-  var dlFootBack = document.getElementById('dl-foot-back');
-  if (dlFootBack) dlFootBack.addEventListener('click', function(){ showScreen('screen-menu'); });
-  var dlFootAdd = document.getElementById('dl-foot-add');
-  if (dlFootAdd) dlFootAdd.addEventListener('click', function(){ var b=document.getElementById('add-delivery-row-btn'); if(b)b.click(); });
-  var dlFootToggle = document.getElementById('dl-foot-toggle');
-  if (dlFootToggle) dlFootToggle.addEventListener('click', function(){ lockApp(dlFootToggle); });
-
-  // ---------- Stock Transfer footer dock ----------
-  [['tf-icon-inventory','menu-open-inventory-btn'],
-   ['tf-icon-purchase','menu-open-purchase-btn'],
-   ['tf-icon-transfer','menu-open-transfer-btn'],
-   ['tf-icon-cmarket','menu-open-cmarket-btn']].forEach(function(p){
-    var ic = document.getElementById(p[0]);
-    var orig = document.getElementById(p[1]);
-    if (ic && orig) ic.addEventListener('click', function(){ orig.click(); });
-  });
-  var tfFootBack = document.getElementById('tf-foot-back');
-  if (tfFootBack) tfFootBack.addEventListener('click', function(){ showScreen('screen-menu'); });
-  var tfFootHistory = document.getElementById('tf-foot-history');
-  if (tfFootHistory) tfFootHistory.addEventListener('click', function(){ var b=document.getElementById('open-transfer-history-btn'); if(b)b.click(); });
-  var tfFootToggle = document.getElementById('tf-foot-toggle');
-  if (tfFootToggle) tfFootToggle.addEventListener('click', function(){ lockApp(tfFootToggle); });
-
-  // ---------- Inventory footer dock ----------
-  [['iv-icon-inventory','menu-open-inventory-btn'],
-   ['iv-icon-purchase','menu-open-purchase-btn'],
-   ['iv-icon-transfer','menu-open-transfer-btn'],
-   ['iv-icon-cmarket','menu-open-cmarket-btn']].forEach(function(p){
-    var ic = document.getElementById(p[0]);
-    var orig = document.getElementById(p[1]);
-    if (ic && orig) ic.addEventListener('click', function(){ orig.click(); });
-  });
-  var ivFootBack = document.getElementById('iv-foot-back');
-  if (ivFootBack) ivFootBack.addEventListener('click', function(){ showScreen('screen-menu'); });
-  var ivFootRefresh = document.getElementById('iv-foot-refresh');
-  if (ivFootRefresh) ivFootRefresh.addEventListener('click', function(){ render(); });
-  var ivFootToggle = document.getElementById('iv-foot-toggle');
-  if (ivFootToggle) ivFootToggle.addEventListener('click', function(){ lockApp(ivFootToggle); });
-
   // ---------- Transfer PIN ----------
   var transferUnlocked = false;
 
@@ -4484,7 +4102,14 @@
     showScreen('screen-menu');
   });
   var tsRefreshBtn = document.getElementById('ts-refresh-btn');
-  if (tsRefreshBtn) tsRefreshBtn.addEventListener('click', function(){ lockApp(tsRefreshBtn); });
+  if (tsRefreshBtn) tsRefreshBtn.addEventListener('click', function(){
+    tsRefreshBtn.classList.add('off');
+    tsRefreshBtn.setAttribute('aria-checked', 'false');
+    setTimeout(function(){
+      try { setSessionPassword(''); } catch(e) {}
+      location.reload();
+    }, 240);
+  });
   var tsNaToggleBtn = document.getElementById('ts-na-toggle');
   var tsIconsCollapseEl = document.getElementById('ts-icons-collapse');
   if (tsNaToggleBtn && tsIconsCollapseEl) tsNaToggleBtn.addEventListener('click', function(){
@@ -4948,6 +4573,7 @@
     relocateTsBodies();
     var cfg = TS_TABS[name];
     if (!cfg) return;
+    if (name === 'current' && tsActiveTab !== 'current') tsCurrentOffset = 0;
     Object.keys(TS_TABS).forEach(function(k){
       var b = document.getElementById(TS_TABS[k].body);
       if (b) b.style.display = (k === name) ? 'flex' : 'none';
@@ -5232,18 +4858,39 @@
   }
 
   // ----- Current timesheet -----
+  var tsCurrentOffset = 0; // 0 = this week, 1 = next week, 2 = week after next
+  var TS_CURRENT_LABELS = ['This week', 'Next week', 'Week after next'];
+  var TS_CURRENT_MAX_OFFSET = 2;
+
   function renderCurrentTimesheet(){
-    var weekStart = getCurrentWeekIso();
+    var weekStart = getWeekIsoByOffset(tsCurrentOffset);
     var week = getOrCreateWeek(weekStart);
     var dates = weekDates(weekStart);
 
+    var label = document.getElementById('ts-current-weeklabel');
+    if (label) label.textContent = TS_CURRENT_LABELS[tsCurrentOffset] || 'This week';
+
     document.getElementById('ts-current-range').textContent =
       fmtShortDate(weekStart) + ' \u2013 ' + fmtShortDate(dates.sun) + ' (Mon\u2013Sun)';
+
+    var prevBtn = document.getElementById('ts-current-prev');
+    var nextBtn = document.getElementById('ts-current-next');
+    if (prevBtn) { var atStart = tsCurrentOffset <= 0; prevBtn.style.opacity = atStart ? '0.3' : '1'; prevBtn.style.pointerEvents = atStart ? 'none' : 'auto'; }
+    if (nextBtn) { var atEnd = tsCurrentOffset >= TS_CURRENT_MAX_OFFSET; nextBtn.style.opacity = atEnd ? '0.3' : '1'; nextBtn.style.pointerEvents = atEnd ? 'none' : 'auto'; }
 
     document.getElementById('ts-current-totals').innerHTML = renderWeekTotalsBar(week);
     var daysEl = document.getElementById('ts-current-days');
     renderWeekDays(week, daysEl, dates);
     attachWeekDayListeners(daysEl, week, dates, renderCurrentTimesheet);
+  }
+
+  function stepCurrentWeek(delta){
+    var next = tsCurrentOffset + delta;
+    if (next < 0) next = 0;
+    if (next > TS_CURRENT_MAX_OFFSET) next = TS_CURRENT_MAX_OFFSET;
+    if (next === tsCurrentOffset) return;
+    tsCurrentOffset = next;
+    renderCurrentTimesheet();
   }
 
   function scrollCurrentToToday(){
@@ -5270,6 +4917,8 @@
   document.getElementById('ts-current-back-btn').addEventListener('click', function(){
     showScreen('screen-timesheet');
   });
+  document.getElementById('ts-current-prev').addEventListener('click', function(){ stepCurrentWeek(-1); });
+  document.getElementById('ts-current-next').addEventListener('click', function(){ stepCurrentWeek(1); });
 
   // ----- Add new timesheet -----
   var tsAddDraft = {}; // { mon: [{staffId, start, end}], tue: [...], ... }
@@ -6133,34 +5782,6 @@
   document.getElementById('handover-back-btn').addEventListener('click', function(){
     showScreen('screen-menu');
   });
-
-  // ---------- Coming Soon placeholder ----------
-  var comingSoonReturn = 'screen-menu';
-  function openComingSoon(label, returnScreen){
-    comingSoonReturn = returnScreen || 'screen-menu';
-    var t = document.getElementById('coming-soon-title');
-    if (t) t.textContent = label || 'Coming soon';
-    showScreen('screen-coming-soon');
-  }
-  var comingSoonBack = document.getElementById('coming-soon-back-btn');
-  if (comingSoonBack) comingSoonBack.addEventListener('click', function(){ showScreen(comingSoonReturn); });
-
-  // ---------- Hand Over bottom banner dock ----------
-  // Category icons (Duty / Reminder / Event / Note) — placeholder until built.
-  [['ho-icon-duty','Duty'],
-   ['ho-icon-reminder','Reminder'],
-   ['ho-icon-event','Event'],
-   ['ho-icon-note','Note']].forEach(function(p){
-    var ic = document.getElementById(p[0]);
-    if (ic) ic.addEventListener('click', function(){ openComingSoon(p[1], 'screen-handover'); });
-  });
-  var hoFootBack = document.getElementById('ho-foot-back');
-  if (hoFootBack) hoFootBack.addEventListener('click', function(){ showScreen('screen-menu'); });
-  var hoFootManage = document.getElementById('ho-foot-manage');
-  if (hoFootManage) hoFootManage.addEventListener('click', function(){ var b=document.getElementById('handover-manage-btn'); if(b)b.click(); });
-  var hoFootToggle = document.getElementById('ho-foot-toggle');
-  if (hoFootToggle) hoFootToggle.addEventListener('click', function(){ lockApp(hoFootToggle); });
-
   document.getElementById('handover-manage-btn').addEventListener('click', function(){
     var tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -7376,19 +6997,6 @@
   document.getElementById('setting-back-btn').addEventListener('click', function(){
     showScreen('screen-menu');
   });
-
-  // ---------- Tools (Setting) bottom banner dock ----------
-  // Note: 'Other' tile was swapped onto the dashboard, so it returns to screen-menu.
-  [['st-icon-menu','Menu','screen-setting'],
-   ['st-icon-invoice','Invoice','screen-setting'],
-   ['st-icon-other','Other','screen-menu']].forEach(function(p){
-    var ic = document.getElementById(p[0]);
-    if (ic) ic.addEventListener('click', function(){ openComingSoon(p[1], p[2]); });
-  });
-  var stFootBack = document.getElementById('st-foot-back');
-  if (stFootBack) stFootBack.addEventListener('click', function(){ showScreen('screen-menu'); });
-  var stFootToggle = document.getElementById('st-foot-toggle');
-  if (stFootToggle) stFootToggle.addEventListener('click', function(){ lockApp(stFootToggle); });
   var _exportBtn = document.getElementById('export-backup-btn');
   if (_exportBtn) _exportBtn.addEventListener('click', exportBackup);
 
@@ -7636,7 +7244,14 @@
     if (swapBtn) swapBtn.addEventListener('click', swapFrames);
 
     var refreshBtn = document.getElementById('glass-refresh-btn');
-    if (refreshBtn) refreshBtn.addEventListener('click', function(){ lockApp(refreshBtn); });
+    if (refreshBtn) refreshBtn.addEventListener('click', function(){
+      refreshBtn.classList.add('off');
+      refreshBtn.setAttribute('aria-checked', 'false');
+      setTimeout(function(){
+        try { setSessionPassword(''); } catch(e) {}
+        location.reload();
+      }, 240);
+    });
 
     // ----- Drag to reorder / move between frames -----
     var dragEl = null, ghost = null, pressTimer = null, dragging = false;
